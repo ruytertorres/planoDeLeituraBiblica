@@ -508,6 +508,22 @@
         }
       }
 
+      .loading-state {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+        grid-column: 1 / -1;
+      }
+
+      .error-state {
+        text-align: center;
+        padding: 3rem;
+        color: #e74c3c;
+        background-color: rgba(231, 76, 60, 0.1);
+        border-radius: var(--border-radius);
+        grid-column: 1 / -1;
+      }
+
       /* =========================================================================
        ESTADOS ESPECIAIS
        ========================================================================= */
@@ -569,6 +585,7 @@
     <!-- =========================================================================
        NAVBAR
        ========================================================================= -->
+
     <nav id="navbar">
       <div class="navbar-container">
         <a href="#" class="navbar-title">
@@ -601,7 +618,6 @@
        CONTEÚDO PRINCIPAL
        ========================================================================= -->
     <main id="app">
-      <!-- Header do Aplicativo -->
       <header class="app-header">
         <h1>Plano Cronológico da Bíblia</h1>
         <p>
@@ -610,7 +626,6 @@
         </p>
       </header>
 
-      <!-- Informações do Plano -->
       <section class="plano-info">
         <div>
           <h2>Detalhes do Plano</h2>
@@ -636,18 +651,9 @@
         </div>
       </section>
 
-      <!-- Filtros e Controles (para implementação futura) -->
-      <div style="display: none" id="filtros-container">
-        <!-- Filtros serão implementados futuramente -->
-      </div>
-
-      <!-- Container do Plano (será populado pelo JavaScript) -->
+      <!-- Container do Plano -->
       <section id="plano-leitura">
-        <!-- Os dias serão renderizados aqui pelo main.js -->
-        <div
-          class="loading-state"
-          style="text-align: center; padding: 3rem; color: #666"
-        >
+        <div class="loading-state">
           <i
             class="fas fa-spinner fa-spin fa-2x"
             style="margin-bottom: 1rem"
@@ -667,16 +673,12 @@
             &copy; <span id="current-year">2024</span> Leitura Bíblica
             Cronológica
           </p>
-          <p class="app-version">
-            Versão 0.2 • Desenvolvido com
-            <i class="fas fa-heart" style="color: #e74c3c"></i>
-          </p>
+          <p class="app-version">Versão 0.2</p>
         </div>
 
         <div class="footer-links">
-          <a href="#" class="footer-link">Sobre o Projeto</a>
+          <a href="#" class="footer-link">Sobre</a>
           <a href="#" class="footer-link">Contato</a>
-          <a href="#" class="footer-link">GitHub</a>
         </div>
       </div>
     </footer>
@@ -684,7 +686,7 @@
     <!-- =========================================================================
        ENTRY POINT DA APLICAÇÃO
        ========================================================================= -->
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="./js/main.js"></script>
 
     <!-- Script para funcionalidades básicas da interface -->
     <script>
@@ -706,21 +708,41 @@
             html.classList.remove("dark-mode");
             themeIcon.className = "fas fa-moon";
             themeToggle.title = "Alternar para modo escuro";
+            localStorage.setItem("theme", "light");
           } else {
             html.classList.add("dark-mode");
             themeIcon.className = "fas fa-sun";
             themeToggle.title = "Alternar para modo claro";
+            localStorage.setItem("theme", "dark");
           }
         });
 
-        // Simula progresso (para demonstração - será substituído pelo sistema real)
+        // Restaurar tema salvo
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+          document.documentElement.classList.add("dark-mode");
+          themeIcon.className = "fas fa-sun";
+          themeToggle.title = "Alternar para modo claro";
+        }
+
+        // Estado de carregamento
+        const planoContainer = document.getElementById("plano-leitura");
+
+        // Timeout para mostrar erro se o carregamento falhar
         setTimeout(() => {
-          const progress = Math.floor(Math.random() * 30) + 5; // 5-35%
-          document.getElementById("dias-lidos").textContent = Math.floor(
-            (317 * progress) / 100
-          );
-          document.getElementById("progresso").textContent = progress + "%";
-        }, 1000);
+          const loadingDiv = planoContainer.querySelector(".loading-state");
+          if (loadingDiv && !planoContainer.querySelector(".dia-wrapper")) {
+            loadingDiv.innerHTML = `
+            <div class="error-state">
+              <i class="fas fa-exclamation-triangle fa-2x" style="margin-bottom: 1rem;"></i>
+              <p>Erro ao carregar o plano de leitura</p>
+              <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top: 1rem;">
+                <i class="fas fa-redo"></i> Tentar novamente
+              </button>
+            </div>
+          `;
+          }
+        }, 5000);
       });
     </script>
   </body>
