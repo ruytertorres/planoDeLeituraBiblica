@@ -1,0 +1,959 @@
+function normalizarLivro(livro) {
+  return livro
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "_");
+}
+
+undefined
+function extrairIntervalo(texto) {
+  if (texto.includes("–")) {
+    const [inicio, fim] = texto.split("–").map(Number);
+    return { inicio, fim };
+  }
+
+  const numero = Number(texto);
+  return { inicio: numero, fim: numero };
+}
+
+undefined
+const html = `
+<div class="dia"><span class="ref">Dia 1 (01/01):</span> Gênesis 1–2 <div class="tags">#pentateuco #criação</div></div>
+<div class="dia"><span class="ref">Dia 2 (02/01):</span> Gênesis 3–5 <div class="tags">#pentateuco #queda #genealogia</div></div>
+<div class="dia"><span class="ref">Dia 3 (03/01):</span> Gênesis 6–9 <div class="tags">#pentateuco #dilúvio #aliança</div></div>
+<div class="dia"><span class="ref">Dia 4 (04/01):</span> Gênesis 10–11 <div class="tags">#pentateuco #nações #torreDeBabel</div></div>
+<div class="dia"><span class="ref">Dia 5 (05/01):</span> Gênesis 12–15 <div class="tags">#pentateuco #Abraão #promessa</div></div>
+<div class="dia"><span class="ref">Dia 6 (06/01):</span> Gênesis 16–19 <div class="tags">#pentateuco #Hagar #Sodoma</div></div>
+<div class="dia"><span class="ref">Dia 7 (07/01):</span> Gênesis 20–22 <div class="tags">#pentateuco #sacrifícioDeIsaque</div></div>
+<div class="dia"><span class="ref">Dia 8 (08/01):</span> Gênesis 23–26 <div class="tags">#pentateuco #Rebeca #Isaque</div></div>
+<div class="dia"><span class="ref">Dia 9 (09/01):</span> Gênesis 27–29 <div class="tags">#pentateuco #Jacó #Esaú</div></div>
+<div class="dia"><span class="ref">Dia 10 (10/01):</span> Gênesis 30–32 <div class="tags">#pentateuco #famíliaDeJacó #Peniel</div></div>
+
+<div class="dia"><span class="ref">Dia 11 (11/01):</span> Gênesis 33–36 <div class="tags">#pentateuco #Edom #reconciliação</div></div>
+<div class="dia"><span class="ref">Dia 12 (12/01):</span> Gênesis 37–39 <div class="tags">#pentateuco #José #Egito</div></div>
+<div class="dia"><span class="ref">Dia 13 (13/01):</span> Gênesis 40–42 <div class="tags">#pentateuco #sonhos #providência</div></div>
+<div class="dia"><span class="ref">Dia 14 (14/01):</span> Gênesis 43–46 <div class="tags">#pentateuco #reconciliação #migração</div></div>
+<div class="dia"><span class="ref">Dia 15 (15/01):</span> Gênesis 47–50 <div class="tags">#pentateuco #bênção #morteDeJacó</div></div>
+
+<div class="dia"><span class="ref">Dia 16 (16/01):</span> Jó 1–4 <div class="tags">#poesia #sofrimento #provação</div></div>
+<div class="dia"><span class="ref">Dia 17 (17/01):</span> Jó 5–7 <div class="tags">#poesia #lamento #debate</div></div>
+<div class="dia"><span class="ref">Dia 18 (18/01):</span> Jó 8–10 <div class="tags">#poesia #justiçaDivina</div></div>
+<div class="dia"><span class="ref">Dia 19 (19/01):</span> Jó 11–13 <div class="tags">#poesia #defesaDeJó</div></div>
+<div class="dia"><span class="ref">Dia 20 (20/01):</span> Jó 14–17 <div class="tags">#poesia #esperança</div></div>
+
+<div class="dia"><span class="ref">Dia 21 (21/01):</span> Jó 18–20 <div class="tags">#poesia #discurso</div></div>
+<div class="dia"><span class="ref">Dia 22 (22/01):</span> Jó 21–24 <div class="tags">#poesia #impiedade</div></div>
+<div class="dia"><span class="ref">Dia 23 (23/01):</span> Jó 25–27 <div class="tags">#poesia #respostas</div></div>
+<div class="dia"><span class="ref">Dia 24 (24/01):</span> Jó 28–31 <div class="tags">#poesia #sabedoria</div></div>
+<div class="dia"><span class="ref">Dia 25 (25/01):</span> Jó 32–34 <div class="tags">#poesia #Eliú</div></div>
+
+<div class="dia"><span class="ref">Dia 26 (26/01):</span> Jó 35–37 <div class="tags">#poesia #justiça</div></div>
+<div class="dia"><span class="ref">Dia 27 (27/01):</span> Jó 38–42 <div class="tags">#poesia #DeusFala #restauração</div></div>
+
+<div class="dia"><span class="ref">Dia 28 (28/01):</span> Êxodo 1–4 <div class="tags">#pentateuco #Moisés #chamado</div></div>
+<div class="dia"><span class="ref">Dia 29 (29/01):</span> Êxodo 5–7 <div class="tags">#pentateuco #Faraó #pragas</div></div>
+<div class="dia"><span class="ref">Dia 30 (30/01):</span> Êxodo 8–10 <div class="tags">#pentateuco #pragas</div></div>
+
+<div class="dia"><span class="ref">Dia 31 (31/01):</span> Êxodo 11–13 <div class="tags">#pentateuco #Páscoa #Êxodo</div></div>
+<div class="dia"><span class="ref">Dia 32 (01/02):</span> Êxodo 14–17 <div class="tags">#pentateuco #MarVermelho #maná</div></div>
+<div class="dia"><span class="ref">Dia 33 (02/02):</span> Êxodo 18–20 <div class="tags">#pentateuco #dezMandamentos</div></div>
+
+<div class="dia"><span class="ref">Dia 34 (03/02):</span> Êxodo 21–24 <div class="tags">#pentateuco #aliança</div></div>
+<div class="dia"><span class="ref">Dia 35 (04/02):</span> Êxodo 25–27 <div class="tags">#pentateuco #tabernáculo</div></div>
+<div class="dia"><span class="ref">Dia 36 (05/02):</span> Êxodo 28–31 <div class="tags">#pentateuco #sacerdócio</div></div>
+
+<div class="dia"><span class="ref">Dia 37 (06/02):</span> Êxodo 32–34 <div class="tags">#pentateuco #bezerroDeOuro</div></div>
+<div class="dia"><span class="ref">Dia 38 (07/02):</span> Êxodo 35–37 <div class="tags">#pentateuco #construção</div></div>
+<div class="dia"><span class="ref">Dia 39 (08/02):</span> Êxodo 38–40 <div class="tags">#pentateuco #glória</div></div>
+
+<div class="dia"><span class="ref">Dia 40 (09/02):</span> Levítico 1–4 <div class="tags">#pentateuco #sacrifícios</div></div>
+<div class="dia"><span class="ref">Dia 41 (10/02):</span> Levítico 5–7 <div class="tags">#pentateuco #ofertas</div></div>
+<div class="dia"><span class="ref">Dia 42 (11/02):</span> Levítico 8–10 <div class="tags">#pentateuco #consagração</div></div>
+
+<div class="dia"><span class="ref">Dia 43 (12/02):</span> Levítico 11–13 <div class="tags">#pentateuco #pureza</div></div>
+<div class="dia"><span class="ref">Dia 44 (13/02):</span> Levítico 14–16 <div class="tags">#pentateuco #expiação</div></div>
+<div class="dia"><span class="ref">Dia 45 (14/02):</span> Levítico 17–19 <div class="tags">#pentateuco #santidade</div></div>
+
+<div class="dia"><span class="ref">Dia 46 (15/02):</span> Levítico 20–22; Salmo 95 <div class="tags">#pentateuco #adoração</div></div>
+<div class="dia"><span class="ref">Dia 47 (16/02):</span> Levítico 23–27 <div class="tags">#pentateuco #festas</div></div>
+
+<div class="dia"><span class="ref">Dia 48 (17/02):</span> Números 1–3 <div class="tags">#pentateuco #censo</div></div>
+<div class="dia"><span class="ref">Dia 49 (18/02):</span> Números 4–6 <div class="tags">#pentateuco #nazireu</div></div>
+<div class="dia"><span class="ref">Dia 50 (19/02):</span> Números 7–10 <div class="tags">#pentateuco #partida</div></div>
+
+<div class="dia"><span class="ref">Dia 51 (20/02):</span> Números 11–12:16; Salmo 90 <div class="tags">#pentateuco #murmuração</div></div>
+<div class="dia"><span class="ref">Dia 52 (21/02):</span> Salmo 91; Números 12–14 <div class="tags">#pentateuco #rebelião</div></div>
+<div class="dia"><span class="ref">Dia 53 (22/02):</span> Números 15–17 <div class="tags">#pentateuco #autoridade</div></div>
+
+<div class="dia"><span class="ref">Dia 54 (23/02):</span> Números 18–20 <div class="tags">#pentateuco #falhaDeMoisés</div></div>
+<div class="dia"><span class="ref">Dia 55 (24/02):</span> Números 21–24 <div class="tags">#pentateuco #Balaão</div></div>
+<div class="dia"><span class="ref">Dia 56 (25/02):</span> Números 25–27 <div class="tags">#pentateuco #sucessão</div></div>
+
+<div class="dia"><span class="ref">Dia 57 (26/02):</span> Números 28–30 <div class="tags">#pentateuco #votos</div></div>
+<div class="dia"><span class="ref">Dia 58 (27/02):</span> Números 31–33 <div class="tags">#pentateuco #itinerário</div></div>
+<div class="dia"><span class="ref">Dia 59 (28/02):</span> Números 34–36 <div class="tags">#pentateuco #herança</div></div>
+
+<div class="dia"><span class="ref">Dia 60 (01/03):</span> Deuteronômio 1–3 <div class="tags">#pentateuco #recapitulação</div></div>
+
+<div class="dia"><span class="ref">Dia 61 (02/03):</span> Deuteronômio 4–6 <div class="tags">#pentateuco #aliança #Shema</div></div>
+<div class="dia"><span class="ref">Dia 62 (03/03):</span> Deuteronômio 7–9 <div class="tags">#pentateuco #eleição #memória</div></div>
+<div class="dia"><span class="ref">Dia 63 (04/03):</span> Deuteronômio 10–12 <div class="tags">#pentateuco #adoração</div></div>
+<div class="dia"><span class="ref">Dia 64 (05/03):</span> Deuteronômio 13–15 <div class="tags">#pentateuco #leisSociais</div></div>
+<div class="dia"><span class="ref">Dia 65 (06/03):</span> Deuteronômio 16–18 <div class="tags">#pentateuco #festas #profeta</div></div>
+
+<div class="dia"><span class="ref">Dia 66 (07/03):</span> Deuteronômio 19–21 <div class="tags">#pentateuco #justiça</div></div>
+<div class="dia"><span class="ref">Dia 67 (08/03):</span> Deuteronômio 22–24 <div class="tags">#pentateuco #vidaSocial</div></div>
+<div class="dia"><span class="ref">Dia 68 (09/03):</span> Deuteronômio 25–27 <div class="tags">#pentateuco #bênçãoEMaldição</div></div>
+<div class="dia"><span class="ref">Dia 69 (10/03):</span> Deuteronômio 28 <div class="tags">#pentateuco #bênçãosEMaldições</div></div>
+<div class="dia"><span class="ref">Dia 70 (11/03):</span> Deuteronômio 29–31 <div class="tags">#pentateuco #renovaçãoDaAliança</div></div>
+
+<div class="dia"><span class="ref">Dia 71 (12/03):</span> Deuteronômio 32–34 <div class="tags">#pentateuco #cânticoDeMoisés #morteDeMoisés</div></div>
+
+<div class="dia"><span class="ref">Dia 72 (13/03):</span> Josué 1–4 <div class="tags">#historiaBiblica #entradaNaTerra</div></div>
+<div class="dia"><span class="ref">Dia 73 (14/03):</span> Josué 5–8 <div class="tags">#historiaBiblica #conquista</div></div>
+<div class="dia"><span class="ref">Dia 74 (15/03):</span> Josué 9–11 <div class="tags">#historiaBiblica #aliançaComGibeão</div></div>
+<div class="dia"><span class="ref">Dia 75 (16/03):</span> Josué 12–14 <div class="tags">#historiaBiblica #herança</div></div>
+<div class="dia"><span class="ref">Dia 76 (17/03):</span> Josué 15–17 <div class="tags">#historiaBiblica #divisãoDaTerra</div></div>
+
+<div class="dia"><span class="ref">Dia 77 (18/03):</span> Josué 18–21 <div class="tags">#historiaBiblica #refúgio #levitas</div></div>
+<div class="dia"><span class="ref">Dia 78 (19/03):</span> Josué 22–24 <div class="tags">#historiaBiblica #aliançaRenovada</div></div>
+
+<div class="dia"><span class="ref">Dia 79 (20/03):</span> Juízes 1–3 <div class="tags">#historiaBiblica #cicloDosJuízes</div></div>
+<div class="dia"><span class="ref">Dia 80 (21/03):</span> Juízes 4–6 <div class="tags">#historiaBiblica #Débora #Gideão</div></div>
+<div class="dia"><span class="ref">Dia 81 (22/03):</span> Juízes 7–9 <div class="tags">#historiaBiblica #Gideão</div></div>
+<div class="dia"><span class="ref">Dia 82 (23/03):</span> Juízes 10–12 <div class="tags">#historiaBiblica #Jephte</div></div>
+<div class="dia"><span class="ref">Dia 83 (24/03):</span> Juízes 13–16 <div class="tags">#historiaBiblica #Sansão</div></div>
+<div class="dia"><span class="ref">Dia 84 (25/03):</span> Juízes 17–18 <div class="tags">#historiaBiblica #idolatria</div></div>
+<div class="dia"><span class="ref">Dia 85 (26/03):</span> Juízes 19–21 <div class="tags">#historiaBiblica #decadência</div></div>
+
+<div class="dia"><span class="ref">Dia 86 (27/03):</span> Rute 1–4 <div class="tags">#historiaBiblica #redenção</div></div>
+
+<div class="dia"><span class="ref">Dia 87 (28/03):</span> 1 Samuel 1–3 <div class="tags">#historiaBiblica #Samuel</div></div>
+<div class="dia"><span class="ref">Dia 88 (29/03):</span> 1 Samuel 4–7 <div class="tags">#historiaBiblica #arcaDaAliança</div></div>
+<div class="dia"><span class="ref">Dia 89 (30/03):</span> 1 Samuel 8–10 <div class="tags">#historiaBiblica #monarquia</div></div>
+<div class="dia"><span class="ref">Dia 90 (31/03):</span> 1 Samuel 11–13 <div class="tags">#historiaBiblica #Saul</div></div>
+
+<div class="dia"><span class="ref">Dia 91 (01/04):</span> 1 Samuel 14–15 <div class="tags">#historiaBiblica #desobediência</div></div>
+<div class="dia"><span class="ref">Dia 92 (02/04):</span> 1 Samuel 16–18 <div class="tags">#historiaBiblica #Davi</div></div>
+<div class="dia"><span class="ref">Dia 93 (03/04):</span> 1 Samuel 19–21 <div class="tags">#historiaBiblica #perseguição</div></div>
+<div class="dia"><span class="ref">Dia 94 (04/04):</span> 1 Samuel 22–24 <div class="tags">#historiaBiblica #fuga</div></div>
+<div class="dia"><span class="ref">Dia 95 (05/04):</span> 1 Samuel 25–27 <div class="tags">#historiaBiblica #provação</div></div>
+
+<div class="dia"><span class="ref">Dia 96 (06/04):</span> 1 Samuel 28–31 <div class="tags">#historiaBiblica #quedaDeSaul</div></div>
+
+<div class="dia"><span class="ref">Dia 97 (07/04):</span> Salmo 18; 2 Samuel 1 <div class="tags">#salmos #lamento #Davi</div></div>
+<div class="dia"><span class="ref">Dia 98 (08/04):</span> 2 Samuel 2–5 <div class="tags">#historiaBiblica #reinoUnificado</div></div>
+<div class="dia"><span class="ref">Dia 99 (09/04):</span> 2 Samuel 6–7 <div class="tags">#historiaBiblica #aliançaDavídica</div></div>
+<div class="dia"><span class="ref">Dia 100 (10/04):</span> 2 Samuel 8–10 <div class="tags">#historiaBiblica #expansão</div></div>
+
+<div class="dia"><span class="ref">Dia 101 (11/04):</span> Salmos 1–2; 15; 22 <div class="tags">#salmos #messianico</div></div>
+<div class="dia"><span class="ref">Dia 102 (12/04):</span> Salmos 3–4; 12–13; 28 <div class="tags">#salmos #refúgio</div></div>
+<div class="dia"><span class="ref">Dia 103 (13/04):</span> Salmos 20–21; 27 <div class="tags">#salmos #confiança</div></div>
+<div class="dia"><span class="ref">Dia 104 (14/04):</span> Salmos 5–6; 8–10 <div class="tags">#salmos #adoração</div></div>
+<div class="dia"><span class="ref">Dia 105 (15/04):</span> Salmos 11; 14; 16 <div class="tags">#salmos #justiça</div></div>
+
+<div class="dia"><span class="ref">Dia 106 (16/04):</span> Salmos 17; 19; 23 <div class="tags">#salmos #pastor</div></div>
+<div class="dia"><span class="ref">Dia 107 (17/04):</span> Salmos 24; 29; 33 <div class="tags">#salmos #reinadoDeDeus</div></div>
+<div class="dia"><span class="ref">Dia 108 (18/04):</span> Salmos 36; 39; 41 <div class="tags">#salmos #dependência</div></div>
+<div class="dia"><span class="ref">Dia 109 (19/04):</span> Salmos 53; 58; 64 <div class="tags">#salmos #justiçaDivina</div></div>
+<div class="dia"><span class="ref">Dia 110 (20/04):</span> Salmos 56–57; 142 <div class="tags">#salmos #refúgio</div></div>
+
+<div class="dia"><span class="ref">Dia 111 (21/04):</span> Salmos 52; 54; 60 <div class="tags">#salmos #livramento</div></div>
+<div class="dia"><span class="ref">Dia 112 (22/04):</span> Salmos 63; 65–66 <div class="tags">#salmos #gratidão</div></div>
+<div class="dia"><span class="ref">Dia 113 (23/04):</span> Salmos 67; 69 <div class="tags">#salmos #messianico</div></div>
+<div class="dia"><span class="ref">Dia 114 (24/04):</span> Salmos 70–71 <div class="tags">#salmos #oração</div></div>
+<div class="dia"><span class="ref">Dia 115 (25/04):</span> Salmos 86; 101 <div class="tags">#salmos #governoJusto</div></div>
+
+<div class="dia"><span class="ref">Dia 116 (26/04):</span> Salmos 103; 108 <div class="tags">#salmos #misericórdia</div></div>
+<div class="dia"><span class="ref">Dia 117 (27/04):</span> Salmos 110; 122 <div class="tags">#salmos #messias #Jerusalém</div></div>
+<div class="dia"><span class="ref">Dia 118 (28/04):</span> Salmos 124; 131; 133 <div class="tags">#salmos #comunhão</div></div>
+<div class="dia"><span class="ref">Dia 119 (29/04):</span> Salmos 138–139 <div class="tags">#salmos #onisciência</div></div>
+<div class="dia"><span class="ref">Dia 120 (30/04):</span> Salmos 141; 143–144 <div class="tags">#salmos #súplica</div></div>
+
+<div class="dia"><span class="ref">Dia 121 (01/05):</span> 2 Samuel 11–12 <div class="tags">#historiaBiblica #pecadoEDisciplina</div></div>
+<div class="dia"><span class="ref">Dia 122 (02/05):</span> Salmo 51; 2 Samuel 13 <div class="tags">#salmos #arrependimento</div></div>
+<div class="dia"><span class="ref">Dia 123 (03/05):</span> 2 Samuel 14–15 <div class="tags">#historiaBiblica #rebelião</div></div>
+<div class="dia"><span class="ref">Dia 124 (04/05):</span> Salmos 3–4; 63 <div class="tags">#salmos #fuga</div></div>
+
+<div class="dia"><span class="ref">Dia 125 (05/05):</span> 2 Samuel 16–18 <div class="tags">#historiaBiblica #Absalão</div></div>
+<div class="dia"><span class="ref">Dia 126 (06/05):</span> 2 Samuel 19–20 <div class="tags">#historiaBiblica #restauração</div></div>
+<div class="dia"><span class="ref">Dia 127 (07/05):</span> 2 Samuel 21–23 <div class="tags">#historiaBiblica #últimasPalavras</div></div>
+<div class="dia"><span class="ref">Dia 128 (08/05):</span> Salmo 30; 2 Samuel 24 <div class="tags">#salmos #arrependimento</div></div>
+
+<div class="dia"><span class="ref">Dia 129 (09/05):</span> 1 Reis 1–2 <div class="tags">#historiaBiblica #Salomão</div></div>
+<div class="dia"><span class="ref">Dia 130 (10/05):</span> Salmo 72; 1 Reis 3 <div class="tags">#salmos #sabedoria</div></div>
+<div class="dia"><span class="ref">Dia 131 (11/05):</span> 1 Reis 4–6 <div class="tags">#historiaBiblica #templo</div></div>
+<div class="dia"><span class="ref">Dia 132 (12/05):</span> Salmos 127; 1 Reis 7 <div class="tags">#salmos #prosperidade</div></div>
+
+<div class="dia"><span class="ref">Dia 133 (13/05):</span> 1 Reis 8 <div class="tags">#historiaBiblica #dedicaçãoDoTemplo</div></div>
+<div class="dia"><span class="ref">Dia 134 (14/05):</span> Provérbios 1–3 <div class="tags">#sabedoria #temorDoSenhor</div></div>
+<div class="dia"><span class="ref">Dia 135 (15/05):</span> Provérbios 4–6 <div class="tags">#sabedoria #disciplina</div></div>
+<div class="dia"><span class="ref">Dia 136 (16/05):</span> Provérbios 7–9 <div class="tags">#sabedoria #escolhas</div></div>
+
+<div class="dia"><span class="ref">Dia 137 (17/05):</span> Provérbios 10–12 <div class="tags">#sabedoria #vidaPrática</div></div>
+<div class="dia"><span class="ref">Dia 138 (18/05):</span> Provérbios 13–15 <div class="tags">#sabedoria #ética</div></div>
+<div class="dia"><span class="ref">Dia 139 (19/05):</span> Provérbios 16–18 <div class="tags">#sabedoria #governo</div></div>
+<div class="dia"><span class="ref">Dia 140 (20/05):</span> Provérbios 19–21 <div class="tags">#sabedoria #justiça</div></div>
+
+<div class="dia"><span class="ref">Dia 141 (21/05):</span> Provérbios 22–24 <div class="tags">#sabedoria #justiçaSocial</div></div>
+<div class="dia"><span class="ref">Dia 142 (22/05):</span> Provérbios 25–27 <div class="tags">#sabedoria #liderança</div></div>
+<div class="dia"><span class="ref">Dia 143 (23/05):</span> Provérbios 28–29 <div class="tags">#sabedoria #governoJusto</div></div>
+<div class="dia"><span class="ref">Dia 144 (24/05):</span> Provérbios 30–31 <div class="tags">#sabedoria #vidaVirtuosa</div></div>
+
+<div class="dia"><span class="ref">Dia 145 (25/05):</span> Eclesiastes 1–4 <div class="tags">#sabedoria #vaidade</div></div>
+<div class="dia"><span class="ref">Dia 146 (26/05):</span> Eclesiastes 5–8 <div class="tags">#sabedoria #tempo</div></div>
+<div class="dia"><span class="ref">Dia 147 (27/05):</span> Eclesiastes 9–12 <div class="tags">#sabedoria #sentidoDaVida</div></div>
+
+<div class="dia"><span class="ref">Dia 148 (28/05):</span> Cânticos 1–4 <div class="tags">#poesia #amorAliança</div></div>
+<div class="dia"><span class="ref">Dia 149 (29/05):</span> Cânticos 5–8 <div class="tags">#poesia #amorFiel</div></div>
+
+<div class="dia"><span class="ref">Dia 150 (30/05):</span> 1 Reis 9–11 <div class="tags">#historiaBiblica #quedaDeSalomão</div></div>
+<div class="dia"><span class="ref">Dia 151 (31/05):</span> Provérbios 1; 2 Crônicas 1 <div class="tags">#sabedoria #oração</div></div>
+
+<div class="dia"><span class="ref">Dia 152 (01/06):</span> 1 Reis 12–14 <div class="tags">#historiaBiblica #reinoDividido</div></div>
+<div class="dia"><span class="ref">Dia 153 (02/06):</span> 2 Crônicas 10–12 <div class="tags">#historiaBiblica #Roboão</div></div>
+
+<div class="dia"><span class="ref">Dia 154 (03/06):</span> 1 Reis 15; 2 Crônicas 13–14 <div class="tags">#historiaBiblica #Asa</div></div>
+<div class="dia"><span class="ref">Dia 155 (04/06):</span> 2 Crônicas 15–16 <div class="tags">#historiaBiblica #reforma</div></div>
+
+<div class="dia"><span class="ref">Dia 156 (05/06):</span> 1 Reis 16–18 <div class="tags">#profetas #Elias</div></div>
+<div class="dia"><span class="ref">Dia 157 (06/06):</span> 1 Reis 19–22 <div class="tags">#profetas #Elias #quedaDeAcabe</div></div>
+
+<div class="dia"><span class="ref">Dia 158 (07/06):</span> 2 Reis 1–3 <div class="tags">#profetas #Eliseu</div></div>
+<div class="dia"><span class="ref">Dia 159 (08/06):</span> 2 Reis 4–6 <div class="tags">#profetas #milagres</div></div>
+<div class="dia"><span class="ref">Dia 160 (09/06):</span> 2 Reis 7–9 <div class="tags">#profetas #juízo</div></div>
+<div class="dia"><span class="ref">Dia 161 (10/06):</span> 2 Reis 10–12 <div class="tags">#historiaBiblica #Jeú</div></div>
+
+<div class="dia"><span class="ref">Dia 162 (11/06):</span> Joel 1–3 <div class="tags">#profetasMenores #diaDoSenhor</div></div>
+<div class="dia"><span class="ref">Dia 163 (12/06):</span> Jonas 1–4 <div class="tags">#profetasMenores #misericórdia</div></div>
+
+<div class="dia"><span class="ref">Dia 164 (13/06):</span> Amós 1–3 <div class="tags">#profetasMenores #justiçaSocial</div></div>
+<div class="dia"><span class="ref">Dia 165 (14/06):</span> Amós 4–6 <div class="tags">#profetasMenores #juízo</div></div>
+<div class="dia"><span class="ref">Dia 166 (15/06):</span> Amós 7–9 <div class="tags">#profetasMenores #restauração</div></div>
+
+<div class="dia"><span class="ref">Dia 167 (16/06):</span> Oséias 1–3 <div class="tags">#profetasMenores #amorRedentor</div></div>
+<div class="dia"><span class="ref">Dia 168 (17/06):</span> Oséias 4–6 <div class="tags">#profetasMenores #infidelidade</div></div>
+<div class="dia"><span class="ref">Dia 169 (18/06):</span> Oséias 7–10 <div class="tags">#profetasMenores #arrependimento</div></div>
+<div class="dia"><span class="ref">Dia 170 (19/06):</span> Oséias 11–14 <div class="tags">#profetasMenores #restauração</div></div>
+
+<div class="dia"><span class="ref">Dia 171 (20/06):</span> Isaías 1–4 <div class="tags">#profetasMaiores #santidade</div></div>
+<div class="dia"><span class="ref">Dia 172 (21/06):</span> Isaías 5–8 <div class="tags">#profetasMaiores #chamado</div></div>
+<div class="dia"><span class="ref">Dia 173 (22/06):</span> Isaías 9–12 <div class="tags">#profetasMaiores #messias</div></div>
+<div class="dia"><span class="ref">Dia 174 (23/06):</span> Isaías 13–17 <div class="tags">#profetasMaiores #juízoDasNações</div></div>
+
+<div class="dia"><span class="ref">Dia 175 (24/06):</span> Isaías 18–22 <div class="tags">#profetasMaiores #confiança</div></div>
+<div class="dia"><span class="ref">Dia 176 (25/06):</span> Isaías 23–27 <div class="tags">#profetasMaiores #redenção</div></div>
+<div class="dia"><span class="ref">Dia 177 (26/06):</span> Isaías 28–30 <div class="tags">#profetasMaiores #arrependimento</div></div>
+<div class="dia"><span class="ref">Dia 178 (27/06):</span> Isaías 31–33 <div class="tags">#profetasMaiores #salvação</div></div>
+
+<div class="dia"><span class="ref">Dia 179 (28/06):</span> Isaías 34–36 <div class="tags">#profetasMaiores #juízoESocorro</div></div>
+<div class="dia"><span class="ref">Dia 180 (29/06):</span> Isaías 37–39 <div class="tags">#profetasMaiores #Ezequias</div></div>
+<div class="dia"><span class="ref">Dia 181 (30/06):</span> Isaías 40–43 <div class="tags">#profetasMaiores #consolo</div></div>
+
+<div class="dia"><span class="ref">Dia 182 (01/07):</span> Isaías 44–48 <div class="tags">#profetasMaiores #unicidadeDeDeus</div></div>
+<div class="dia"><span class="ref">Dia 183 (02/07):</span> Isaías 49–53 <div class="tags">#profetasMaiores #servoSofredor</div></div>
+<div class="dia"><span class="ref">Dia 184 (03/07):</span> Isaías 54–58 <div class="tags">#profetasMaiores #aliançaEterna</div></div>
+<div class="dia"><span class="ref">Dia 185 (04/07):</span> Isaías 59–63 <div class="tags">#profetasMaiores #redençãoFinal</div></div>
+
+<div class="dia"><span class="ref">Dia 186 (05/07):</span> Isaías 64–66 <div class="tags">#profetasMaiores #novoCéuETerra</div></div>
+
+<div class="dia"><span class="ref">Dia 187 (06/07):</span> Miqueias 1–4 <div class="tags">#profetasMenores #justiçaEMessias</div></div>
+<div class="dia"><span class="ref">Dia 188 (07/07):</span> Miqueias 5–7 <div class="tags">#profetasMenores #esperança</div></div>
+
+<div class="dia"><span class="ref">Dia 189 (08/07):</span> 2 Reis 13–15 <div class="tags">#historiaBiblica #decadência</div></div>
+<div class="dia"><span class="ref">Dia 190 (09/07):</span> 2 Crônicas 26–28 <div class="tags">#historiaBiblica #UziasEAcás</div></div>
+
+<div class="dia"><span class="ref">Dia 191 (10/07):</span> Isaías 1; 6 <div class="tags">#profetasMaiores #visãoDoTrono</div></div>
+
+<div class="dia"><span class="ref">Dia 192 (11/07):</span> 2 Crônicas 29–31 <div class="tags">#historiaBiblica #reformaDeEzequias</div></div>
+<div class="dia"><span class="ref">Dia 193 (12/07):</span> Provérbios 25–26 <div class="tags">#sabedoria #vidaPrática</div></div>
+
+<div class="dia"><span class="ref">Dia 194 (13/07):</span> 2 Reis 16–17 <div class="tags">#historiaBiblica #quedaDeIsrael</div></div>
+
+<div class="dia"><span class="ref">Dia 195 (14/07):</span> Naum 1–3 <div class="tags">#profetasMenores #quedaDeNínive</div></div>
+
+<div class="dia"><span class="ref">Dia 196 (15/07):</span> Sofonias 1–3 <div class="tags">#profetasMenores #diaDoSenhor</div></div>
+
+<div class="dia"><span class="ref">Dia 197 (16/07):</span> Habacuque 1–3 <div class="tags">#profetasMenores #fé</div></div>
+
+<div class="dia"><span class="ref">Dia 198 (17/07):</span> Jeremias 1–3 <div class="tags">#profetasMaiores #chamado</div></div>
+<div class="dia"><span class="ref">Dia 199 (18/07):</span> Jeremias 4–6 <div class="tags">#profetasMaiores #arrependimento</div></div>
+<div class="dia"><span class="ref">Dia 200 (19/07):</span> Jeremias 7–9 <div class="tags">#profetasMaiores #templo</div></div>
+
+<div class="dia"><span class="ref">Dia 201 (20/07):</span> Jeremias 10–13 <div class="tags">#profetasMaiores #idolatria</div></div>
+<div class="dia"><span class="ref">Dia 202 (21/07):</span> Jeremias 14–17 <div class="tags">#profetasMaiores #oração</div></div>
+<div class="dia"><span class="ref">Dia 203 (22/07):</span> Jeremias 18–22 <div class="tags">#profetasMaiores #vasoDoOleiro</div></div>
+
+<div class="dia"><span class="ref">Dia 204 (23/07):</span> Jeremias 23–25 <div class="tags">#profetasMaiores #falsosProfetas</div></div>
+<div class="dia"><span class="ref">Dia 205 (24/07):</span> Jeremias 26–29 <div class="tags">#profetasMaiores #exílio</div></div>
+<div class="dia"><span class="ref">Dia 206 (25/07):</span> Jeremias 30–33 <div class="tags">#profetasMaiores #novaAliança</div></div>
+
+<div class="dia"><span class="ref">Dia 207 (26/07):</span> Jeremias 34–36 <div class="tags">#profetasMaiores #perseguição</div></div>
+<div class="dia"><span class="ref">Dia 208 (27/07):</span> Jeremias 37–39 <div class="tags">#profetasMaiores #quedaDeJerusalém</div></div>
+
+<div class="dia"><span class="ref">Dia 209 (28/07):</span> Jeremias 40–43 <div class="tags">#profetasMaiores #remanescente</div></div>
+<div class="dia"><span class="ref">Dia 210 (29/07):</span> Jeremias 44–47 <div class="tags">#profetasMaiores #juízoDasNações</div></div>
+<div class="dia"><span class="ref">Dia 211 (30/07):</span> Jeremias 48–50 <div class="tags">#profetasMaiores #quedaDaBabilônia</div></div>
+<div class="dia"><span class="ref">Dia 212 (31/07):</span> Jeremias 51–52 <div class="tags">#profetasMaiores #fimDeJerusalém</div></div>
+
+<div class="dia"><span class="ref">Dia 213 (01/08):</span> Lamentações 1–2 <div class="tags">#poesia #lamento</div></div>
+<div class="dia"><span class="ref">Dia 214 (02/08):</span> Lamentações 3–5 <div class="tags">#poesia #esperança</div></div>
+
+<div class="dia"><span class="ref">Dia 215 (03/08):</span> Obadias <div class="tags">#profetasMenores #juízo</div></div>
+
+<div class="dia"><span class="ref">Dia 216 (04/08):</span> Ezequiel 1–4 <div class="tags">#profetasMaiores #glóriaDeDeus</div></div>
+<div class="dia"><span class="ref">Dia 217 (05/08):</span> Ezequiel 5–8 <div class="tags">#profetasMaiores #idolatria</div></div>
+<div class="dia"><span class="ref">Dia 218 (06/08):</span> Ezequiel 9–12 <div class="tags">#profetasMaiores #juízo</div></div>
+<div class="dia"><span class="ref">Dia 219 (07/08):</span> Ezequiel 13–15 <div class="tags">#profetasMaiores #falsosProfetas</div></div>
+<div class="dia"><span class="ref">Dia 220 (08/08):</span> Ezequiel 16–17 <div class="tags">#profetasMaiores #aliança</div></div>
+
+<div class="dia"><span class="ref">Dia 221 (09/08):</span> Ezequiel 18–20 <div class="tags">#profetasMaiores #responsabilidade</div></div>
+<div class="dia"><span class="ref">Dia 222 (10/08):</span> Ezequiel 21–23 <div class="tags">#profetasMaiores #idolatria</div></div>
+<div class="dia"><span class="ref">Dia 223 (11/08):</span> Ezequiel 24–27 <div class="tags">#profetasMaiores #juízo</div></div>
+<div class="dia"><span class="ref">Dia 224 (12/08):</span> Ezequiel 28–30 <div class="tags">#profetasMaiores #quedaDasNações</div></div>
+<div class="dia"><span class="ref">Dia 225 (13/08):</span> Ezequiel 31–33 <div class="tags">#profetasMaiores #atalaias</div></div>
+
+<div class="dia"><span class="ref">Dia 226 (14/08):</span> Ezequiel 34–36 <div class="tags">#profetasMaiores #pastorVerdadeiro</div></div>
+<div class="dia"><span class="ref">Dia 227 (15/08):</span> Ezequiel 37–39 <div class="tags">#profetasMaiores #restauração</div></div>
+<div class="dia"><span class="ref">Dia 228 (16/08):</span> Ezequiel 40–43 <div class="tags">#profetasMaiores #novoTemplo</div></div>
+<div class="dia"><span class="ref">Dia 229 (17/08):</span> Ezequiel 44–48 <div class="tags">#profetasMaiores #novaTerra</div></div>
+
+<div class="dia"><span class="ref">Dia 230 (18/08):</span> Daniel 1–3 <div class="tags">#profetasMaiores #fidelidade</div></div>
+<div class="dia"><span class="ref">Dia 231 (19/08):</span> Daniel 4–6 <div class="tags">#profetasMaiores #reinos</div></div>
+<div class="dia"><span class="ref">Dia 232 (20/08):</span> Daniel 7–9 <div class="tags">#profetasMaiores #escatologia</div></div>
+<div class="dia"><span class="ref">Dia 233 (21/08):</span> Daniel 10–12 <div class="tags">#profetasMaiores #fimDosTempos</div></div>
+
+<div class="dia"><span class="ref">Dia 234 (22/08):</span> Esdras 1–3 <div class="tags">#posExilio #retorno</div></div>
+<div class="dia"><span class="ref">Dia 235 (23/08):</span> Esdras 4–6 <div class="tags">#posExilio #reconstrução</div></div>
+<div class="dia"><span class="ref">Dia 236 (24/08):</span> Ageu 1–2; Zacarias 1 <div class="tags">#profetasMenores #templo</div></div>
+<div class="dia"><span class="ref">Dia 237 (25/08):</span> Zacarias 2–6 <div class="tags">#profetasMenores #visões</div></div>
+<div class="dia"><span class="ref">Dia 238 (26/08):</span> Zacarias 7–10 <div class="tags">#profetasMenores #messias</div></div>
+<div class="dia"><span class="ref">Dia 239 (27/08):</span> Zacarias 11–14 <div class="tags">#profetasMenores #reinoFuturo</div></div>
+
+<div class="dia"><span class="ref">Dia 240 (28/08):</span> Esdras 7–10 <div class="tags">#posExilio #reforma</div></div>
+<div class="dia"><span class="ref">Dia 241 (29/08):</span> Ester 1–3 <div class="tags">#posExilio #providência</div></div>
+<div class="dia"><span class="ref">Dia 242 (30/08):</span> Ester 4–7 <div class="tags">#posExilio #livramento</div></div>
+<div class="dia"><span class="ref">Dia 243 (31/08):</span> Ester 8–10 <div class="tags">#posExilio #vitória</div></div>
+
+<div class="dia"><span class="ref">Dia 244 (01/09):</span> Neemias 1–3 <div class="tags">#posExilio #reconstrução</div></div>
+<div class="dia"><span class="ref">Dia 245 (02/09):</span> Neemias 4–6 <div class="tags">#posExilio #perseverança</div></div>
+<div class="dia"><span class="ref">Dia 246 (03/09):</span> Neemias 7–9 <div class="tags">#posExilio #arrependimento</div></div>
+<div class="dia"><span class="ref">Dia 247 (04/09):</span> Neemias 10–13 <div class="tags">#posExilio #aliança</div></div>
+
+<div class="dia"><span class="ref">Dia 248 (05/09):</span> Malaquias 1–4 <div class="tags">#profetasMenores #preparaçãoMessiânica</div></div>
+
+<div class="dia"><span class="ref">Dia 249 (06/09):</span> Salmo 119 <div class="tags">#salmos #lei #palavraDeDeus</div></div>
+
+<h2>Novo Testamento</h2>
+
+<div class="dia"><span class="ref">Dia 250 (07/09):</span> Lucas 1–4 <div class="tags">#evangelhos #nascimento</div></div>
+<div class="dia"><span class="ref">Dia 251 (08/09):</span> Mateus 1–4 <div class="tags">#evangelhos #encarnação</div></div>
+<div class="dia"><span class="ref">Dia 252 (09/09):</span> João 1–4 <div class="tags">#evangelhos #verbo</div></div>
+<div class="dia"><span class="ref">Dia 253 (10/09):</span> Marcos 1–4 <div class="tags">#evangelhoSinótico #autoridade</div></div>
+<div class="dia"><span class="ref">Dia 254 (11/09):</span> Mateus 5–7 <div class="tags">#evangelhos #sermãoDoMonte</div></div>
+<div class="dia"><span class="ref">Dia 255 (12/09):</span> Mateus 8–10 <div class="tags">#evangelhos #milagres</div></div>
+<div class="dia"><span class="ref">Dia 256 (13/09):</span> Marcos 5–7 <div class="tags">#evangelhoSinótico #milagres</div></div>
+<div class="dia"><span class="ref">Dia 257 (14/09):</span> Mateus 11–13 <div class="tags">#evangelhos #ensinamentos</div></div>
+<div class="dia"><span class="ref">Dia 258 (15/09):</span> Lucas 5–7 <div class="tags">#evangelhos #milagres</div></div>
+<div class="dia"><span class="ref">Dia 259 (16/09):</span> Marcos 8–10 <div class="tags">#evangelhoSinótico #transfiguração</div></div>
+<div class="dia"><span class="ref">Dia 260 (17/09):</span> Mateus 14–16 <div class="tags">#evangelhos #transfiguração</div></div>
+<div class="dia"><span class="ref">Dia 261 (18/09):</span> Lucas 8–10 <div class="tags">#evangelhos #parábolas</div></div>
+<div class="dia"><span class="ref">Dia 262 (19/09):</span> Mateus 17–19 <div class="tags">#evangelhos #discípulado</div></div>
+<div class="dia"><span class="ref">Dia 263 (20/09):</span> Lucas 11–13 <div class="tags">#evangelhos #reino</div></div>
+<div class="dia"><span class="ref">Dia 264 (21/09):</span> Marcos 11–13 <div class="tags">#evangelhoSinótico #ensinamentos</div></div>
+<div class="dia"><span class="ref">Dia 265 (22/09):</span> Mateus 20–22 <div class="tags">#evangelhos #Jerusalém</div></div>
+<div class="dia"><span class="ref">Dia 266 (23/09):</span> Lucas 14–16 <div class="tags">#evangelhos #ensinamentos</div></div>
+<div class="dia"><span class="ref">Dia 267 (24/09):</span> Mateus 23–25 <div class="tags">#evangelhos #escatologia</div></div>
+<div class="dia"><span class="ref">Dia 268 (25/09):</span> Marcos 14–16 <div class="tags">#evangelhoSinótico #paixãoERessurreição</div></div>
+<div class="dia"><span class="ref">Dia 269 (26/09):</span> Lucas 17–19 <div class="tags">#evangelhos #paixãoERessurreição</div></div>
+<div class="dia"><span class="ref">Dia 270 (27/09):</span> Mateus 26–28 <div class="tags">#evangelhos #paixãoERessurreição</div></div>
+<div class="dia"><span class="ref">Dia 271 (28/09):</span> Lucas 20–21 <div class="tags">#evangelhos #paixãoERessurreição</div></div>
+<div class="dia"><span class="ref">Dia 272 (29/09):</span> João 5–7 <div class="tags">#evangelhos #sinaisEensinos</div></div>
+<div class="dia"><span class="ref">Dia 273 (30/09):</span> João 8–10 <div class="tags">#evangelhos #sinaisEensinos</div></div>
+<div class="dia"><span class="ref">Dia 274 (01/10):</span> João 11–13 <div class="tags">#evangelhos #amor</div></div>
+<div class="dia"><span class="ref">Dia 275 (02/10):</span> João 14–17 <div class="tags">#evangelhos #espíritoSanto</div></div>
+<div class="dia"><span class="ref">Dia 276 (03/10):</span> João 18–21 <div class="tags">#evangelhos #ressurreição</div></div>
+<div class="dia"><span class="ref">Dia 277 (04/10):</span> Atos 1–4 <div class="tags">#igrejaPrimitiva #pentecostes</div></div>
+<div class="dia"><span class="ref">Dia 278 (05/10):</span> Atos 5–8 <div class="tags">#igrejaPrimitiva #expansão</div></div>
+<div class="dia"><span class="ref">Dia 279 (06/10):</span> Gálatas 1–2 <div class="tags">#cartasPaulinas #graça</div></div>
+<div class="dia"><span class="ref">Dia 280 (07/10):</span> Atos 9–12 <div class="tags">#igrejaPrimitiva #Paulo</div></div>
+<div class="dia"><span class="ref">Dia 281 (08/10):</span> 1 Tessalonicenses 1–3 <div class="tags">#cartasPaulinas #segundaVinda</div></div>
+<div class="dia"><span class="ref">Dia 282 (09/10):</span> 1 Tessalonicenses 4–5; 2 Tessalonicenses 1 <div class="tags">#cartasPaulinas #segundaVinda</div></div>
+<div class="dia"><span class="ref">Dia 283 (10/10):</span> Atos 13–16 <div class="tags">#igrejaPrimitiva #missões</div></div>
+<div class="dia"><span class="ref">Dia 284 (11/10):</span> Gálatas 3–6 <div class="tags">#cartasPaulinas #graça</div></div>
+<div class="dia"><span class="ref">Dia 285 (12/10):</span> 1 Coríntios 1–4 <div class="tags">#cartasPaulinas #igreja</div></div>
+<div class="dia"><span class="ref">Dia 286 (13/10):</span> 1 Coríntios 5–8 <div class="tags">#cartasPaulinas #vidaCristã</div></div>
+<div class="dia"><span class="ref">Dia 287 (14/10):</span> 1 Coríntios 9–11; 2 Coríntios 1 <div class="tags">#cartasPaulinas #vidaCristã</div></div>
+<div class="dia"><span class="ref">Dia 288 (15/10):</span> 2 Coríntios 2–5 <div class="tags">#cartasPaulinas #ministério</div></div>
+<div class="dia"><span class="ref">Dia 289 (16/10):</span> 2 Coríntios 6–9 <div class="tags">#cartasPaulinas #vidaCristã</div></div>
+<div class="dia"><span class="ref">Dia 290 (17/10):</span> 2 Coríntios 10–13; Romanos 1 <div class="tags">#cartasPaulinas #justificação</div></div>
+<div class="dia"><span class="ref">Dia 291 (18/10):</span> Romanos 2–4 <div class="tags">#cartasPaulinas #justificação</div></div>
+<div class="dia"><span class="ref">Dia 292 (19/10):</span> Romanos 5–8 <div class="tags">#cartasPaulinas #vidaNoEspírito</div></div>
+<div class="dia"><span class="ref">Dia 293 (20/10):</span> Romanos 9–12 <div class="tags">#cartasPaulinas #soberania</div></div>
+<div class="dia"><span class="ref">Dia 294 (21/10):</span> Romanos 13–16 <div class="tags">#cartasPaulinas #vidaCristã</div></div>
+<div class="dia"><span class="ref">Dia 295 (22/10):</span> Efésios 1–3 <div class="tags">#cartasPaulinas #igreja</div></div>
+<div class="dia"><span class="ref">Dia 296 (23/10):</span> Efésios 4–6 <div class="tags">#cartasPaulinas #vidaCristã</div></div>
+<div class="dia"><span class="ref">Dia 297 (24/10):</span> Filipenses 1–4 <div class="tags">#cartasPaulinas #alegria</div></div>
+<div class="dia"><span class="ref">Dia 298 (25/10):</span> Colossenses 1–3 <div class="tags">#cartasPaulinas #perdão</div></div>
+<div class="dia"><span class="ref">Dia 299 (26/10):</span> Colossenses 4; Filemom 1 <div class="tags">#cartasPaulinas #perdão</div></div>
+<div class="dia"><span class="ref">Dia 300 (27/10):</span> Atos 17–20 <div class="tags">#igrejaPrimitiva #evangelização</div></div>
+<div class="dia"><span class="ref">Dia 301 (28/10):</span> Atos 21–24 <div class="tags">#igrejaPrimitiva #conflitos</div></div>
+<div class="dia"><span class="ref">Dia 302 (29/10):</span> Atos 25–28 <div class="tags">#igrejaPrimitiva #Roma</div></div>
+<div class="dia"><span class="ref">Dia 303 (30/10):</span> Hebreus 1–4 <div class="tags">#epístolaGeral #sacerdócio</div></div>
+<div class="dia"><span class="ref">Dia 304 (31/10):</span> Hebreus 5–8 <div class="tags">#epístolaGeral #aliança</div></div>
+<div class="dia"><span class="ref">Dia 305 (01/11):</span> Hebreus 9–13 <div class="tags">#epístolaGeral #fé</div></div>
+<div class="dia"><span class="ref">Dia 306 (02/11):</span> Tiago 1–5 <div class="tags">#epístolaGeral #féEObras</div></div>
+<div class="dia"><span class="ref">Dia 307 (03/11):</span> 1 Pedro 1–5 <div class="tags">#epístolaGeral #sofrimento</div></div>
+<div class="dia"><span class="ref">Dia 308 (04/11):</span> 2 Pedro 1–3; Judas 1 <div class="tags">#epístolaGeral #falsosMestres</div></div>
+<div class="dia"><span class="ref">Dia 309 (05/11):</span> 1 João 1–5 <div class="tags">#epístolaGeral #amor</div></div>
+<div class="dia"><span class="ref">Dia 310 (06/11):</span> 2 João; 3 João 1 <div class="tags">#epístolaGeral #verdade</div></div>
+<div class="dia"><span class="ref">Dia 311 (07/11):</span> Apocalipse 1–3 <div class="tags">#escatologia #CristoGlorificado</div></div>
+<div class="dia"><span class="ref">Dia 312 (08/11):</span> Apocalipse 4–6 <div class="tags">#escatologia #trono</div></div>
+<div class="dia"><span class="ref">Dia 313 (09/11):</span> Apocalipse 7–9 <div class="tags">#escatologia #juízo</div></div>
+<div class="dia"><span class="ref">Dia 314 (10/11):</span> Apocalipse 10–12 <div class="tags">#escatologia #conflito</div></div>
+<div class="dia"><span class="ref">Dia 315 (11/11):</span> Apocalipse 13–15 <div class="tags">#escatologia #besta</div></div>
+<div class="dia"><span class="ref">Dia 316 (12/11):</span> Apocalipse 16–18 <div class="tags">#escatologia #quedaDaBabilônia</div></div>
+<div class="dia"><span class="ref">Dia 317 (13/11):</span> Apocalipse 19–22 <div class="tags">#escatologia #novaCriação</div></div>
+
+`;
+
+undefined
+const container = document.createElement("div");
+container.innerHTML = html;
+
+'\n<div class="dia"><span class="ref">Dia 1 (01/01):</span> Gênesis 1–2 <div class="tags">#pentateuco #criação</div></div>\n<div class="dia"><span class="ref">Dia 2 (02/01):</span> Gênesis 3–5 <div class="tags">#pentateuco #queda #genealogia</div></div>\n<div class="dia"><span class="ref">Dia 3 (03/01):</span> Gênesis 6–9 <div class="tags">#pentateuco #dilúvio #aliança</div></div>\n<div class="dia"><span class="ref">Dia 4 (04/01):</span> Gênesis 10–11 <div class="tags">#pentateuco #nações #torreDeBabel</div></div>\n<div class="dia"><span class="ref">Dia 5 (05/01):</span> Gênesis 12–15 <div class="tags">#pentateuco #Abraão #promessa</div></div>\n<div class="dia"><span class="ref">Dia 6 (06/01):</span> Gênesis 16–19 <div class="tags">#pentateuco #Hagar #Sodoma</div></div>\n<div class="dia"><span class="ref">Dia 7 (07/01):</span> Gênesis 20–22 <div class="tags">#pentateuco #sacrifícioDeIsaque</div></div>\n<div class="dia"><span class="ref">Dia 8 (08/01):</span> Gênesis 23–26 <div class="tags">#pentateuco #Rebeca #Isaque</div></div>\n<div class="dia"><span class="ref">Dia 9 (09/01):</span> Gênesis 27–29 <div class="tags">#pentateuco #Jacó #Esaú</div></div>\n<div class="dia"><span class="ref">Dia 10 (10/01):</span> Gênesis 30–32 <div class="tags">#pentateuco #famíliaDeJacó #Peniel</div></div>\n\n<div class="dia"><span class="ref">Dia 11 (11/01):</span> Gênesis 33–36 <div class="tags">#pentateuco #Edom #reconciliação</div></div>\n<div class="dia"><span class="ref">Dia 12 (12/01):</span> Gênesis 37–39 <div class="tags">#pentateuco #José #Egito</div></div>\n<div class="dia"><span class="ref">Dia 13 (13/01):</span> Gênesis 40–42 <div class="tags">#pentateuco #sonhos #providência</div></div>\n<div class="dia"><span class="ref">Dia 14 (14/01):</span> Gênesis 43–46 <div class="tags">#pentateuco #reconciliação #migração</div></div>\n<div class="dia"><span class="ref">Dia 15 (15/01):</span> Gênesis 47–50 <div class="tags">#pentateuco #bênção #morteDeJacó</div></div>\n\n<div class="dia"><span class="ref">Dia 16 (16/01):</span> Jó 1–4 <div class="tags">#poesia #sofrimento #provação</div></div>\n<div class="dia"><span class="ref">Dia 17 (17/01):</span> Jó 5–7 <div class="tags">#poesia #lamento #debate</div></div>\n<div class="dia"><span class="ref">Dia 18 (18/01):</span> Jó 8–10 <div class="tags">#poesia #justiçaDivina</div></div>\n<div class="dia"><span class="ref">Dia 19 (19/01):</span> Jó 11–13 <div class="tags">#poesia #defesaDeJó</div></div>\n<div class="dia"><span class="ref">Dia 20 (20/01):</span> Jó 14–17 <div class="tags">#poesia #esperança</div></div>\n\n<div class="dia"><span class="ref">Dia 21 (21/01):</span> Jó 18–20 <div class="tags">#poesia #discurso</div></div>\n<div class="dia"><span class="ref">Dia 22 (22/01):</span> Jó 21–24 <div class="tags">#poesia #impiedade</div></div>\n<div class="dia"><span class="ref">Dia 23 (23/01):</span> Jó 25–27 <div class="tags">#poesia #respostas</div></div>\n<div class="dia"><span class="ref">Dia 24 (24/01):</span> Jó 28–31 <div class="tags">#poesia #sabedoria</div></div>\n<div class="dia"><span class="ref">Dia 25 (25/01):</span> Jó 32–34 <div class="tags">#poesia #Eliú</div></div>\n\n<div class="dia"><span class="ref">Dia 26 (26/01):</span> Jó 35–37 <div class="tags">#poesia #justiça</div></div>\n<div class="dia"><span class="ref">Dia 27 (27/01):</span> Jó 38–42 <div class="tags">#poesia #DeusFala #restauração</div></div>\n\n<div class="dia"><span class="ref">Dia 28 (28/01):</span> Êxodo 1–4 <div class="tags">#pentateuco #Moisés #chamado</div></div>\n<div class="dia"><span class="ref">Dia 29 (29/01):</span> Êxodo 5–7 <div class="tags">#pentateuco #Faraó #pragas</div></div>\n<div class="dia"><span class="ref">Dia 30 (30/01):</span> Êxodo 8–10 <div class="tags">#pentateuco #pragas</div></div>\n\n<div class="dia"><span class="ref">Dia 31 (31/01):</span> Êxodo 11–13 <div class="tags">#pentateuco #Páscoa #Êxodo</div></div>\n<div class="dia"><span class="ref">Dia 32 (01/02):</span> Êxodo 14–17 <div class="tags">#pentateuco #MarVermelho #maná</div></div>\n<div class="dia"><span class="ref">Dia 33 (02/02):</span> Êxodo 18–20 <div class="tags">#pentateuco #dezMandamentos</div></div>\n\n<div class="dia"><span class="ref">Dia 34 (03/02):</span> Êxodo 21–24 <div class="tags">#pentateuco #aliança</div></div>\n<div class="dia"><span class="ref">Dia 35 (04/02):</span> Êxodo 25–27 <div class="tags">#pentateuco #tabernáculo</div></div>\n<div class="dia"><span class="ref">Dia 36 (05/02):</span> Êxodo 28–31 <div class="tags">#pentateuco #sacerdócio</div></div>\n\n<div class="dia"><span class="ref">Dia 37 (06/02):</span> Êxodo 32–34 <div class="tags">#pentateuco #bezerroDeOuro</div></div>\n<div class="dia"><span class="ref">Dia 38 (07/02):</span> Êxodo 35–37 <div class="tags">#pentateuco #construção</div></div>\n<div class="dia"><span class="ref">Dia 39 (08/02):</span> Êxodo 38–40 <div class="tags">#pentateuco #glória</div></div>\n\n<div class="dia"><span class="ref">Dia 40 (09/02):</span> Lev
+container.querySelectorAll(".dia").length
+
+317
+const dias = [...container.querySelectorAll(".dia")].map(el => {
+  // Dia e data
+  const ref = el.querySelector(".ref").textContent;
+  const [, numero, data] = ref.match(/Dia (\d+) \((\d{2}\/\d{2})\)/);
+
+  // Texto de leitura (remove tags)
+  const textoLeitura = el.cloneNode(true);
+  textoLeitura.querySelectorAll(".ref, .tags").forEach(n => n.remove());
+  const leituras = textoLeitura.textContent
+    .trim()
+    .split(";")
+    .map(l => l.trim())
+    .filter(Boolean);
+
+  // Leituras (livro + intervalo)
+  const novoTestamento = leituras.map(l => {
+    const match = l.match(/^(.+?)\s+(\d+(?:–\d+)?)/);
+
+    if (!match) {
+      console.warn("Leitura ignorada:", l);
+      return null;
+    }
+
+    return {
+      livroId: normalizarLivro(match[1]),
+      intervalo: extrairIntervalo(match[2])
+    };
+  }).filter(Boolean);
+
+  // Tags
+  const tags = [...el.querySelectorAll(".tags")]
+    .flatMap(t => t.textContent.split(" "))
+    .map(t => t.replace("#", ""))
+    .filter(Boolean);
+
+  // Saída final
+  return `
+new Dia({
+  numero: ${numero},
+  data: "2024-${data.split("/").reverse().join("-")}",
+  novoTestamento: ${JSON.stringify(novoTestamento, null, 2)},
+  observacoes: "${tags.join(", ")}"
+})
+`.trim();
+});
+
+console.log(dias.join(",\n\n"));
+
+VM473:20 Leitura ignorada: 15
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 22
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 12–13
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 28
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 27
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 8–10
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 14
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 16
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 19
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 23
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 29
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 33
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 39
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 41
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 58
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 64
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 142
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 54
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 60
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 65–66
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 69
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 101
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 108
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 122
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 131
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 133
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 143–144
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 63
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 6
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: Obadias
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:20 Leitura ignorada: 2 João
+(anonymous) @ VM473:20
+(anonymous) @ VM473:16
+(anonymous) @ VM473:1
+VM473:47 new Dia({
+  numero: 1,
+  data: "2024-01-01",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 1,
+      "fim": 2
+    }
+  }
+],
+  observacoes: "pentateuco, criação"
+}),
+
+new Dia({
+  numero: 2,
+  data: "2024-01-02",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 3,
+      "fim": 5
+    }
+  }
+],
+  observacoes: "pentateuco, queda, genealogia"
+}),
+
+new Dia({
+  numero: 3,
+  data: "2024-01-03",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 6,
+      "fim": 9
+    }
+  }
+],
+  observacoes: "pentateuco, dilúvio, aliança"
+}),
+
+new Dia({
+  numero: 4,
+  data: "2024-01-04",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 10,
+      "fim": 11
+    }
+  }
+],
+  observacoes: "pentateuco, nações, torreDeBabel"
+}),
+
+new Dia({
+  numero: 5,
+  data: "2024-01-05",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 12,
+      "fim": 15
+    }
+  }
+],
+  observacoes: "pentateuco, Abraão, promessa"
+}),
+
+new Dia({
+  numero: 6,
+  data: "2024-01-06",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 16,
+      "fim": 19
+    }
+  }
+],
+  observacoes: "pentateuco, Hagar, Sodoma"
+}),
+
+new Dia({
+  numero: 7,
+  data: "2024-01-07",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 20,
+      "fim": 22
+    }
+  }
+],
+  observacoes: "pentateuco, sacrifícioDeIsaque"
+}),
+
+new Dia({
+  numero: 8,
+  data: "2024-01-08",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 23,
+      "fim": 26
+    }
+  }
+],
+  observacoes: "pentateuco, Rebeca, Isaque"
+}),
+
+new Dia({
+  numero: 9,
+  data: "2024-01-09",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 27,
+      "fim": 29
+    }
+  }
+],
+  observacoes: "pentateuco, Jacó, Esaú"
+}),
+
+new Dia({
+  numero: 10,
+  data: "2024-01-10",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 30,
+      "fim": 32
+    }
+  }
+],
+  observacoes: "pentateuco, famíliaDeJacó, Peniel"
+}),
+
+new Dia({
+  numero: 11,
+  data: "2024-01-11",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 33,
+      "fim": 36
+    }
+  }
+],
+  observacoes: "pentateuco, Edom, reconciliação"
+}),
+
+new Dia({
+  numero: 12,
+  data: "2024-01-12",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 37,
+      "fim": 39
+    }
+  }
+],
+  observacoes: "pentateuco, José, Egito"
+}),
+
+new Dia({
+  numero: 13,
+  data: "2024-01-13",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 40,
+      "fim": 42
+    }
+  }
+],
+  observacoes: "pentateuco, sonhos, providência"
+}),
+
+new Dia({
+  numero: 14,
+  data: "2024-01-14",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 43,
+      "fim": 46
+    }
+  }
+],
+  observacoes: "pentateuco, reconciliação, migração"
+}),
+
+new Dia({
+  numero: 15,
+  data: "2024-01-15",
+  novoTestamento: [
+  {
+    "livroId": "genesis",
+    "intervalo": {
+      "inicio": 47,
+      "fim": 50
+    }
+  }
+],
+  observacoes: "pentateuco, bênção, morteDeJacó"
+}),
+
+new Dia({
+  numero: 16,
+  data: "2024-01-16",
+  novoTestamento: [
+  {
+    "livroId": "jo",
+    "intervalo": {
+      "inicio": 1,
+      "fim": 4
+    }
+  }
+],
+  observacoes: "poesia, sofrimento, provação"
+}),
+
+new Dia({
+  numero: 17,
+  data: "2024-01-17",
+  novoTestamento: [
+  {
+    "livroId": "jo",
+    "intervalo": {
+      "inicio": 5,
+      "fim": 7
+    }
+  }
+],
+  observacoes: "poesia, lamento, debate"
+}),
+
+new Dia({
+  numero: 18,
+  data: "2024-01-18",
+  novoTestamento: [
+  {
+    "livroId": "jo",
+    "intervalo": {
+      "inicio": 8,
+      "fim": 10
+    }
+  }
+],
+  observacoes: "poesia, justiçaDivina"
+}),
+
+new Dia({
+  numero: 19,
+  data: "2024-01-19",
+  novoTestamento: [
+  {
+    "livroId": "jo",
+    "intervalo": {
+      "inicio": 11,
+      "fim": 13
+    }
+  }
+],
+  observacoes: "poesia, defesaDeJó"
+}),
+
+new Dia({
+  numero: 20,
+  data: "2024-01-20",
+  novoTestamento: [
+  {
+    "livroId": "jo",
+    "intervalo": {
+      "inicio": 14,
+      "fim": 17
+    }
+  }
+],
+  observacoes: "poesia, esperança"
+}),
+
+new Dia({
+  numero: 21,
+  data: "2024-01-21",
+  novoTestamento: [
+  {
+    "livroId": "jo",
+    "intervalo": {
+      "inicio": 18,
+      "fim": 20
+    }
+  }
+],
+  observacoes: "poesia, discurso"
+}),
+
+new Dia({
+  numero: 22,
+  data: "2024-01-22",
+  novoTestamento: [
+  {
+    "livroId": "jo",
+    "intervalo": {
+      "inicio": 21,
+      "fim": 24
+    }
+  }
+],
+  observacoes: "poesia, impiedade"
+}),
+
+new Dia({
+  numero: 23,
+  data: "2024-01-23",
+  novoTestamento: [
+  {
+    "livroId": "jo",
+    "intervalo": {
+      "inicio": 25,
+      "fim": 27
+    }
+  }
+],
+  observacoes: "poesia, respostas"
+}),
+
+new Dia({
+  numero: 24,
+  data: "2024-01-24",
+  novoTestamento: [
+  {
+    "livroId": "jo",
+    "intervalo": {
+      "inicio": 28,
+      "fim": 31
+    }
+  }
+],
+  observacoes: "poes
+undefined

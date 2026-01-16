@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light-mode">
+  <head>
+    <!-- =========================================================================
+       index.html — Tela Principal (App de Leitura Bíblica)
+       Versão: 0.5
+       Aplicação: Leitura Cronológica Controlada da Bíblia
+       Autor: Ruyter Torres
+
+       ALTERAÇÃO (v0.5):
+       -------------------------------------------------------------------------
+       - Estrutura visual completa do aplicativo
+       - Layout responsivo para desktop e mobile
+       - CSS integrado (temporário)
+       - Componentes visuais organizados
+       ========================================================================= -->
+
+    <!-- Metadados essenciais -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Aplicação de Leitura Bíblica Cronológica e Estruturada"
+    />
+
+    <title>Plano de Leitura Bíblica Cronológica</title>
+
+    <!-- CSS inline (temporário - será migrado para arquivo CSS) -->
+    <style>
+      /* =========================================================================
+       VARIÁVEIS DE ESTILO & RESET
+       ========================================================================= */
+      :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #e74c3c;
+        --light-bg: #f8f9fa;
+        --dark-bg: #2c3e50;
+        --text-light: #333;
+        --text-dark: #f8f9fa;
+        --card-bg: #ffffff;
+        --border-color: #e0e0e0;
+        --success-color: #27ae60;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --border-radius: 8px;
+        --transition: all 0.3s ease;
+      }
+
+      .dark-mode {
+        --light-bg: #1a1a1a;
+        --card-bg: #2c3e50;
+        --text-light: #f8f9fa;
+        --text-dark: #f8f9fa;
+        --border-color: #404040;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, sans-serif;
+        background-color: var(--light-bg);
+        color: var(--text-light);
+        line-height: 1.6;
+        transition: var(--transition);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* =========================================================================
+       LAYOUT PRINCIPAL
+       ========================================================================= */
+      #app {
+        flex: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        width: 100%;
+      }
+
+      /* =========================================================================
+       NAVBAR
+       ========================================================================= */
+      #navbar {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 1rem 0;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .navbar-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .navbar-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .navbar-title i {
+        font-size: 1.2rem;
+      }
+
+      .navbar-stats {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .stat-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        opacity: 0.8;
+      }
+
+      .theme-toggle {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+      }
+
+      .theme-toggle:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      /* =========================================================================
+       HEADER DO APLICATIVO
+       ========================================================================= */
+      .app-header {
+        text-align: center;
+        padding: 2rem 0;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+      }
+
+      .app-header h1 {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .app-header p {
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .plano-info {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .plano-info h2 {
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .plano-meta {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .meta-item {
+        text-align: center;
+      }
+
+      .meta-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--secondary-color);
+      }
+
+      .meta-label {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      /* =========================================================================
+       CONTAINER DO PLANO
+       ========================================================================= */
+      #plano-leitura {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      /* =========================================================================
+       CARDS DOS DIAS
+       ========================================================================= */
+      .dia-wrapper {
+        opacity: 0;
+        animation: fadeIn 0.5s ease forwards;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      .dia {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        border: 1px solid var(--border-color);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .dia:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .dia-header {
+        border-bottom: 2px solid var(--secondary-color);
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .dia-header h3 {
+        color: var(--primary-color);
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .dia-number {
+        background-color: var(--secondary-color);
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+      }
+
+      .dia-date {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      /* =========================================================================
+       SEÇÕES DE LEITURA (AT/NT)
+       ========================================================================= */
+      .antigo-testamento,
+      .novo-testamento {
+        margin-bottom: 1.5rem;
+        flex: 1;
+      }
+
+      .antigo-testamento h4,
+      .novo-testamento h4 {
+        color: var(--primary-color);
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .antigo-testamento h4::before {
+        content: "📖";
+      }
+
+      .novo-testamento h4::before {
+        content: "✝️";
+      }
+
+      .trecho {
+        background-color: rgba(52, 152, 219, 0.1);
+        padding: 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        border-left: 3px solid var(--secondary-color);
+      }
+
+      .trecho:last-child {
+        margin-bottom: 0;
+      }
+
+      .trecho.livro-unico {
+        border-left-color: var(--success-color);
+      }
+
+      .livro-nome {
+        font-weight: 600;
+        color: var(--primary-color);
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+
+      .capitulos {
+        color: var(--secondary-color);
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      /* =========================================================================
+       OBSERVAÇÕES
+       ========================================================================= */
+      .observacoes {
+        background-color: rgba(231, 76, 60, 0.1);
+        padding: 1rem;
+        border-radius: 6px;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: #666;
+        border-left: 3px solid var(--accent-color);
+      }
+
+      .observacoes::before {
+        content: "📝 ";
+        font-weight: bold;
+        color: var(--accent-color);
+      }
+
+      /* =========================================================================
+       CONTROLES
+       ========================================================================= */
+      .dia-controles {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 0.9rem;
+        flex: 1;
+        text-align: center;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      .btn-primary {
+        background-color: var(--secondary-color);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: #2980b9;
+      }
+
+      .btn-secondary {
+        background-color: #f8f9fa;
+        color: var(--text-light);
+        border: 1px solid var(--border-color);
+      }
+
+      .btn-secondary:hover {
+        background-color: #e9ecef;
+      }
+
+      /* =========================================================================
+       FOOTER
+       ========================================================================= */
+      #footer {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 2rem 0;
+        margin-top: 3rem;
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .footer-link {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .footer-link:hover {
+        color: white;
+      }
+
+      .app-version {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      /* =========================================================================
+       RESPONSIVIDADE
+       ========================================================================= */
+      @media (max-width: 768px) {
+        #plano-leitura {
+          grid-template-columns: 1fr;
+        }
+
+        .navbar-container {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .navbar-stats {
+          width: 100%;
+          justify-content: space-around;
+        }
+
+        .plano-info {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .plano-meta {
+          justify-content: center;
+        }
+
+        .app-header h1 {
+          font-size: 2rem;
+        }
+
+        .footer-container {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .plano-meta {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .navbar-stats {
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+      }
+
+      /* =========================================================================
+       ESTADOS ESPECIAIS
+       ========================================================================= */
+      .dia-hoje {
+        border: 2px solid var(--success-color);
+        position: relative;
+      }
+
+      .dia-hoje::before {
+        content: "HOJE";
+        position: absolute;
+        top: -10px;
+        right: 10px;
+        background-color: var(--success-color);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+
+      .dia-lido {
+        opacity: 0.7;
+      }
+
+      .dia-lido .dia-header {
+        border-bottom-color: var(--success-color);
+      }
+
+      .marcar-lido {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #ccc;
+        transition: var(--transition);
+      }
+
+      .marcar-lido:hover {
+        color: var(--success-color);
+      }
+
+      .marcar-lido.lido {
+        color: var(--success-color);
+      }
+    </style>
+
+    <!-- Ícones (Font Awesome via CDN para demonstração) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <!-- =========================================================================
+       NAVBAR
+       ========================================================================= -->
+    <nav id="navbar">
+      <div class="navbar-container">
+        <a href="#" class="navbar-title">
+          <i class="fas fa-bible"></i>
+          Leitura Bíblica Cronológica
+        </a>
+
+        <div class="navbar-stats">
+          <div class="stat-item">
+            <span class="stat-value" id="total-dias">317</span>
+            <span class="stat-label">Dias</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="dias-lidos">0</span>
+            <span class="stat-label">Lidos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="progresso">0%</span>
+            <span class="stat-label">Progresso</span>
+          </div>
+
+          <button class="theme-toggle" id="theme-toggle" title="Alternar tema">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================================================================
+       CONTEÚDO PRINCIPAL
+       ========================================================================= -->
+    <main id="app">
+      <!-- Header do Aplicativo -->
+      <header class="app-header">
+        <h1>Plano Cronológico da Bíblia</h1>
+        <p>
+          Leia toda a Bíblia em 317 dias, seguindo uma ordem cronológica e
+          temática que ajuda a entender a narrativa bíblica como um todo.
+        </p>
+      </header>
+
+      <!-- Informações do Plano -->
+      <section class="plano-info">
+        <div>
+          <h2>Detalhes do Plano</h2>
+          <p>
+            Este plano cobre todos os 66 livros da Bíblia, distribuídos em
+            leituras diárias balanceadas.
+          </p>
+        </div>
+
+        <div class="plano-meta">
+          <div class="meta-item">
+            <div class="meta-value">66</div>
+            <div class="meta-label">Livros</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-value">1,189</div>
+            <div class="meta-label">Capítulos</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-value">317</div>
+            <div class="meta-label">Dias</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filtros e Controles (para implementação futura) -->
+      <div style="display: none" id="filtros-container">
+        <!-- Filtros serão implementados futuramente -->
+      </div>
+
+      <!-- Container do Plano (será populado pelo JavaScript) -->
+      <section id="plano-leitura">
+        <!-- Os dias serão renderizados aqui pelo main.js -->
+        <div
+          class="loading-state"
+          style="text-align: center; padding: 3rem; color: #666"
+        >
+          <i
+            class="fas fa-spinner fa-spin fa-2x"
+            style="margin-bottom: 1rem"
+          ></i>
+          <p>Carregando plano de leitura...</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+    <footer id="footer">
+      <div class="footer-container">
+        <div>
+          <p>
+            &copy; <span id="current-year">2024</span> Leitura Bíblica
+            Cronológica
+          </p>
+          <p class="app-version">
+            Versão 0.2 • Desenvolvido com
+            <i class="fas fa-heart" style="color: #e74c3c"></i>
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <a href="#" class="footer-link">Sobre o Projeto</a>
+          <a href="#" class="footer-link">Contato</a>
+          <a href="#" class="footer-link">GitHub</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- =========================================================================
+       ENTRY POINT DA APLICAÇÃO
+       ========================================================================= -->
+    <script type="module" src="js/main.js"></script>
+
+    <!-- Script para funcionalidades básicas da interface -->
+    <script>
+      // Configuração básica da interface
+      document.addEventListener("DOMContentLoaded", function () {
+        // Atualiza o ano no footer
+        document.getElementById("current-year").textContent =
+          new Date().getFullYear();
+
+        // Alternador de tema claro/escuro
+        const themeToggle = document.getElementById("theme-toggle");
+        const themeIcon = themeToggle.querySelector("i");
+
+        themeToggle.addEventListener("click", function () {
+          const html = document.documentElement;
+          const isDark = html.classList.contains("dark-mode");
+
+          if (isDark) {
+            html.classList.remove("dark-mode");
+            themeIcon.className = "fas fa-moon";
+            themeToggle.title = "Alternar para modo escuro";
+          } else {
+            html.classList.add("dark-mode");
+            themeIcon.className = "fas fa-sun";
+            themeToggle.title = "Alternar para modo claro";
+          }
+        });
+
+        // Simula progresso (para demonstração - será substituído pelo sistema real)
+        setTimeout(() => {
+          const progress = Math.floor(Math.random() * 30) + 5; // 5-35%
+          document.getElementById("dias-lidos").textContent = Math.floor(
+            (317 * progress) / 100
+          );
+          document.getElementById("progresso").textContent = progress + "%";
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>
