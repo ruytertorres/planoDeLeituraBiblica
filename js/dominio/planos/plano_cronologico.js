@@ -10,7 +10,7 @@
    - Expor dados prontos para consumo por renderizadores
    - Não conter lógica de UI, datas dinâmicas ou persistência
 ============================================================================ */
-import { Dia } from "./dia.js";
+import { Dia } from "../dia.js";
 
 export const planoCronologico = {
   id: "plano_cronologico",
