@@ -1,23 +1,42 @@
 /* ============================================================================
    plano_cronologico.js — Entidade de Plano: Plano Cronológico de Leitura
-   Versão: 1.0.0 (CONVERTIDO AUTOMATICAMENTE)
-   Aplicação: Leitura Controlada da Bíblia
+   Versão: 0.6
+   Aplicação: Bíblia Responsiva App
 
    RESPONSABILIDADE ÚNICA:
    ----------------------------------------------------------------------------
    - Representar o plano cronológico diário de leitura bíblica
-   - Garantir estrutura estável para futura adição de metadados
-   - Expor dados prontos para consumo por renderizadores
-   - Não conter lógica de UI, datas dinâmicas ou persistência
+   - Expor estrutura estável conforme contrato de plano
+   - NÃO conter lógica de UI
+   - NÃO conter lógica de progresso
+   - NÃO conter persistência
 ============================================================================ */
-import { Dia } from "../dia.js";
 
-export const planoCronologico = {
+/* --------------------------------------------------------------------------
+   IMPORTAÇÕES
+-------------------------------------------------------------------------- */
+
+import { Dia } from "../dia.js";
+import { validarPlano } from "./contrato_plano.js";
+
+/* --------------------------------------------------------------------------
+   DEFINIÇÃO DO PLANO (CONTRATO)
+-------------------------------------------------------------------------- */
+
+const planoCronologico = {
+
+  /* --------------------------------------------------------------------------
+     METADADOS DO PLANO
+  -------------------------------------------------------------------------- */
+
   id: "plano_cronologico",
   nome: "Plano Cronológico da Bíblia",
   descricao: "Leitura diária da Bíblia em ordem cronológica e temática",
   totalDias: 317,
 
+  /* --------------------------------------------------------------------------
+     DIAS DO PLANO (DOMÍNIO PURO)
+  -------------------------------------------------------------------------- */
   dias: [
     new Dia({
       numero: 1,
@@ -5619,6 +5638,28 @@ export const planoCronologico = {
       observacoes: "escatologia, novaCriação",
     }),
   ],
+
+  /* --------------------------------------------------------------------------
+     MÉTODOS DE ACESSO (CONTRATO FUNCIONAL)
+  -------------------------------------------------------------------------- */
+
+  getDia(numero) {
+    return this.dias.find(dia => dia.numero === numero);
+  },
+
+  getDias() {
+    return this.dias;
+  },
 };
+
+/* --------------------------------------------------------------------------
+   VALIDAÇÃO DO CONTRATO
+-------------------------------------------------------------------------- */
+
+validarPlano(planoCronologico);
+
+/* --------------------------------------------------------------------------
+   EXPORTAÇÃO
+-------------------------------------------------------------------------- */
 
 export default planoCronologico;

@@ -573,7 +573,9 @@
         color: var(--success-color);
       }
     </style>
-
+	
+	<link rel="stylesheet" href="./css/notas.css">
+	
     <!-- Ícones (Font Awesome via CDN para demonstração) -->
     <link
       rel="stylesheet"
@@ -662,6 +664,62 @@
         </div>
       </section>
     </main>
+	
+	
+		<!-- ============================================================
+     BLOCO DE NOTAS FLUTUANTE — UI BASE
+     Versão: 0.1 (UI estática)
+============================================================= -->
+	<section id="notasFlutuantes">
+
+
+<!-- Botão flutuante -->
+<button id="btn-notas" title="Abrir anotações">
+  📝
+</button>
+
+<!-- Overlay do bloco de notas -->
+<div id="notas-overlay" class="hidden">
+
+  <div class="notas-header">
+    <span>Anotações de Leitura</span>
+
+    <div class="notas-acoes">
+      <button id="btn-exportar" title="Exportar para DOCX">
+        ⬇️
+      </button>
+      <button id="btn-fechar" title="Fechar bloco">
+        ✖
+      </button>
+    </div>
+  </div>
+
+  <!-- Toolbar futura (placeholder visual) -->
+  <div class="notas-toolbar">
+    <button><b>B</b></button>
+    <button><i>I</i></button>
+    <button><u>U</u></button>
+    <button>🖍</button>
+    <button>Título</button>
+  </div>
+
+  <!-- Área de escrita -->
+  <div
+    id="notas-editor"
+    contenteditable="true"
+    placeholder="Digite suas anotações aqui..."
+  ></div>
+
+  <!-- Rodapé -->
+  <div class="notas-footer">
+    <button id="btn-limpar" class="danger">
+      Limpar notas
+    </button>
+  </div>
+
+</div>
+
+</section>
 
     <!-- =========================================================================
        FOOTER

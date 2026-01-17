@@ -1,205 +1,314 @@
-📋 NOTA DE ATUALIZAÇÃO - PRÓXIMOS PASSOS
-✅ FEITO HOJE (Correções Concluídas)
-1. Corrigidos problemas de import de módulos
-✅ Importação de dia.js no plano_cronologico.js ajustada (import { Dia } from "../dia.js";)
+📘 NOTA DE CONTINUIDADE — APP DE LEITURA BÍBLICA
 
-✅ Estrutura de pastas organizada corretamente
+Data: 16/01/2026
+Estado: Arquitetura saudável, evolução controlada, sem dívida técnica
 
-✅ Arquivos JavaScript funcionando com ES6 modules
+1️⃣ CONTEXTO GERAL DO DIA
 
-2. Aplicação funcional visualmente
-✅ Interface completa com Navbar, cards dos dias e Footer
+O projeto deixou de ser um script funcional com plano único e passou a ser tratado conscientemente como uma plataforma extensível de leitura bíblica, com separação explícita entre:
 
-✅ Sistema de tema claro/escuro
+Domínio — regras, entidades, contratos
 
-✅ Layout responsivo para desktop e mobile
+Infraestrutura — gerenciamento de plano e estado
 
-✅ Estatísticas básicas funcionando
+UI — renderização e interação passiva
 
-3. Renderização do plano
-✅ 317 dias do plano cronológico renderizados
+Estado do usuário — progresso e anotações
 
-✅ Cards com informações de cada dia
+O dia teve dois eixos principais:
 
-✅ Separação entre Antigo e Novo Testamento
+Consolidação arquitetural do núcleo (planos e domínio)
 
-✅ Observações formatadas como tags
+Integração inicial do Bloco de Notas Flutuante (UI base)
 
-=========================================================================
+2️⃣ O QUE FOI FEITO — CAMADA DE ARQUITETURA (CONCLUÍDO)
+✅ PASSO 1 — CONTRATO DE PLANO (ESSENCIAL)
 
-🔄 PENDENTES PARA AMANHÃ
-1. Corrigir opção "Marcar como lido" 🔧
-Problema identificado: O estado não persiste entre recarregamentos
+Status: FEITO
+Arquivo:
 
-javascript
-// A implementar:
-- Sistema de persistência com localStorage
-- Sincronização entre abas/navegadores
-- Backup automático do progresso
-2. Criar barra de progresso visual 📊
-Funcionalidades planejadas:
+/js/dominio/planos/contrato_plano.js
 
-javascript
-// Componente visual:
-- Barra horizontal mostrando % completa
-- Indicador de dias restantes
-- Gráfico de progresso por testamento
-- Metas semanais/mensais
-3. Introduzir Tailwind CSS 🎨
-Migração planejada:
 
-text
-// Passos:
-1. Instalar Tailwind via CDN ou npm
-2. Criar arquivo tailwind.config.js
-3. Migrar gradualmente classes CSS inline
-4. Manter tema claro/escuro com Tailwind
-5. Componentizar estilos repetitivos
-4. Estudar :root do CSS 📚
-Tópicos para pesquisa:
+Responsabilidade clara:
 
-css
-/* Conceitos a explorar: */
-- Variáveis CSS (custom properties)
-- Escopo global vs. local
-- Herança de variáveis
-- Override de temas
-- Performance de variáveis CSS
-5. Procurar versões da Bíblia online 📖
-Fontes potenciais de API:
+Não implementa plano
 
-text
-// APIs a pesquisar:
-1. Bible API (bible-api.com)
-2. YouVersion API
-3. ESV API (esv.org)
-4. Bíblia Digital API
-5. API.Bible
+Documenta o shape
 
-// Funcionalidades desejadas:
-- Múltiplas versões (ARA, NVI, NVT, etc.)
-- Busca por referência
-- Texto paralelo
-- Marcadores e notas
-🎯 PRIORIDADES DE IMPLEMENTAÇÃO
-PRIORIDADE 1 (Essencial)
-Persistência do "Marcar como lido"
+Valida em runtime
 
-Implementar localStorage
+Gera erro explícito se o contrato for violado
 
-Criar função de backup/restore
+Contrato lógico garantido:
 
-Adicionar confirmação visual
+{
+  id: string,
+  nome: string,
+  descricao: string,
+  totalDias: number,
+  dias: Dia[],
 
-Barra de progresso
+  getDia(numero): Dia | null,
+  getDias(): Dia[]
+}
 
-Componente simples inicial
 
-Estatísticas em tempo real
+Decisão crítica registrada:
 
-Animação de progresso
+PlanoManager nunca confia em planos sem validação
 
-PRIORIDADE 2 (Melhorias UI/UX)
-Tailwind CSS
+Falha rápida > bug silencioso
 
-Setup básico primeiro
+Esse ponto é fundamental para evolução futura.
 
-Migrar componentes principais
+✅ PASSO 2 — NORMALIZAÇÃO DO DIA (DOMÍNIO)
 
-Manter funcionalidade existente
+Status: FEITO
 
-PRIORIDADE 3 (Expansão de recursos)
-API de Bíblia
+Correção arquitetural aplicada:
 
-Pesquisar APIs gratuitas
+A UI não acessa mais estrutura interna
 
-Testar integração básica
+O Dia expõe intenção, não dados crus
 
-Planejar arquitetura de cache
+Métodos confirmados e utilizados:
 
-## trabalhar persistencia 
+getAntigoTestamento()
 
-=================================================================================
+getNovoTestamento()
 
-💡 IDEIAS ADICIONAIS
-Funcionalidades futuras:
-📅 Calendário de leitura
+temLeitura()
 
-🔔 Lembretes diários
+getResumo()
 
-📊 Relatórios de progresso
+Benefício direto:
 
-👥 Compartilhamento de progresso
+Mudanças internas não quebram a UI
 
-📱 PWA (Progressive Web App)
+Suporte futuro a planos temáticos, leituras extras, paralelas, etc.
 
-🌙 Modo noturno aprimorado
+✅ PASSO 3 — PLANO MANAGER (PEÇA-CHAVE)
 
-Melhorias técnicas:
-🧪 Testes unitários
+Status: FEITO
+Arquivo:
 
-📦 Bundler (Vite/Webpack)
+/js/infra/plano_manager.js
 
-🔧 TypeScript migration
 
-🗄️ IndexedDB para dados offline
+Responsabilidades bem delimitadas:
 
-📝 NOTAS TÉCNICAS
-Estrutura atual:
-text
-project/
-├── index.html          # Página principal
-├── js/
-│   ├── main.js         # Orquestrador
-│   ├── dominio/        # Lógica de negócio
-│   └── ui/             # Componentes visuais
-Dependências:
-Font Awesome (CDN) ✅
+Registrar planos
 
-ES6 Modules ✅
+Validar contrato
 
-localStorage (parcial) ⚠️
+Definir plano ativo
 
-Compatibilidade:
-Chrome/Edge ✅
+Expor plano ativo
 
-Firefox ✅
+Regras respeitadas:
 
-Safari ✅
+Não renderiza
 
-Mobile browsers ✅
+Não persiste progresso
 
-⚠️ PONTOS DE ATENÇÃO
-Performance com 317 dias
+Não conhece UI
 
-Considerar paginação/lazy loading
+Fluxo correto consolidado:
 
-Virtual scroll para mobile
+main.js → PlanoManager → Plano Ativo → Dia
 
-Acessibilidade
 
-Testar com leitores de tela
+Resultado:
 
-Garantir contraste adequado
+main.js não conhece planos concretos
 
-SEO
+Infraestrutura pronta para múltiplos planos sem refatoração
 
-Meta tags apropriadas
+3️⃣ O QUE FOI FEITO — BLOCO DE NOTAS (UI BASE)
+✅ Bloco de Notas Flutuante — Integração Inicial
 
-Structured data para conteúdo bíblico
+Status: FUNCIONAL (fase UI base)
 
-🎉 PRÓXIMO CHECK-IN
-Data: Amanhã
-Objetivo: Ter as 5 prioridades implementadas ou em progresso avançado
-Métrica de sucesso:
+Implementado com sucesso:
 
-Progresso persistente entre sessões ✅
+Botão flutuante fixo (#btn-notas)
 
-Barra de progresso visível ✅
+Overlay flutuante (#notas-overlay)
 
-Tailwind configurado (mesmo que básico) ✅
+Editor via contenteditable
 
-📌 Status atual: 🟢 FUNCIONAL - Aplicação básica operacional
-🚀 Próxima fase: 🟡 OTIMIZAÇÃO - Melhorar UX e adicionar persistência
+Persistência automática em localStorage
 
-"O plano está funcionando! Agora vamos torná-lo memorável e útil para o dia-a-dia."
+Limpeza com confirmação
+
+Integração correta com index.html e main.js
+
+Decisão arquitetural importante:
+
+O HTML da nota é estático
+
+O JS apenas controla comportamento
+
+Nenhum elemento de UI é criado dinamicamente
+
+Isso garante:
+
+Previsibilidade visual
+
+Manutenção simples
+
+Compatibilidade futura com Tailwind e PWA
+
+✅ Separação de responsabilidades (Notas)
+
+Estrutura validada:
+
+/css
+  └── notas.css
+      → Estilo exclusivo do bloco de notas
+
+/js/dominio/notas
+  └── NotasLeituraManager.js
+      → Regra de negócio + persistência
+
+/js/ui/notas
+  ├── notas_overlay.js
+  └── notas_toolbar.js (criado, ainda vazio)
+
+
+NotasLeituraManager:
+
+Armazena HTML bruto
+
+Não conhece DOM
+
+Usa localStorage
+
+Já preparado para múltiplos usuários
+
+4️⃣ O QUE NÃO FOI FEITO (INTENCIONALMENTE)
+
+Nada abaixo é bug ou atraso — são etapas conscientemente não iniciadas:
+
+Toolbar funcional (bold, itálico, título)
+
+Normalização semântica do HTML das notas
+
+Conversão HTML → DOCX
+
+Associação da nota ao dia
+
+Associação da nota ao usuário
+
+Progresso desacoplado da UI (Service)
+
+Esses passos não foram antecipados para evitar acoplamento e retrabalho.
+
+5️⃣ ONDE PARAMOS EXATAMENTE (PONTO TÉCNICO)
+
+📍 Estado atual real:
+
+Bloco de Notas funcional, persistindo HTML livre, sem contrato semântico e sem vínculo com dia ou usuário.
+
+Isso significa:
+
+Editor aceita qualquer HTML
+
+Não existe ainda “HTML válido para exportação”
+
+Não existe associação nota ↔ dia ↔ usuário
+
+Este é o ponto correto de parada.
+
+6️⃣ PRÓXIMOS PASSOS — ORDEM FECHADA (NÃO INVERTER)
+🔹 PASSO 4 — PROGRESSO LEITURA SERVICE (PRÓXIMO TÉCNICO)
+
+Arquivo proposto:
+
+/js/infra/progresso_leitura_service.js
+
+
+Responsabilidades únicas:
+
+Persistir leitura por plano
+
+Marcar/desmarcar dia
+
+Calcular progresso
+
+Expor resumo pronto
+
+A UI passa a consumir:
+
+{
+  lidos: number,
+  total: number,
+  percentual: number
+}
+
+🔹 PASSO 5 — UI PASSIVA (MATURIDADE)
+
+Regra definitiva:
+
+UI não decide regra
+
+UI não calcula estado
+
+UI apenas dispara eventos e reflete dados
+
+Esse passo transforma o projeto em sistema evolutivo.
+
+🔹 PASSO 6 — BLOCO DE NOTAS (CONTINUAÇÃO)
+
+Ordem correta (já definida):
+
+Toolbar real (bold / itálico / título)
+Arquivo: /js/ui/notas/notas_toolbar.js
+
+Normalização de HTML
+Converter HTML livre em HTML semântico previsível
+
+Conversão HTML → DOCX
+Exportação client-side + opção de limpar
+
+Associação da nota ao dia / usuário
+Estrutura alvo:
+
+notas[usuarioId][planoId][diaNumero] = html
+
+7️⃣ DECISÕES DE ARQUITETURA REGISTRADAS
+
+O Bloco de Notas pertence ao domínio do usuário, não à UI
+
+Hoje usa localStorage
+
+Amanhã suportará múltiplos usuários sem reescrita
+
+Nenhuma decisão tomada hoje gera dívida técnica
+
+🔹 PASSO 7 — cetificado e limpesa de progresoo
+
+- adcionar um botão que limpa o progrsso de leitura voltando ele a 0 dias lidos; essa ação precisa de confirmação, um sistema de segurança que 
+impede de limpar acidentalmente
+-durante a leitura anual a qualquer momento fica um botão de expotação de progreço que envaia um docx com o progresso para o usuario sontendo:
+progresso em %
+total de dias lidos
+total de capitulos lidos
+qual o ultimo dia e o ultimo capitulo lido, qual o proximo dia e proximo capitulo
+- no fim da leitura emite um certificado simbolico contendo:
+
+leitura anual da biblia
+conclida por usuario; no periodo do dia xx/xx/xxxx até xx/xx/xxxx
+"texto generico de certificado"
+
+
+8️⃣ ESTADO FINAL DO DIA
+
+✔ Contrato de plano validado
+✔ Domínio protegido
+✔ PlanoManager funcional
+✔ Bloco de notas integrado
+✔ Arquitetura coerente
+✔ Próximos passos claros
+✔ Nenhum débito técnico oculto

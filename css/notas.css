@@ -1,0 +1,59 @@
+/* ============================================================================
+   notas.css — Bloco de Anotações
+============================================================================ */
+
+#btn-notas {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 20px;
+  padding: 12px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+#notas-overlay {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  height: 420px;
+  background: #fff;
+  border: 1px solid #ccc;
+  display: none;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+#notas-overlay.aberto {
+  display: flex;
+}
+
+.notas-header,
+.notas-footer {
+  padding: 8px;
+  background: #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+}
+
+#notas-editor {
+  flex: 1;
+  padding: 8px;
+  overflow-y: auto;
+  outline: none;
+}
+
+#notas-overlay {
+  display: none;
+}
+
+#notas-overlay.aberto {
+  display: flex;
+}
+
+.notas-toolbar button {
+  cursor: pointer;
+}

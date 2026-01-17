@@ -1,6 +1,6 @@
 /* ============================================================================
    biblia.js — Catálogo Estrutural da Bíblia
-   Versão: 0.3.0
+   Versão: 0.5
    Aplicação: Leitura Controlada da Bíblia
 
    RESPONSABILIDADE ÚNICA:

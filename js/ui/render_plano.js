@@ -1,22 +1,21 @@
 /* ============================================================================
    render_plano.js — Renderizador do Plano Cronológico
-   Versão: 0.1
+   Versão: 0.6
    Aplicação: Leitura Cronológica Controlada da Bíblia
    Autor: Ruyter Torres
 
    RESPONSABILIDADE ÚNICA:
    ----------------------------------------------------------------------------
    - Renderizar o plano cronológico no DOM
-   - Converter dados estruturados em HTML
-   - Inserir conteúdo no container definido
+   - Inserir HTML previamente preparado no container definido
 
    O QUE ESTE MÓDULO NÃO FAZ:
    ----------------------------------------------------------------------------
-   - Não define ordem cronológica
-   - Não valida capítulos bíblicos
+   - Não conhece a entidade Dia
+   - Não valida regras bíblicas
    - Não controla progresso de leitura
    - Não gerencia estado do usuário
-   - Não aplica regras de negócio
+   - Não contém lógica de negócio
 
    CONTRATO DE ENTRADA:
    ----------------------------------------------------------------------------
@@ -51,30 +50,30 @@ export function renderPlanoCronologico({ containerId, plano }) {
      LIMPEZA PREVENTIVA
      --------------------------------------------------------------------------
      - Evita render duplicado
-     - Permite re-render futuro (filtros, busca, etc.)
+     - Permite re-render futuro (filtros, busca, navegação)
      ----------------------------------------------------------------------- */
   container.innerHTML = "";
 
   /* --------------------------------------------------------------------------
      RENDERIZAÇÃO DOS DIAS
      --------------------------------------------------------------------------
-     - Cada item do plano já vem pronto em HTML
-     - Este módulo não interpreta conteúdo bíblico
+     - Cada item do plano já vem convertido em HTML
+     - A UI valida apenas o contrato visual
      ----------------------------------------------------------------------- */
-  plano.forEach((dia, index) => {
+  plano.forEach((item, index) => {
 
-    if (!dia || typeof dia.html !== "string") {
+    if (!item || typeof item.html !== "string") {
       console.warn(
-        `Entrada inválida no plano cronológico (índice ${index}).`,
-        dia
+        `Entrada inválida no plano cronológico (índice ${index}). Esperado { html: string }.`,
+        item
       );
       return;
     }
 
-    /* Wrapper semântico (futuro uso com Tailwind / CSS Grid) */
+    /* Wrapper semântico para layout e estilização */
     const wrapper = document.createElement("div");
     wrapper.className = "dia-wrapper";
-    wrapper.innerHTML = dia.html;
+    wrapper.innerHTML = item.html;
 
     container.appendChild(wrapper);
   });
