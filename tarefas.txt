@@ -1,131 +1,9 @@
 📘 NOTA DE CONTINUIDADE — APP DE LEITURA BÍBLICA
 
-Data: 16/01/2026
+Data: 17/01/2026
 Estado: Arquitetura saudável, evolução controlada, sem dívida técnica
 
-1️⃣ CONTEXTO GERAL DO DIA
-
-O projeto deixou de ser um script funcional com plano único e passou a ser tratado conscientemente como uma plataforma extensível de leitura bíblica, com separação explícita entre:
-
-Domínio — regras, entidades, contratos
-
-Infraestrutura — gerenciamento de plano e estado
-
-UI — renderização e interação passiva
-
-Estado do usuário — progresso e anotações
-
-O dia teve dois eixos principais:
-
-Consolidação arquitetural do núcleo (planos e domínio)
-
-Integração inicial do Bloco de Notas Flutuante (UI base)
-
-2️⃣ O QUE FOI FEITO — CAMADA DE ARQUITETURA (CONCLUÍDO)
-✅ PASSO 1 — CONTRATO DE PLANO (ESSENCIAL)
-
-Status: FEITO
-Arquivo:
-
-/js/dominio/planos/contrato_plano.js
-
-
-Responsabilidade clara:
-
-Não implementa plano
-
-Documenta o shape
-
-Valida em runtime
-
-Gera erro explícito se o contrato for violado
-
-Contrato lógico garantido:
-
-{
-  id: string,
-  nome: string,
-  descricao: string,
-  totalDias: number,
-  dias: Dia[],
-
-  getDia(numero): Dia | null,
-  getDias(): Dia[]
-}
-
-
-Decisão crítica registrada:
-
-PlanoManager nunca confia em planos sem validação
-
-Falha rápida > bug silencioso
-
-Esse ponto é fundamental para evolução futura.
-
-✅ PASSO 2 — NORMALIZAÇÃO DO DIA (DOMÍNIO)
-
-Status: FEITO
-
-Correção arquitetural aplicada:
-
-A UI não acessa mais estrutura interna
-
-O Dia expõe intenção, não dados crus
-
-Métodos confirmados e utilizados:
-
-getAntigoTestamento()
-
-getNovoTestamento()
-
-temLeitura()
-
-getResumo()
-
-Benefício direto:
-
-Mudanças internas não quebram a UI
-
-Suporte futuro a planos temáticos, leituras extras, paralelas, etc.
-
-✅ PASSO 3 — PLANO MANAGER (PEÇA-CHAVE)
-
-Status: FEITO
-Arquivo:
-
-/js/infra/plano_manager.js
-
-
-Responsabilidades bem delimitadas:
-
-Registrar planos
-
-Validar contrato
-
-Definir plano ativo
-
-Expor plano ativo
-
-Regras respeitadas:
-
-Não renderiza
-
-Não persiste progresso
-
-Não conhece UI
-
-Fluxo correto consolidado:
-
-main.js → PlanoManager → Plano Ativo → Dia
-
-
-Resultado:
-
-main.js não conhece planos concretos
-
-Infraestrutura pronta para múltiplos planos sem refatoração
-
-3️⃣ O QUE FOI FEITO — BLOCO DE NOTAS (UI BASE)
+1. O QUE FOI FEITO — BLOCO DE NOTAS (UI BASE)
 ✅ Bloco de Notas Flutuante — Integração Inicial
 
 Status: FUNCIONAL (fase UI base)
@@ -187,15 +65,113 @@ Usa localStorage
 
 Já preparado para múltiplos usuários
 
-4️⃣ O QUE NÃO FOI FEITO (INTENCIONALMENTE)
+2. continuação de manutenção no bloco de notas flutuante
+
+estado atual 17/01/26
+
+Estado geral
+
+✔ Arquitetura saudável
+✔ Separação domínio / UI bem encaminhada
+✔ Bloco de notas corretamente incompleto
+✔ Nenhum erro grave de concepção
+Estrutura do bloco estática no index.html
+✔ JS apenas controla comportamento
+✔ Nenhum elemento estrutural criado via JS
+
+Isso está 100% alinhado com:
+
+PWA
+
+Tailwind
+
+Manutenção previsível
+
+estamos nesse ponto: 
+
+
+Opção A — Arquitetural
+
+Definir com você o contrato HTML semântico final
+
+Sem código ainda
+
+Opção B — Técnica
+
+Implementar notas_toolbar.js forçando esse contrato
+
+IMPLEMENTAÇÃO DE notas_toolbar.js (FORÇANDO O CONTRATO)
+
+Agora sim, código — somente UI, sem domínio.
+
+Responsabilidade
+
+Executar comandos restritos
+
+Nunca permitir HTML fora do contrato
+
+Não persistir nada
+
+Sem permitir HTML inválido
+
+/js/ui/notas/notas_toolbar.js
+
+Opção C — Segurança
+
+Criar função de normalização que limpa HTML inválido automaticamente
+
+NORMALIZAÇÃO E SEGURANÇA
+
+/js/dominio/notas/normalizar_html_nota.js
+
+>> teste de funcionalidade falhou:
+
+Quando esse erro sumir:
+
+Teste colar HTML externo no editor (ex: <div>, <img>) [o bloco de notas está aceitando html invalido]
+
+Ele deve desaparecer automaticamente
+
+Apenas tags do contrato devem sobreviver
+
+Quando confirmar isso, o sistema está oficialmente blindado.
+
+Se aparecer qualquer outro erro, mande exatamente como você fez agora — com mensagem completa.
+
+
+alteração sugerida (porem falhou)
+
+4. AJUSTE CANÔNICO EM notas_overlay.js
+
+Substitua apenas o listener de input por este:
+
+editor.addEventListener("input", () => {
+  notasManager.setConteudo(editor.innerHTML);
+
+  const htmlNormalizado = notasManager.getConteudo();
+
+  if (editor.innerHTML !== htmlNormalizado) {
+    const pos = window.getSelection()?.getRangeAt(0);
+    editor.innerHTML = htmlNormalizado;
+  }
+});
+
+O que isso garante:
+
+✔ HTML inválido desaparece imediatamente (falhou)
+✔ Colagens externas são limpas na hora(falhou)
+✔ O editor nunca exibe algo que o domínio não aceita(falhou)
+
+
+4 O QUE NÃO FOI FEITO (INTENCIONALMENTE)
 
 Nada abaixo é bug ou atraso — são etapas conscientemente não iniciadas:
 
-Toolbar funcional (bold, itálico, título)
+Toolbar funcional (bold, itálico, título) [estamos nessa fase]
 
-Normalização semântica do HTML das notas
+Normalização semântica do HTML das notas [estamos nessa fase]
 
-Conversão HTML → DOCX
+Conversão HTML → DOCX [proxima etapa apos corrigir o erro]
 
 Associação da nota ao dia
 
@@ -205,59 +181,6 @@ Progresso desacoplado da UI (Service)
 
 Esses passos não foram antecipados para evitar acoplamento e retrabalho.
 
-5️⃣ ONDE PARAMOS EXATAMENTE (PONTO TÉCNICO)
-
-📍 Estado atual real:
-
-Bloco de Notas funcional, persistindo HTML livre, sem contrato semântico e sem vínculo com dia ou usuário.
-
-Isso significa:
-
-Editor aceita qualquer HTML
-
-Não existe ainda “HTML válido para exportação”
-
-Não existe associação nota ↔ dia ↔ usuário
-
-Este é o ponto correto de parada.
-
-6️⃣ PRÓXIMOS PASSOS — ORDEM FECHADA (NÃO INVERTER)
-🔹 PASSO 4 — PROGRESSO LEITURA SERVICE (PRÓXIMO TÉCNICO)
-
-Arquivo proposto:
-
-/js/infra/progresso_leitura_service.js
-
-
-Responsabilidades únicas:
-
-Persistir leitura por plano
-
-Marcar/desmarcar dia
-
-Calcular progresso
-
-Expor resumo pronto
-
-A UI passa a consumir:
-
-{
-  lidos: number,
-  total: number,
-  percentual: number
-}
-
-🔹 PASSO 5 — UI PASSIVA (MATURIDADE)
-
-Regra definitiva:
-
-UI não decide regra
-
-UI não calcula estado
-
-UI apenas dispara eventos e reflete dados
-
-Esse passo transforma o projeto em sistema evolutivo.
 
 🔹 PASSO 6 — BLOCO DE NOTAS (CONTINUAÇÃO)
 
@@ -277,7 +200,7 @@ Estrutura alvo:
 
 notas[usuarioId][planoId][diaNumero] = html
 
-7️⃣ DECISÕES DE ARQUITETURA REGISTRADAS
+DECISÕES DE ARQUITETURA REGISTRADAS
 
 O Bloco de Notas pertence ao domínio do usuário, não à UI
 
@@ -302,13 +225,9 @@ leitura anual da biblia
 conclida por usuario; no periodo do dia xx/xx/xxxx até xx/xx/xxxx
 "texto generico de certificado"
 
+imlementações futuras
 
-8️⃣ ESTADO FINAL DO DIA
-
-✔ Contrato de plano validado
-✔ Domínio protegido
-✔ PlanoManager funcional
-✔ Bloco de notas integrado
-✔ Arquitetura coerente
-✔ Próximos passos claros
-✔ Nenhum débito técnico oculto
+1. botão de redefinir progresso do plano de leitura (zerando ele com apenas um click); esse botã oprecisa de um seistema 
+de segurança de validação para não resetar o progrço por acidentalmente
+2. certificado de conclusão de leitura da biblia (gerar um certificado de conclusão de leitura da biblia com base no plano atual de escolha do usuario [com o nome do usuaro; data de inicio; data de termino; texto de certificado generico])
+esse certificado não pode ser gerado com menos de 90 dias apos o inicio da leitura, para evitar fraude

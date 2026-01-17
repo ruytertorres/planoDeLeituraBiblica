@@ -30,6 +30,13 @@ export function initNotasOverlay(notasManager) {
   /* Persistência */
   editor.addEventListener("input", () => {
     notasManager.setConteudo(editor.innerHTML);
+
+    const htmlNormalizado = notasManager.getConteudo();
+
+    if (editor.innerHTML !== htmlNormalizado) {
+      const pos = window.getSelection()?.getRangeAt(0);
+      editor.innerHTML = htmlNormalizado;
+    }
   });
 
   /* Limpar */

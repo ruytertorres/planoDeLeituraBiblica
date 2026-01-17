@@ -1,8 +1,9 @@
 /* ============================================================================
    NotasLeituraManager.js — Domínio de Anotações de Leitura
-   Versão: 0.1
-   Aplicação: Leitura Cronológica Controlada da Bíblia
+   Versão: 0.2
 ============================================================================ */
+
+import { normalizarHTMLNota } from "./normalizar_html_nota.js";
 
 export class NotasLeituraManager {
   constructor(chave = "notas_leitura_default") {
@@ -16,7 +17,7 @@ export class NotasLeituraManager {
   -------------------------------------------------------------------------- */
 
   setConteudo(html) {
-    this.conteudoHTML = html || "";
+    this.conteudoHTML = normalizarHTMLNota(html || "");
     this._salvar();
   }
 
