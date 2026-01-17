@@ -231,3 +231,4 @@ imlementações futuras
 de segurança de validação para não resetar o progrço por acidentalmente
 2. certificado de conclusão de leitura da biblia (gerar um certificado de conclusão de leitura da biblia com base no plano atual de escolha do usuario [com o nome do usuaro; data de inicio; data de termino; texto de certificado generico])
 esse certificado não pode ser gerado com menos de 90 dias apos o inicio da leitura, para evitar fraude
+3. AUTOMATIZAR AS DATAS POR ANO  AUTOMATICAMENTE
