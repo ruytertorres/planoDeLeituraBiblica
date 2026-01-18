@@ -1,6 +1,6 @@
 📘 NOTA DE CONTINUIDADE — APP DE LEITURA BÍBLICA
 
-Data: 17/01/2026
+Data: 18/01/2026
 Estado: Arquitetura saudável, evolução controlada, sem dívida técnica
 
 1. O QUE FOI FEITO — BLOCO DE NOTAS (UI BASE)
@@ -90,127 +90,7 @@ Manutenção previsível
 estamos nesse ponto: 
 
 
-Opção A — Arquitetural
-
-Definir com você o contrato HTML semântico final
-
-Sem código ainda
-
-Opção B — Técnica
-
-Implementar notas_toolbar.js forçando esse contrato
-
-IMPLEMENTAÇÃO DE notas_toolbar.js (FORÇANDO O CONTRATO)
-
-Agora sim, código — somente UI, sem domínio.
-
-Responsabilidade
-
-Executar comandos restritos
-
-Nunca permitir HTML fora do contrato
-
-Não persistir nada
-
-Sem permitir HTML inválido
-
-/js/ui/notas/notas_toolbar.js
-
-Opção C — Segurança
-
-Criar função de normalização que limpa HTML inválido automaticamente
-
-NORMALIZAÇÃO E SEGURANÇA
-
-/js/dominio/notas/normalizar_html_nota.js
-
->> teste de funcionalidade falhou:
-
-Quando esse erro sumir:
-
-Teste colar HTML externo no editor (ex: <div>, <img>) [o bloco de notas está aceitando html invalido]
-
-Ele deve desaparecer automaticamente
-
-Apenas tags do contrato devem sobreviver
-
-Quando confirmar isso, o sistema está oficialmente blindado.
-
-Se aparecer qualquer outro erro, mande exatamente como você fez agora — com mensagem completa.
-
-
-alteração sugerida (porem falhou)
-
-4. AJUSTE CANÔNICO EM notas_overlay.js
-
-Substitua apenas o listener de input por este:
-
-editor.addEventListener("input", () => {
-  notasManager.setConteudo(editor.innerHTML);
-
-  const htmlNormalizado = notasManager.getConteudo();
-
-  if (editor.innerHTML !== htmlNormalizado) {
-    const pos = window.getSelection()?.getRangeAt(0);
-    editor.innerHTML = htmlNormalizado;
-  }
-});
-
-O que isso garante:
-
-✔ HTML inválido desaparece imediatamente (falhou)
-✔ Colagens externas são limpas na hora(falhou)
-✔ O editor nunca exibe algo que o domínio não aceita(falhou)
-
-
-4 O QUE NÃO FOI FEITO (INTENCIONALMENTE)
-
-Nada abaixo é bug ou atraso — são etapas conscientemente não iniciadas:
-
-Toolbar funcional (bold, itálico, título) [estamos nessa fase]
-
-Normalização semântica do HTML das notas [estamos nessa fase]
-
-Conversão HTML → DOCX [proxima etapa apos corrigir o erro]
-
-Associação da nota ao dia
-
-Associação da nota ao usuário
-
-Progresso desacoplado da UI (Service)
-
-Esses passos não foram antecipados para evitar acoplamento e retrabalho.
-
-
-🔹 PASSO 6 — BLOCO DE NOTAS (CONTINUAÇÃO)
-
-Ordem correta (já definida):
-
-Toolbar real (bold / itálico / título)
-Arquivo: /js/ui/notas/notas_toolbar.js
-
-Normalização de HTML
-Converter HTML livre em HTML semântico previsível
-
-Conversão HTML → DOCX
-Exportação client-side + opção de limpar
-
-Associação da nota ao dia / usuário
-Estrutura alvo:
-
-notas[usuarioId][planoId][diaNumero] = html
-
-DECISÕES DE ARQUITETURA REGISTRADAS
-
-O Bloco de Notas pertence ao domínio do usuário, não à UI
-
-Hoje usa localStorage
-
-Amanhã suportará múltiplos usuários sem reescrita
-
-Nenhuma decisão tomada hoje gera dívida técnica
-
-🔹 PASSO 7 — cetificado e limpesa de progresoo
+🔹 PROXIMOS PASSOS — cetificado e limpesa de progreçoo
 
 - adcionar um botão que limpa o progrsso de leitura voltando ele a 0 dias lidos; essa ação precisa de confirmação, um sistema de segurança que 
 impede de limpar acidentalmente
@@ -376,11 +256,6 @@ esse certificado não pode ser gerado com menos de 90 dias apos o inicio da leit
 gemini quero atualizar o campo data: "2024-01-04",, criando um codigo de automação que todo ano ele atualiza sozinho pro ano que ele esta.
 
 
-
-você pode me ajudar nessa tarefa
-
-Com certeza! Para automatizar isso e garantir que o código sempre utilize o ano atual, a melhor forma é substituir a string estática "2024-01-01" por uma lógica que utilize o objeto Date do JavaScript.
-
 Aqui estão as duas maneiras mais eficientes de fazer isso:
 
 1. Utilizando o Ano Atual Dinamicamente
@@ -511,3 +386,6 @@ No campo de busca, coloque: data: "2024-01-04" (ou a data específica).
 No campo de substituir, coloque: data: \${new Date().getFullYear()}-01-04`` (usando a crase).
 
 Você gostaria que eu ajudasse a converter o restante dos dias para esse formato de "lista simplificada" ou prefere manter a estrutura de objetos grandes que você já tem?
+
+
+- outra mudança, as tgas dos dias de leituras poderiam ficar em uma div que se expande quando clicada, para deixar a visualisação mais clean
