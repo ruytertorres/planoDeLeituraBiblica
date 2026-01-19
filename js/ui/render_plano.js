@@ -34,16 +34,13 @@
 ============================================================================ */
 
 export function renderPlanoCronologico({ containerId, plano }) {
-
   /* --------------------------------------------------------------------------
      OBTENÇÃO DO CONTAINER
      ----------------------------------------------------------------------- */
   const container = document.getElementById(containerId);
 
   if (!container) {
-    throw new Error(
-      `Container com id "${containerId}" não encontrado no DOM.`
-    );
+    throw new Error(`Container com id "${containerId}" não encontrado no DOM.`);
   }
 
   /* --------------------------------------------------------------------------
@@ -61,11 +58,10 @@ export function renderPlanoCronologico({ containerId, plano }) {
      - A UI valida apenas o contrato visual
      ----------------------------------------------------------------------- */
   plano.forEach((item, index) => {
-
     if (!item || typeof item.html !== "string") {
       console.warn(
         `Entrada inválida no plano cronológico (índice ${index}). Esperado { html: string }.`,
-        item
+        item,
       );
       return;
     }
@@ -77,11 +73,4 @@ export function renderPlanoCronologico({ containerId, plano }) {
 
     container.appendChild(wrapper);
   });
-
-  /* --------------------------------------------------------------------------
-     FINALIZAÇÃO
-     ----------------------------------------------------------------------- */
-  console.log(
-    `Plano cronológico renderizado com sucesso (${plano.length} dias).`
-  );
 }

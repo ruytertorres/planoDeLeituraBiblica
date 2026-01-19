@@ -1,6 +1,6 @@
 /* ============================================================================
    plano_cronologico.js — Entidade de Plano: Plano Cronológico de Leitura
-   Versão: 0.6
+   Versão: 0.7
    Aplicação: Bíblia Responsiva App
 
    RESPONSABILIDADE ÚNICA:
@@ -10,6 +10,7 @@
    - NÃO conter lógica de UI
    - NÃO conter lógica de progresso
    - NÃO conter persistência
+   - NÃO conter lógica de datas (usa gerador centralizado)
 ============================================================================ */
 
 /* --------------------------------------------------------------------------
@@ -18,13 +19,41 @@
 
 import { Dia } from "../dia.js";
 import { validarPlano } from "./contrato_plano.js";
+import { gerarDataISO, gerarDataBR } from "./utils/geradorDatas.js";
+
+/* --------------------------------------------------------------------------
+   FUNÇÕES AUXILIARES USANDO GERADOR CENTRALIZADO
+   --------------------------------------------------------------------------
+   Estas funções usam o gerador centralizado em utils/geradorDatas.js
+   Isso garante consistência em todos os planos e facilita manutenção
+   IMPORTANTE: Usa ANO FIXO 2026 definido no geradorDatas.js
+-------------------------------------------------------------------------- */
+
+/**
+ * Gera data automática usando gerador centralizado
+ * @param {number} diaNumero - Número do dia no plano (1-317)
+ * @returns {string} Data no formato YYYY-MM-DD
+ */
+function gerarDataAutomatica(diaNumero) {
+  // Usa função centralizada - ano 2026 já é padrão em geradorDatas.js
+  return gerarDataISO(diaNumero);
+}
+
+/**
+ * Gera data formatada usando gerador centralizado
+ * @param {number} diaNumero - Número do dia no plano (1-317)
+ * @returns {string} Data no formato DD/MM/YYYY
+ */
+function gerarDataFormatada(diaNumero) {
+  // Usa função centralizada - ano 2026 já é padrão em geradorDatas.js
+  return gerarDataBR(diaNumero);
+}
 
 /* --------------------------------------------------------------------------
    DEFINIÇÃO DO PLANO (CONTRATO)
 -------------------------------------------------------------------------- */
 
 const planoCronologico = {
-
   /* --------------------------------------------------------------------------
      METADADOS DO PLANO
   -------------------------------------------------------------------------- */
@@ -40,7 +69,9 @@ const planoCronologico = {
   dias: [
     new Dia({
       numero: 1,
-      data: "2024-01-01",
+
+      data: gerarDataAutomatica(1),
+      dataFormatada: gerarDataFormatada(1), //apaga
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -57,7 +88,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 2,
-      data: "2024-01-02",
+
+      data: gerarDataAutomatica(2),
+      dataFormatada: gerarDataFormatada(2),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -74,7 +107,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 3,
-      data: "2024-01-03",
+
+      data: gerarDataAutomatica(3),
+      dataFormatada: gerarDataFormatada(3),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -91,7 +126,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 4,
-      data: "2024-01-04",
+
+      data: gerarDataAutomatica(4),
+      dataFormatada: gerarDataFormatada(4),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -108,7 +145,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 5,
-      data: "2024-01-05",
+
+      data: gerarDataAutomatica(5),
+      dataFormatada: gerarDataFormatada(5),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -125,7 +164,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 6,
-      data: "2024-01-06",
+
+      data: gerarDataAutomatica(6),
+      dataFormatada: gerarDataFormatada(6),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -142,7 +183,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 7,
-      data: "2024-01-07",
+
+      data: gerarDataAutomatica(7),
+      dataFormatada: gerarDataFormatada(7),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -159,7 +202,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 8,
-      data: "2024-01-08",
+
+      data: gerarDataAutomatica(8),
+      dataFormatada: gerarDataFormatada(8),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -176,7 +221,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 9,
-      data: "2024-01-09",
+
+      data: gerarDataAutomatica(9),
+      dataFormatada: gerarDataFormatada(9),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -193,7 +240,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 10,
-      data: "2024-01-10",
+
+      data: gerarDataAutomatica(10),
+      dataFormatada: gerarDataFormatada(10),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -210,7 +259,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 11,
-      data: "2024-01-11",
+
+      data: gerarDataAutomatica(11),
+      dataFormatada: gerarDataFormatada(11),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -227,7 +278,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 12,
-      data: "2024-01-12",
+
+      data: gerarDataAutomatica(12),
+      dataFormatada: gerarDataFormatada(12),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -244,7 +297,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 13,
-      data: "2024-01-13",
+
+      data: gerarDataAutomatica(13),
+      dataFormatada: gerarDataFormatada(13),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -261,7 +316,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 14,
-      data: "2024-01-14",
+
+      data: gerarDataAutomatica(14),
+      dataFormatada: gerarDataFormatada(14),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -278,7 +335,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 15,
-      data: "2024-01-15",
+
+      data: gerarDataAutomatica(15),
+      dataFormatada: gerarDataFormatada(15),
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -295,7 +354,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 16,
-      data: "2024-01-16",
+
+      data: gerarDataAutomatica(16),
+      dataFormatada: gerarDataFormatada(16),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 1, capituloFim: 4 },
       ],
@@ -307,7 +368,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 17,
-      data: "2024-01-17",
+
+      data: gerarDataAutomatica(17),
+      dataFormatada: gerarDataFormatada(17),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 5, capituloFim: 7 },
       ],
@@ -319,7 +382,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 18,
-      data: "2024-01-18",
+
+      data: gerarDataAutomatica(18),
+      dataFormatada: gerarDataFormatada(18),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 8, capituloFim: 10 },
       ],
@@ -331,7 +396,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 19,
-      data: "2024-01-19",
+
+      data: gerarDataAutomatica(19),
+      dataFormatada: gerarDataFormatada(19),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 11, capituloFim: 13 },
       ],
@@ -343,7 +410,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 20,
-      data: "2024-01-20",
+
+      data: gerarDataAutomatica(20),
+      dataFormatada: gerarDataFormatada(20),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 14, capituloFim: 17 },
       ],
@@ -355,7 +424,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 21,
-      data: "2024-01-21",
+
+      data: gerarDataAutomatica(21),
+      dataFormatada: gerarDataFormatada(21),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 18, capituloFim: 20 },
       ],
@@ -367,7 +438,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 22,
-      data: "2024-01-22",
+
+      data: gerarDataAutomatica(22),
+      dataFormatada: gerarDataFormatada(22),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 21, capituloFim: 24 },
       ],
@@ -379,7 +452,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 23,
-      data: "2024-01-23",
+
+      data: gerarDataAutomatica(23),
+      dataFormatada: gerarDataFormatada(23),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 25, capituloFim: 27 },
       ],
@@ -391,7 +466,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 24,
-      data: "2024-01-24",
+
+      data: gerarDataAutomatica(24),
+      dataFormatada: gerarDataFormatada(24),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 28, capituloFim: 31 },
       ],
@@ -403,7 +480,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 25,
-      data: "2024-01-25",
+
+      data: gerarDataAutomatica(25),
+      dataFormatada: gerarDataFormatada(25),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 32, capituloFim: 34 },
       ],
@@ -415,7 +494,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 26,
-      data: "2024-01-26",
+
+      data: gerarDataAutomatica(26),
+      dataFormatada: gerarDataFormatada(26),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 35, capituloFim: 37 },
       ],
@@ -427,7 +508,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 27,
-      data: "2024-01-27",
+
+      data: gerarDataAutomatica(27),
+      dataFormatada: gerarDataFormatada(27),
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 38, capituloFim: 42 },
       ],
@@ -439,7 +522,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 28,
-      data: "2024-01-28",
+
+      data: gerarDataAutomatica(28),
+      dataFormatada: gerarDataFormatada(28),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -456,7 +541,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 29,
-      data: "2024-01-29",
+
+      data: gerarDataAutomatica(29),
+      dataFormatada: gerarDataFormatada(29),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -473,7 +560,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 30,
-      data: "2024-01-30",
+
+      data: gerarDataAutomatica(30),
+      dataFormatada: gerarDataFormatada(30),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -490,7 +579,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 31,
-      data: "2024-01-31",
+
+      data: gerarDataAutomatica(31),
+      dataFormatada: gerarDataFormatada(31),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -507,7 +598,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 32,
-      data: "2024-02-01",
+
+      data: gerarDataAutomatica(32),
+      dataFormatada: gerarDataFormatada(32),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -524,7 +617,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 33,
-      data: "2024-02-02",
+
+      data: gerarDataAutomatica(33),
+      dataFormatada: gerarDataFormatada(33),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -541,7 +636,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 34,
-      data: "2024-02-03",
+
+      data: gerarDataAutomatica(34),
+      dataFormatada: gerarDataFormatada(34),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -558,7 +655,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 35,
-      data: "2024-02-04",
+
+      data: gerarDataAutomatica(35),
+      dataFormatada: gerarDataFormatada(35),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -575,7 +674,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 36,
-      data: "2024-02-05",
+
+      data: gerarDataAutomatica(36),
+      dataFormatada: gerarDataFormatada(36),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -592,7 +693,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 37,
-      data: "2024-02-06",
+
+      data: gerarDataAutomatica(37),
+      dataFormatada: gerarDataFormatada(37),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -609,7 +712,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 38,
-      data: "2024-02-07",
+
+      data: gerarDataAutomatica(38),
+      dataFormatada: gerarDataFormatada(38),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -626,7 +731,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 39,
-      data: "2024-02-08",
+
+      data: gerarDataAutomatica(39),
+      dataFormatada: gerarDataFormatada(39),
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -643,7 +750,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 40,
-      data: "2024-02-09",
+
+      data: gerarDataAutomatica(40),
+      dataFormatada: gerarDataFormatada(40),
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -660,7 +769,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 41,
-      data: "2024-02-10",
+
+      data: gerarDataAutomatica(41),
+      dataFormatada: gerarDataFormatada(41),
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -677,7 +788,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 42,
-      data: "2024-02-11",
+
+      data: gerarDataAutomatica(42),
+      dataFormatada: gerarDataFormatada(42),
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -694,7 +807,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 43,
-      data: "2024-02-12",
+
+      data: gerarDataAutomatica(43),
+      dataFormatada: gerarDataFormatada(43),
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -711,7 +826,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 44,
-      data: "2024-02-13",
+
+      data: gerarDataAutomatica(44),
+      dataFormatada: gerarDataFormatada(44),
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -728,7 +845,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 45,
-      data: "2024-02-14",
+
+      data: gerarDataAutomatica(45),
+      dataFormatada: gerarDataFormatada(45),
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -745,7 +864,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 46,
-      data: "2024-02-15",
+
+      data: gerarDataAutomatica(46),
+      dataFormatada: gerarDataFormatada(46),
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -768,7 +889,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 47,
-      data: "2024-02-16",
+
+      data: gerarDataAutomatica(47),
+      dataFormatada: gerarDataFormatada(47),
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -785,7 +908,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 48,
-      data: "2024-02-17",
+
+      data: gerarDataAutomatica(48),
+      dataFormatada: gerarDataFormatada(48),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -802,7 +927,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 49,
-      data: "2024-02-18",
+
+      data: gerarDataAutomatica(49),
+      dataFormatada: gerarDataFormatada(49),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -819,7 +946,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 50,
-      data: "2024-02-19",
+
+      data: gerarDataAutomatica(50),
+      dataFormatada: gerarDataFormatada(50),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -836,7 +965,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 51,
-      data: "2024-02-20",
+
+      data: gerarDataAutomatica(51),
+      dataFormatada: gerarDataFormatada(51),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -859,7 +990,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 52,
-      data: "2024-02-21",
+
+      data: gerarDataAutomatica(52),
+      dataFormatada: gerarDataFormatada(52),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -882,7 +1015,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 53,
-      data: "2024-02-22",
+
+      data: gerarDataAutomatica(53),
+      dataFormatada: gerarDataFormatada(53),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -899,7 +1034,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 54,
-      data: "2024-02-23",
+
+      data: gerarDataAutomatica(54),
+      dataFormatada: gerarDataFormatada(54),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -916,7 +1053,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 55,
-      data: "2024-02-24",
+
+      data: gerarDataAutomatica(55),
+      dataFormatada: gerarDataFormatada(55),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -933,7 +1072,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 56,
-      data: "2024-02-25",
+
+      data: gerarDataAutomatica(56),
+      dataFormatada: gerarDataFormatada(56),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -950,7 +1091,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 57,
-      data: "2024-02-26",
+
+      data: gerarDataAutomatica(57),
+      dataFormatada: gerarDataFormatada(57),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -967,7 +1110,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 58,
-      data: "2024-02-27",
+
+      data: gerarDataAutomatica(58),
+      dataFormatada: gerarDataFormatada(58),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -984,7 +1129,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 59,
-      data: "2024-02-28",
+
+      data: gerarDataAutomatica(59),
+      dataFormatada: gerarDataFormatada(59),
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -1001,7 +1148,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 60,
-      data: "2024-03-01",
+
+      data: gerarDataAutomatica(60),
+      dataFormatada: gerarDataFormatada(60),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1018,7 +1167,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 61,
-      data: "2024-03-02",
+
+      data: gerarDataAutomatica(61),
+      dataFormatada: gerarDataFormatada(61),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1035,7 +1186,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 62,
-      data: "2024-03-03",
+
+      data: gerarDataAutomatica(62),
+      dataFormatada: gerarDataFormatada(62),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1052,7 +1205,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 63,
-      data: "2024-03-04",
+
+      data: gerarDataAutomatica(63),
+      dataFormatada: gerarDataFormatada(63),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1069,7 +1224,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 64,
-      data: "2024-03-05",
+
+      data: gerarDataAutomatica(64),
+      dataFormatada: gerarDataFormatada(64),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1086,7 +1243,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 65,
-      data: "2024-03-06",
+
+      data: gerarDataAutomatica(65),
+      dataFormatada: gerarDataFormatada(65),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1103,7 +1262,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 66,
-      data: "2024-03-07",
+
+      data: gerarDataAutomatica(66),
+      dataFormatada: gerarDataFormatada(66),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1120,7 +1281,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 67,
-      data: "2024-03-08",
+
+      data: gerarDataAutomatica(67),
+      dataFormatada: gerarDataFormatada(67),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1137,7 +1300,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 68,
-      data: "2024-03-09",
+
+      data: gerarDataAutomatica(68),
+      dataFormatada: gerarDataFormatada(68),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1154,7 +1319,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 69,
-      data: "2024-03-10",
+
+      data: gerarDataAutomatica(69),
+      dataFormatada: gerarDataFormatada(69),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1171,7 +1338,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 70,
-      data: "2024-03-11",
+
+      data: gerarDataAutomatica(70),
+      dataFormatada: gerarDataFormatada(70),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1188,7 +1357,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 71,
-      data: "2024-03-12",
+
+      data: gerarDataAutomatica(71),
+      dataFormatada: gerarDataFormatada(71),
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1205,7 +1376,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 72,
-      data: "2024-03-13",
+
+      data: gerarDataAutomatica(72),
+      dataFormatada: gerarDataFormatada(72),
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1222,7 +1395,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 73,
-      data: "2024-03-14",
+
+      data: gerarDataAutomatica(73),
+      dataFormatada: gerarDataFormatada(73),
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1239,7 +1414,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 74,
-      data: "2024-03-15",
+
+      data: gerarDataAutomatica(74),
+      dataFormatada: gerarDataFormatada(74),
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1256,7 +1433,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 75,
-      data: "2024-03-16",
+
+      data: gerarDataAutomatica(75),
+      dataFormatada: gerarDataFormatada(75),
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1273,7 +1452,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 76,
-      data: "2024-03-17",
+
+      data: gerarDataAutomatica(76),
+      dataFormatada: gerarDataFormatada(76),
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1290,7 +1471,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 77,
-      data: "2024-03-18",
+
+      data: gerarDataAutomatica(77),
+      dataFormatada: gerarDataFormatada(77),
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1307,7 +1490,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 78,
-      data: "2024-03-19",
+
+      data: gerarDataAutomatica(78),
+      dataFormatada: gerarDataFormatada(78),
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1324,7 +1509,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 79,
-      data: "2024-03-20",
+
+      data: gerarDataAutomatica(79),
+      dataFormatada: gerarDataFormatada(79),
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1341,7 +1528,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 80,
-      data: "2024-03-21",
+
+      data: gerarDataAutomatica(80),
+      dataFormatada: gerarDataFormatada(80),
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1358,7 +1547,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 81,
-      data: "2024-03-22",
+
+      data: gerarDataAutomatica(81),
+      dataFormatada: gerarDataFormatada(81),
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1375,7 +1566,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 82,
-      data: "2024-03-23",
+
+      data: gerarDataAutomatica(82),
+      dataFormatada: gerarDataFormatada(82),
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1392,7 +1585,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 83,
-      data: "2024-03-24",
+
+      data: gerarDataAutomatica(83),
+      dataFormatada: gerarDataFormatada(83),
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1409,7 +1604,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 84,
-      data: "2024-03-25",
+
+      data: gerarDataAutomatica(84),
+      dataFormatada: gerarDataFormatada(84),
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1426,7 +1623,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 85,
-      data: "2024-03-26",
+
+      data: gerarDataAutomatica(85),
+      dataFormatada: gerarDataFormatada(85),
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1443,7 +1642,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 86,
-      data: "2024-03-27",
+
+      data: gerarDataAutomatica(86),
+      dataFormatada: gerarDataFormatada(86),
       antigoTestamento: [
         {
           livroId: "rute",
@@ -1460,7 +1661,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 87,
-      data: "2024-03-28",
+
+      data: gerarDataAutomatica(87),
+      dataFormatada: gerarDataFormatada(87),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1477,7 +1680,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 88,
-      data: "2024-03-29",
+
+      data: gerarDataAutomatica(88),
+      dataFormatada: gerarDataFormatada(88),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1494,7 +1699,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 89,
-      data: "2024-03-30",
+
+      data: gerarDataAutomatica(89),
+      dataFormatada: gerarDataFormatada(89),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1511,7 +1718,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 90,
-      data: "2024-03-31",
+
+      data: gerarDataAutomatica(90),
+      dataFormatada: gerarDataFormatada(90),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1528,7 +1737,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 91,
-      data: "2024-04-01",
+
+      data: gerarDataAutomatica(91),
+      dataFormatada: gerarDataFormatada(91),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1545,7 +1756,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 92,
-      data: "2024-04-02",
+
+      data: gerarDataAutomatica(92),
+      dataFormatada: gerarDataFormatada(92),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1562,7 +1775,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 93,
-      data: "2024-04-03",
+
+      data: gerarDataAutomatica(93),
+      dataFormatada: gerarDataFormatada(93),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1579,7 +1794,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 94,
-      data: "2024-04-04",
+
+      data: gerarDataAutomatica(94),
+      dataFormatada: gerarDataFormatada(94),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1596,7 +1813,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 95,
-      data: "2024-04-05",
+
+      data: gerarDataAutomatica(95),
+      dataFormatada: gerarDataFormatada(95),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1613,7 +1832,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 96,
-      data: "2024-04-06",
+
+      data: gerarDataAutomatica(96),
+      dataFormatada: gerarDataFormatada(96),
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1630,7 +1851,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 97,
-      data: "2024-04-07",
+
+      data: gerarDataAutomatica(97),
+      dataFormatada: gerarDataFormatada(97),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1653,7 +1876,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 98,
-      data: "2024-04-08",
+
+      data: gerarDataAutomatica(98),
+      dataFormatada: gerarDataFormatada(98),
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -1670,7 +1895,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 99,
-      data: "2024-04-09",
+
+      data: gerarDataAutomatica(99),
+      dataFormatada: gerarDataFormatada(99),
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -1687,7 +1914,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 100,
-      data: "2024-04-10",
+
+      data: gerarDataAutomatica(100),
+      dataFormatada: gerarDataFormatada(100),
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -1704,7 +1933,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 101,
-      data: "2024-04-11",
+
+      data: gerarDataAutomatica(101),
+      dataFormatada: gerarDataFormatada(101),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1733,7 +1964,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 102,
-      data: "2024-04-12",
+
+      data: gerarDataAutomatica(102),
+      dataFormatada: gerarDataFormatada(102),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1762,7 +1995,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 103,
-      data: "2024-04-13",
+
+      data: gerarDataAutomatica(103),
+      dataFormatada: gerarDataFormatada(103),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1785,7 +2020,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 104,
-      data: "2024-04-14",
+
+      data: gerarDataAutomatica(104),
+      dataFormatada: gerarDataFormatada(104),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1808,7 +2045,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 105,
-      data: "2024-04-15",
+
+      data: gerarDataAutomatica(105),
+      dataFormatada: gerarDataFormatada(105),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1837,7 +2076,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 106,
-      data: "2024-04-16",
+
+      data: gerarDataAutomatica(106),
+      dataFormatada: gerarDataFormatada(106),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1866,7 +2107,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 107,
-      data: "2024-04-17",
+
+      data: gerarDataAutomatica(107),
+      dataFormatada: gerarDataFormatada(107),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1895,7 +2138,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 108,
-      data: "2024-04-18",
+
+      data: gerarDataAutomatica(108),
+      dataFormatada: gerarDataFormatada(108),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1924,7 +2169,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 109,
-      data: "2024-04-19",
+
+      data: gerarDataAutomatica(109),
+      dataFormatada: gerarDataFormatada(109),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1953,7 +2200,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 110,
-      data: "2024-04-20",
+
+      data: gerarDataAutomatica(110),
+      dataFormatada: gerarDataFormatada(110),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1976,7 +2225,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 111,
-      data: "2024-04-21",
+
+      data: gerarDataAutomatica(111),
+      dataFormatada: gerarDataFormatada(111),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2005,7 +2256,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 112,
-      data: "2024-04-22",
+
+      data: gerarDataAutomatica(112),
+      dataFormatada: gerarDataFormatada(112),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2028,7 +2281,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 113,
-      data: "2024-04-23",
+
+      data: gerarDataAutomatica(113),
+      dataFormatada: gerarDataFormatada(113),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2051,7 +2306,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 114,
-      data: "2024-04-24",
+
+      data: gerarDataAutomatica(114),
+      dataFormatada: gerarDataFormatada(114),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2068,7 +2325,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 115,
-      data: "2024-04-25",
+
+      data: gerarDataAutomatica(115),
+      dataFormatada: gerarDataFormatada(115),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2091,7 +2350,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 116,
-      data: "2024-04-26",
+
+      data: gerarDataAutomatica(116),
+      dataFormatada: gerarDataFormatada(116),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2114,7 +2375,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 117,
-      data: "2024-04-27",
+
+      data: gerarDataAutomatica(117),
+      dataFormatada: gerarDataFormatada(117),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2137,7 +2400,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 118,
-      data: "2024-04-28",
+
+      data: gerarDataAutomatica(118),
+      dataFormatada: gerarDataFormatada(118),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2166,7 +2431,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 119,
-      data: "2024-04-29",
+
+      data: gerarDataAutomatica(119),
+      dataFormatada: gerarDataFormatada(119),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2183,7 +2450,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 120,
-      data: "2024-04-30",
+
+      data: gerarDataAutomatica(120),
+      dataFormatada: gerarDataFormatada(120),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2206,7 +2475,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 121,
-      data: "2024-05-01",
+
+      data: gerarDataAutomatica(121),
+      dataFormatada: gerarDataFormatada(121),
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2223,7 +2494,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 122,
-      data: "2024-05-02",
+
+      data: gerarDataAutomatica(122),
+      dataFormatada: gerarDataFormatada(122),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2246,7 +2519,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 123,
-      data: "2024-05-03",
+
+      data: gerarDataAutomatica(123),
+      dataFormatada: gerarDataFormatada(123),
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2263,7 +2538,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 124,
-      data: "2024-05-04",
+
+      data: gerarDataAutomatica(124),
+      dataFormatada: gerarDataFormatada(124),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2286,7 +2563,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 125,
-      data: "2024-05-05",
+
+      data: gerarDataAutomatica(125),
+      dataFormatada: gerarDataFormatada(125),
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2303,7 +2582,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 126,
-      data: "2024-05-06",
+
+      data: gerarDataAutomatica(126),
+      dataFormatada: gerarDataFormatada(126),
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2320,7 +2601,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 127,
-      data: "2024-05-07",
+
+      data: gerarDataAutomatica(127),
+      dataFormatada: gerarDataFormatada(127),
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2337,7 +2620,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 128,
-      data: "2024-05-08",
+
+      data: gerarDataAutomatica(128),
+      dataFormatada: gerarDataFormatada(128),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2360,7 +2645,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 129,
-      data: "2024-05-09",
+
+      data: gerarDataAutomatica(129),
+      dataFormatada: gerarDataFormatada(129),
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2377,7 +2664,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 130,
-      data: "2024-05-10",
+
+      data: gerarDataAutomatica(130),
+      dataFormatada: gerarDataFormatada(130),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2400,7 +2689,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 131,
-      data: "2024-05-11",
+
+      data: gerarDataAutomatica(131),
+      dataFormatada: gerarDataFormatada(131),
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2417,7 +2708,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 132,
-      data: "2024-05-12",
+
+      data: gerarDataAutomatica(132),
+      dataFormatada: gerarDataFormatada(132),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2440,7 +2733,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 133,
-      data: "2024-05-13",
+
+      data: gerarDataAutomatica(133),
+      dataFormatada: gerarDataFormatada(133),
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2457,7 +2752,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 134,
-      data: "2024-05-14",
+
+      data: gerarDataAutomatica(134),
+      dataFormatada: gerarDataFormatada(134),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2474,7 +2771,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 135,
-      data: "2024-05-15",
+
+      data: gerarDataAutomatica(135),
+      dataFormatada: gerarDataFormatada(135),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2491,7 +2790,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 136,
-      data: "2024-05-16",
+
+      data: gerarDataAutomatica(136),
+      dataFormatada: gerarDataFormatada(136),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2508,7 +2809,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 137,
-      data: "2024-05-17",
+
+      data: gerarDataAutomatica(137),
+      dataFormatada: gerarDataFormatada(137),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2525,7 +2828,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 138,
-      data: "2024-05-18",
+
+      data: gerarDataAutomatica(138),
+      dataFormatada: gerarDataFormatada(138),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2542,7 +2847,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 139,
-      data: "2024-05-19",
+
+      data: gerarDataAutomatica(139),
+      dataFormatada: gerarDataFormatada(139),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2559,7 +2866,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 140,
-      data: "2024-05-20",
+
+      data: gerarDataAutomatica(140),
+      dataFormatada: gerarDataFormatada(140),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2576,7 +2885,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 141,
-      data: "2024-05-21",
+
+      data: gerarDataAutomatica(141),
+      dataFormatada: gerarDataFormatada(141),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2593,7 +2904,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 142,
-      data: "2024-05-22",
+
+      data: gerarDataAutomatica(142),
+      dataFormatada: gerarDataFormatada(142),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2610,7 +2923,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 143,
-      data: "2024-05-23",
+
+      data: gerarDataAutomatica(143),
+      dataFormatada: gerarDataFormatada(143),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2627,7 +2942,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 144,
-      data: "2024-05-24",
+
+      data: gerarDataAutomatica(144),
+      dataFormatada: gerarDataFormatada(144),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2644,7 +2961,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 145,
-      data: "2024-05-25",
+
+      data: gerarDataAutomatica(145),
+      dataFormatada: gerarDataFormatada(145),
       antigoTestamento: [
         {
           livroId: "eclesiastes",
@@ -2661,7 +2980,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 146,
-      data: "2024-05-26",
+
+      data: gerarDataAutomatica(146),
+      dataFormatada: gerarDataFormatada(146),
       antigoTestamento: [
         {
           livroId: "eclesiastes",
@@ -2678,7 +2999,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 147,
-      data: "2024-05-27",
+
+      data: gerarDataAutomatica(147),
+      dataFormatada: gerarDataFormatada(147),
       antigoTestamento: [
         {
           livroId: "eclesiastes",
@@ -2695,7 +3018,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 148,
-      data: "2024-05-28",
+
+      data: gerarDataAutomatica(148),
+      dataFormatada: gerarDataFormatada(148),
       antigoTestamento: [
         {
           livroId: "cantares",
@@ -2712,7 +3037,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 149,
-      data: "2024-05-29",
+
+      data: gerarDataAutomatica(149),
+      dataFormatada: gerarDataFormatada(149),
       antigoTestamento: [
         {
           livroId: "cantares",
@@ -2729,7 +3056,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 150,
-      data: "2024-05-30",
+
+      data: gerarDataAutomatica(150),
+      dataFormatada: gerarDataFormatada(150),
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2746,7 +3075,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 151,
-      data: "2024-05-31",
+
+      data: gerarDataAutomatica(151),
+      dataFormatada: gerarDataFormatada(151),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2769,7 +3100,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 152,
-      data: "2024-06-01",
+
+      data: gerarDataAutomatica(152),
+      dataFormatada: gerarDataFormatada(152),
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2786,7 +3119,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 153,
-      data: "2024-06-02",
+
+      data: gerarDataAutomatica(153),
+      dataFormatada: gerarDataFormatada(153),
       antigoTestamento: [
         {
           livroId: "2cronicas",
@@ -2803,7 +3138,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 154,
-      data: "2024-06-03",
+
+      data: gerarDataAutomatica(154),
+      dataFormatada: gerarDataFormatada(154),
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2826,7 +3163,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 155,
-      data: "2024-06-04",
+
+      data: gerarDataAutomatica(155),
+      dataFormatada: gerarDataFormatada(155),
       antigoTestamento: [
         {
           livroId: "2cronicas",
@@ -2843,7 +3182,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 156,
-      data: "2024-06-05",
+
+      data: gerarDataAutomatica(156),
+      dataFormatada: gerarDataFormatada(156),
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2860,7 +3201,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 157,
-      data: "2024-06-06",
+
+      data: gerarDataAutomatica(157),
+      dataFormatada: gerarDataFormatada(157),
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2877,7 +3220,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 158,
-      data: "2024-06-07",
+
+      data: gerarDataAutomatica(158),
+      dataFormatada: gerarDataFormatada(158),
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -2894,7 +3239,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 159,
-      data: "2024-06-08",
+
+      data: gerarDataAutomatica(159),
+      dataFormatada: gerarDataFormatada(159),
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -2911,7 +3258,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 160,
-      data: "2024-06-09",
+
+      data: gerarDataAutomatica(160),
+      dataFormatada: gerarDataFormatada(160),
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -2928,7 +3277,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 161,
-      data: "2024-06-10",
+
+      data: gerarDataAutomatica(161),
+      dataFormatada: gerarDataFormatada(161),
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -2945,7 +3296,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 162,
-      data: "2024-06-11",
+
+      data: gerarDataAutomatica(162),
+      dataFormatada: gerarDataFormatada(162),
       antigoTestamento: [
         {
           livroId: "joel",
@@ -2962,7 +3315,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 163,
-      data: "2024-06-12",
+
+      data: gerarDataAutomatica(163),
+      dataFormatada: gerarDataFormatada(163),
       antigoTestamento: [
         {
           livroId: "jonas",
@@ -2979,7 +3334,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 164,
-      data: "2024-06-13",
+
+      data: gerarDataAutomatica(164),
+      dataFormatada: gerarDataFormatada(164),
       antigoTestamento: [
         {
           livroId: "amos",
@@ -2996,7 +3353,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 165,
-      data: "2024-06-14",
+
+      data: gerarDataAutomatica(165),
+      dataFormatada: gerarDataFormatada(165),
       antigoTestamento: [
         {
           livroId: "amos",
@@ -3013,7 +3372,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 166,
-      data: "2024-06-15",
+
+      data: gerarDataAutomatica(166),
+      dataFormatada: gerarDataFormatada(166),
       antigoTestamento: [
         {
           livroId: "amos",
@@ -3030,7 +3391,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 167,
-      data: "2024-06-16",
+
+      data: gerarDataAutomatica(167),
+      dataFormatada: gerarDataFormatada(167),
       antigoTestamento: [
         {
           livroId: "oseias",
@@ -3047,7 +3410,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 168,
-      data: "2024-06-17",
+
+      data: gerarDataAutomatica(168),
+      dataFormatada: gerarDataFormatada(168),
       antigoTestamento: [
         {
           livroId: "oseias",
@@ -3064,7 +3429,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 169,
-      data: "2024-06-18",
+
+      data: gerarDataAutomatica(169),
+      dataFormatada: gerarDataFormatada(169),
       antigoTestamento: [
         {
           livroId: "oseias",
@@ -3081,7 +3448,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 170,
-      data: "2024-06-19",
+
+      data: gerarDataAutomatica(170),
+      dataFormatada: gerarDataFormatada(170),
       antigoTestamento: [
         {
           livroId: "oseias",
@@ -3098,7 +3467,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 171,
-      data: "2024-06-20",
+
+      data: gerarDataAutomatica(171),
+      dataFormatada: gerarDataFormatada(171),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3115,7 +3486,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 172,
-      data: "2024-06-21",
+
+      data: gerarDataAutomatica(172),
+      dataFormatada: gerarDataFormatada(172),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3132,7 +3505,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 173,
-      data: "2024-06-22",
+
+      data: gerarDataAutomatica(173),
+      dataFormatada: gerarDataFormatada(173),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3149,7 +3524,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 174,
-      data: "2024-06-23",
+
+      data: gerarDataAutomatica(174),
+      dataFormatada: gerarDataFormatada(174),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3166,7 +3543,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 175,
-      data: "2024-06-24",
+
+      data: gerarDataAutomatica(175),
+      dataFormatada: gerarDataFormatada(175),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3183,7 +3562,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 176,
-      data: "2024-06-25",
+
+      data: gerarDataAutomatica(176),
+      dataFormatada: gerarDataFormatada(176),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3200,7 +3581,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 177,
-      data: "2024-06-26",
+
+      data: gerarDataAutomatica(177),
+      dataFormatada: gerarDataFormatada(177),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3217,7 +3600,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 178,
-      data: "2024-06-27",
+
+      data: gerarDataAutomatica(178),
+      dataFormatada: gerarDataFormatada(178),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3234,7 +3619,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 179,
-      data: "2024-06-28",
+
+      data: gerarDataAutomatica(179),
+      dataFormatada: gerarDataFormatada(179),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3251,7 +3638,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 180,
-      data: "2024-06-29",
+
+      data: gerarDataAutomatica(180),
+      dataFormatada: gerarDataFormatada(180),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3268,7 +3657,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 181,
-      data: "2024-06-30",
+
+      data: gerarDataAutomatica(181),
+      dataFormatada: gerarDataFormatada(181),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3285,7 +3676,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 182,
-      data: "2024-07-01",
+
+      data: gerarDataAutomatica(182),
+      dataFormatada: gerarDataFormatada(182),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3302,7 +3695,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 183,
-      data: "2024-07-02",
+
+      data: gerarDataAutomatica(183),
+      dataFormatada: gerarDataFormatada(183),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3319,7 +3714,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 184,
-      data: "2024-07-03",
+
+      data: gerarDataAutomatica(184),
+      dataFormatada: gerarDataFormatada(184),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3336,7 +3733,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 185,
-      data: "2024-07-04",
+
+      data: gerarDataAutomatica(185),
+      dataFormatada: gerarDataFormatada(185),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3353,7 +3752,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 186,
-      data: "2024-07-05",
+
+      data: gerarDataAutomatica(186),
+      dataFormatada: gerarDataFormatada(186),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3370,7 +3771,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 187,
-      data: "2024-07-06",
+
+      data: gerarDataAutomatica(187),
+      dataFormatada: gerarDataFormatada(187),
       antigoTestamento: [
         {
           livroId: "miqueias",
@@ -3387,7 +3790,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 188,
-      data: "2024-07-07",
+
+      data: gerarDataAutomatica(188),
+      dataFormatada: gerarDataFormatada(188),
       antigoTestamento: [
         {
           livroId: "miqueias",
@@ -3404,7 +3809,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 189,
-      data: "2024-07-08",
+
+      data: gerarDataAutomatica(189),
+      dataFormatada: gerarDataFormatada(189),
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -3421,7 +3828,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 190,
-      data: "2024-07-09",
+
+      data: gerarDataAutomatica(190),
+      dataFormatada: gerarDataFormatada(190),
       antigoTestamento: [
         {
           livroId: "2cronicas",
@@ -3438,7 +3847,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 191,
-      data: "2024-07-10",
+
+      data: gerarDataAutomatica(191),
+      dataFormatada: gerarDataFormatada(191),
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3461,7 +3872,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 192,
-      data: "2024-07-11",
+
+      data: gerarDataAutomatica(192),
+      dataFormatada: gerarDataFormatada(192),
       antigoTestamento: [
         {
           livroId: "2cronicas",
@@ -3478,7 +3891,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 193,
-      data: "2024-07-12",
+
+      data: gerarDataAutomatica(193),
+      dataFormatada: gerarDataFormatada(193),
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -3495,7 +3910,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 194,
-      data: "2024-07-13",
+
+      data: gerarDataAutomatica(194),
+      dataFormatada: gerarDataFormatada(194),
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -3512,7 +3929,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 195,
-      data: "2024-07-14",
+
+      data: gerarDataAutomatica(195),
+      dataFormatada: gerarDataFormatada(195),
       antigoTestamento: [
         {
           livroId: "naum",
@@ -3529,7 +3948,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 196,
-      data: "2024-07-15",
+
+      data: gerarDataAutomatica(196),
+      dataFormatada: gerarDataFormatada(196),
       antigoTestamento: [
         {
           livroId: "sofonias",
@@ -3546,7 +3967,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 197,
-      data: "2024-07-16",
+
+      data: gerarDataAutomatica(197),
+      dataFormatada: gerarDataFormatada(197),
       antigoTestamento: [
         {
           livroId: "habacuque",
@@ -3563,7 +3986,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 198,
-      data: "2024-07-17",
+
+      data: gerarDataAutomatica(198),
+      dataFormatada: gerarDataFormatada(198),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3580,7 +4005,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 199,
-      data: "2024-07-18",
+
+      data: gerarDataAutomatica(199),
+      dataFormatada: gerarDataFormatada(199),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3597,7 +4024,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 200,
-      data: "2024-07-19",
+
+      data: gerarDataAutomatica(200),
+      dataFormatada: gerarDataFormatada(200),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3614,7 +4043,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 201,
-      data: "2024-07-20",
+
+      data: gerarDataAutomatica(201),
+      dataFormatada: gerarDataFormatada(201),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3631,7 +4062,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 202,
-      data: "2024-07-21",
+
+      data: gerarDataAutomatica(202),
+      dataFormatada: gerarDataFormatada(202),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3648,7 +4081,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 203,
-      data: "2024-07-22",
+
+      data: gerarDataAutomatica(203),
+      dataFormatada: gerarDataFormatada(203),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3665,7 +4100,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 204,
-      data: "2024-07-23",
+
+      data: gerarDataAutomatica(204),
+      dataFormatada: gerarDataFormatada(204),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3682,7 +4119,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 205,
-      data: "2024-07-24",
+
+      data: gerarDataAutomatica(205),
+      dataFormatada: gerarDataFormatada(205),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3699,7 +4138,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 206,
-      data: "2024-07-25",
+
+      data: gerarDataAutomatica(206),
+      dataFormatada: gerarDataFormatada(206),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3716,7 +4157,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 207,
-      data: "2024-07-26",
+
+      data: gerarDataAutomatica(207),
+      dataFormatada: gerarDataFormatada(207),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3733,7 +4176,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 208,
-      data: "2024-07-27",
+
+      data: gerarDataAutomatica(208),
+      dataFormatada: gerarDataFormatada(208),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3750,7 +4195,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 209,
-      data: "2024-07-28",
+
+      data: gerarDataAutomatica(209),
+      dataFormatada: gerarDataFormatada(209),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3767,7 +4214,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 210,
-      data: "2024-07-29",
+
+      data: gerarDataAutomatica(210),
+      dataFormatada: gerarDataFormatada(210),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3784,7 +4233,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 211,
-      data: "2024-07-30",
+
+      data: gerarDataAutomatica(211),
+      dataFormatada: gerarDataFormatada(211),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3801,7 +4252,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 212,
-      data: "2024-07-31",
+
+      data: gerarDataAutomatica(212),
+      dataFormatada: gerarDataFormatada(212),
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -3818,7 +4271,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 213,
-      data: "2024-08-01",
+
+      data: gerarDataAutomatica(213),
+      dataFormatada: gerarDataFormatada(213),
       antigoTestamento: [
         {
           livroId: "lamentacoes",
@@ -3835,7 +4290,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 214,
-      data: "2024-08-02",
+
+      data: gerarDataAutomatica(214),
+      dataFormatada: gerarDataFormatada(214),
       antigoTestamento: [
         {
           livroId: "lamentacoes",
@@ -3852,7 +4309,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 215,
-      data: "2024-08-03",
+
+      data: gerarDataAutomatica(215),
+      dataFormatada: gerarDataFormatada(215),
       antigoTestamento: [
         {
           livroId: "obadias",
@@ -3869,7 +4328,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 216,
-      data: "2024-08-04",
+
+      data: gerarDataAutomatica(216),
+      dataFormatada: gerarDataFormatada(216),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -3886,7 +4347,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 217,
-      data: "2024-08-05",
+
+      data: gerarDataAutomatica(217),
+      dataFormatada: gerarDataFormatada(217),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -3903,7 +4366,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 218,
-      data: "2024-08-06",
+
+      data: gerarDataAutomatica(218),
+      dataFormatada: gerarDataFormatada(218),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -3920,7 +4385,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 219,
-      data: "2024-08-07",
+
+      data: gerarDataAutomatica(219),
+      dataFormatada: gerarDataFormatada(219),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -3937,7 +4404,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 220,
-      data: "2024-08-08",
+
+      data: gerarDataAutomatica(220),
+      dataFormatada: gerarDataFormatada(220),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -3954,7 +4423,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 221,
-      data: "2024-08-09",
+
+      data: gerarDataAutomatica(221),
+      dataFormatada: gerarDataFormatada(221),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -3971,7 +4442,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 222,
-      data: "2024-08-10",
+
+      data: gerarDataAutomatica(222),
+      dataFormatada: gerarDataFormatada(222),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -3988,7 +4461,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 223,
-      data: "2024-08-11",
+
+      data: gerarDataAutomatica(223),
+      dataFormatada: gerarDataFormatada(223),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4005,7 +4480,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 224,
-      data: "2024-08-12",
+
+      data: gerarDataAutomatica(224),
+      dataFormatada: gerarDataFormatada(224),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4022,7 +4499,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 225,
-      data: "2024-08-13",
+
+      data: gerarDataAutomatica(225),
+      dataFormatada: gerarDataFormatada(225),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4039,7 +4518,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 226,
-      data: "2024-08-14",
+
+      data: gerarDataAutomatica(226),
+      dataFormatada: gerarDataFormatada(226),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4056,7 +4537,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 227,
-      data: "2024-08-15",
+
+      data: gerarDataAutomatica(227),
+      dataFormatada: gerarDataFormatada(227),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4073,7 +4556,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 228,
-      data: "2024-08-16",
+
+      data: gerarDataAutomatica(228),
+      dataFormatada: gerarDataFormatada(228),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4090,7 +4575,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 229,
-      data: "2024-08-17",
+
+      data: gerarDataAutomatica(229),
+      dataFormatada: gerarDataFormatada(229),
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4107,7 +4594,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 230,
-      data: "2024-08-18",
+
+      data: gerarDataAutomatica(230),
+      dataFormatada: gerarDataFormatada(230),
       antigoTestamento: [
         {
           livroId: "daniel",
@@ -4124,7 +4613,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 231,
-      data: "2024-08-19",
+
+      data: gerarDataAutomatica(231),
+      dataFormatada: gerarDataFormatada(231),
       antigoTestamento: [
         {
           livroId: "daniel",
@@ -4141,7 +4632,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 232,
-      data: "2024-08-20",
+
+      data: gerarDataAutomatica(232),
+      dataFormatada: gerarDataFormatada(232),
       antigoTestamento: [
         {
           livroId: "daniel",
@@ -4158,7 +4651,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 233,
-      data: "2024-08-21",
+
+      data: gerarDataAutomatica(233),
+      dataFormatada: gerarDataFormatada(233),
       antigoTestamento: [
         {
           livroId: "daniel",
@@ -4175,7 +4670,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 234,
-      data: "2024-08-22",
+
+      data: gerarDataAutomatica(234),
+      dataFormatada: gerarDataFormatada(234),
       antigoTestamento: [
         {
           livroId: "esdras",
@@ -4192,7 +4689,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 235,
-      data: "2024-08-23",
+
+      data: gerarDataAutomatica(235),
+      dataFormatada: gerarDataFormatada(235),
       antigoTestamento: [
         {
           livroId: "esdras",
@@ -4209,7 +4708,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 236,
-      data: "2024-08-24",
+
+      data: gerarDataAutomatica(236),
+      dataFormatada: gerarDataFormatada(236),
       antigoTestamento: [
         {
           livroId: "ageu",
@@ -4232,7 +4733,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 237,
-      data: "2024-08-25",
+
+      data: gerarDataAutomatica(237),
+      dataFormatada: gerarDataFormatada(237),
       antigoTestamento: [
         {
           livroId: "zacarias",
@@ -4249,7 +4752,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 238,
-      data: "2024-08-26",
+
+      data: gerarDataAutomatica(238),
+      dataFormatada: gerarDataFormatada(238),
       antigoTestamento: [
         {
           livroId: "zacarias",
@@ -4266,7 +4771,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 239,
-      data: "2024-08-27",
+
+      data: gerarDataAutomatica(239),
+      dataFormatada: gerarDataFormatada(239),
       antigoTestamento: [
         {
           livroId: "zacarias",
@@ -4283,7 +4790,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 240,
-      data: "2024-08-28",
+
+      data: gerarDataAutomatica(240),
+      dataFormatada: gerarDataFormatada(240),
       antigoTestamento: [
         {
           livroId: "esdras",
@@ -4300,7 +4809,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 241,
-      data: "2024-08-29",
+
+      data: gerarDataAutomatica(241),
+      dataFormatada: gerarDataFormatada(241),
       antigoTestamento: [
         {
           livroId: "ester",
@@ -4317,7 +4828,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 242,
-      data: "2024-08-30",
+
+      data: gerarDataAutomatica(242),
+      dataFormatada: gerarDataFormatada(242),
       antigoTestamento: [
         {
           livroId: "ester",
@@ -4334,7 +4847,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 243,
-      data: "2024-08-31",
+
+      data: gerarDataAutomatica(243),
+      dataFormatada: gerarDataFormatada(243),
       antigoTestamento: [
         {
           livroId: "ester",
@@ -4351,7 +4866,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 244,
-      data: "2024-09-01",
+
+      data: gerarDataAutomatica(244),
+      dataFormatada: gerarDataFormatada(244),
       antigoTestamento: [
         {
           livroId: "neemias",
@@ -4368,7 +4885,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 245,
-      data: "2024-09-02",
+
+      data: gerarDataAutomatica(245),
+      dataFormatada: gerarDataFormatada(245),
       antigoTestamento: [
         {
           livroId: "neemias",
@@ -4385,7 +4904,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 246,
-      data: "2024-09-03",
+
+      data: gerarDataAutomatica(246),
+      dataFormatada: gerarDataFormatada(246),
       antigoTestamento: [
         {
           livroId: "neemias",
@@ -4402,7 +4923,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 247,
-      data: "2024-09-04",
+
+      data: gerarDataAutomatica(247),
+      dataFormatada: gerarDataFormatada(247),
       antigoTestamento: [
         {
           livroId: "neemias",
@@ -4419,7 +4942,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 248,
-      data: "2024-09-05",
+
+      data: gerarDataAutomatica(248),
+      dataFormatada: gerarDataFormatada(248),
       antigoTestamento: [
         {
           livroId: "malaquias",
@@ -4436,7 +4961,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 249,
-      data: "2024-09-06",
+
+      data: gerarDataAutomatica(249),
+      dataFormatada: gerarDataFormatada(249),
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -4453,7 +4980,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 250,
-      data: "2024-09-07",
+
+      data: gerarDataAutomatica(250),
+      dataFormatada: gerarDataFormatada(250),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4470,7 +4999,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 251,
-      data: "2024-09-08",
+
+      data: gerarDataAutomatica(251),
+      dataFormatada: gerarDataFormatada(251),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4487,7 +5018,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 252,
-      data: "2024-09-09",
+
+      data: gerarDataAutomatica(252),
+      dataFormatada: gerarDataFormatada(252),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4504,7 +5037,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 253,
-      data: "2024-09-10",
+
+      data: gerarDataAutomatica(253),
+      dataFormatada: gerarDataFormatada(253),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4521,7 +5056,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 254,
-      data: "2024-09-11",
+
+      data: gerarDataAutomatica(254),
+      dataFormatada: gerarDataFormatada(254),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4538,7 +5075,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 255,
-      data: "2024-09-12",
+
+      data: gerarDataAutomatica(255),
+      dataFormatada: gerarDataFormatada(255),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4555,7 +5094,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 256,
-      data: "2024-09-13",
+
+      data: gerarDataAutomatica(256),
+      dataFormatada: gerarDataFormatada(256),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4572,7 +5113,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 257,
-      data: "2024-09-14",
+
+      data: gerarDataAutomatica(257),
+      dataFormatada: gerarDataFormatada(257),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4589,7 +5132,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 258,
-      data: "2024-09-15",
+
+      data: gerarDataAutomatica(258),
+      dataFormatada: gerarDataFormatada(258),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4606,7 +5151,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 259,
-      data: "2024-09-16",
+
+      data: gerarDataAutomatica(259),
+      dataFormatada: gerarDataFormatada(259),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4623,7 +5170,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 260,
-      data: "2024-09-17",
+
+      data: gerarDataAutomatica(260),
+      dataFormatada: gerarDataFormatada(260),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4640,7 +5189,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 261,
-      data: "2024-09-18",
+
+      data: gerarDataAutomatica(261),
+      dataFormatada: gerarDataFormatada(261),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4657,7 +5208,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 262,
-      data: "2024-09-19",
+
+      data: gerarDataAutomatica(262),
+      dataFormatada: gerarDataFormatada(262),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4674,7 +5227,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 263,
-      data: "2024-09-20",
+
+      data: gerarDataAutomatica(263),
+      dataFormatada: gerarDataFormatada(263),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4691,7 +5246,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 264,
-      data: "2024-09-21",
+
+      data: gerarDataAutomatica(264),
+      dataFormatada: gerarDataFormatada(264),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4708,7 +5265,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 265,
-      data: "2024-09-22",
+
+      data: gerarDataAutomatica(265),
+      dataFormatada: gerarDataFormatada(265),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4725,7 +5284,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 266,
-      data: "2024-09-23",
+
+      data: gerarDataAutomatica(266),
+      dataFormatada: gerarDataFormatada(266),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4742,7 +5303,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 267,
-      data: "2024-09-24",
+
+      data: gerarDataAutomatica(267),
+      dataFormatada: gerarDataFormatada(267),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4759,7 +5322,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 268,
-      data: "2024-09-25",
+
+      data: gerarDataAutomatica(268),
+      dataFormatada: gerarDataFormatada(268),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4776,7 +5341,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 269,
-      data: "2024-09-26",
+
+      data: gerarDataAutomatica(269),
+      dataFormatada: gerarDataFormatada(269),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4793,7 +5360,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 270,
-      data: "2024-09-27",
+
+      data: gerarDataAutomatica(270),
+      dataFormatada: gerarDataFormatada(270),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4810,7 +5379,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 271,
-      data: "2024-09-28",
+
+      data: gerarDataAutomatica(271),
+      dataFormatada: gerarDataFormatada(271),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4827,7 +5398,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 272,
-      data: "2024-09-29",
+
+      data: gerarDataAutomatica(272),
+      dataFormatada: gerarDataFormatada(272),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4844,7 +5417,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 273,
-      data: "2024-09-30",
+
+      data: gerarDataAutomatica(273),
+      dataFormatada: gerarDataFormatada(273),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4861,7 +5436,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 274,
-      data: "2024-10-01",
+
+      data: gerarDataAutomatica(274),
+      dataFormatada: gerarDataFormatada(274),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4878,7 +5455,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 275,
-      data: "2024-10-02",
+
+      data: gerarDataAutomatica(275),
+      dataFormatada: gerarDataFormatada(275),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4895,7 +5474,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 276,
-      data: "2024-10-03",
+
+      data: gerarDataAutomatica(276),
+      dataFormatada: gerarDataFormatada(276),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4912,7 +5493,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 277,
-      data: "2024-10-04",
+
+      data: gerarDataAutomatica(277),
+      dataFormatada: gerarDataFormatada(277),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4929,7 +5512,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 278,
-      data: "2024-10-05",
+
+      data: gerarDataAutomatica(278),
+      dataFormatada: gerarDataFormatada(278),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4946,7 +5531,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 279,
-      data: "2024-10-06",
+
+      data: gerarDataAutomatica(279),
+      dataFormatada: gerarDataFormatada(279),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4963,7 +5550,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 280,
-      data: "2024-10-07",
+
+      data: gerarDataAutomatica(280),
+      dataFormatada: gerarDataFormatada(280),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4980,7 +5569,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 281,
-      data: "2024-10-08",
+
+      data: gerarDataAutomatica(281),
+      dataFormatada: gerarDataFormatada(281),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4997,7 +5588,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 282,
-      data: "2024-10-09",
+
+      data: gerarDataAutomatica(282),
+      dataFormatada: gerarDataFormatada(282),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5020,7 +5613,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 283,
-      data: "2024-10-10",
+
+      data: gerarDataAutomatica(283),
+      dataFormatada: gerarDataFormatada(283),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5037,7 +5632,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 284,
-      data: "2024-10-11",
+
+      data: gerarDataAutomatica(284),
+      dataFormatada: gerarDataFormatada(284),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5054,7 +5651,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 285,
-      data: "2024-10-12",
+
+      data: gerarDataAutomatica(285),
+      dataFormatada: gerarDataFormatada(285),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5071,7 +5670,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 286,
-      data: "2024-10-13",
+
+      data: gerarDataAutomatica(286),
+      dataFormatada: gerarDataFormatada(286),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5088,7 +5689,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 287,
-      data: "2024-10-14",
+
+      data: gerarDataAutomatica(287),
+      dataFormatada: gerarDataFormatada(287),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5111,7 +5714,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 288,
-      data: "2024-10-15",
+
+      data: gerarDataAutomatica(288),
+      dataFormatada: gerarDataFormatada(288),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5128,7 +5733,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 289,
-      data: "2024-10-16",
+
+      data: gerarDataAutomatica(289),
+      dataFormatada: gerarDataFormatada(289),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5145,7 +5752,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 290,
-      data: "2024-10-17",
+
+      data: gerarDataAutomatica(290),
+      dataFormatada: gerarDataFormatada(290),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5168,7 +5777,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 291,
-      data: "2024-10-18",
+
+      data: gerarDataAutomatica(291),
+      dataFormatada: gerarDataFormatada(291),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5185,7 +5796,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 292,
-      data: "2024-10-19",
+
+      data: gerarDataAutomatica(292),
+      dataFormatada: gerarDataFormatada(292),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5202,7 +5815,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 293,
-      data: "2024-10-20",
+
+      data: gerarDataAutomatica(293),
+      dataFormatada: gerarDataFormatada(293),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5219,7 +5834,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 294,
-      data: "2024-10-21",
+
+      data: gerarDataAutomatica(294),
+      dataFormatada: gerarDataFormatada(294),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5236,7 +5853,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 295,
-      data: "2024-10-22",
+
+      data: gerarDataAutomatica(295),
+      dataFormatada: gerarDataFormatada(295),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5253,7 +5872,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 296,
-      data: "2024-10-23",
+
+      data: gerarDataAutomatica(296),
+      dataFormatada: gerarDataFormatada(296),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5270,7 +5891,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 297,
-      data: "2024-10-24",
+
+      data: gerarDataAutomatica(297),
+      dataFormatada: gerarDataFormatada(297),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5287,7 +5910,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 298,
-      data: "2024-10-25",
+
+      data: gerarDataAutomatica(298),
+      dataFormatada: gerarDataFormatada(298),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5304,7 +5929,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 299,
-      data: "2024-10-26",
+
+      data: gerarDataAutomatica(299),
+      dataFormatada: gerarDataFormatada(299),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5327,7 +5954,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 300,
-      data: "2024-10-27",
+
+      data: gerarDataAutomatica(300),
+      dataFormatada: gerarDataFormatada(300),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5344,7 +5973,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 301,
-      data: "2024-10-28",
+
+      data: gerarDataAutomatica(301),
+      dataFormatada: gerarDataFormatada(301),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5361,7 +5992,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 302,
-      data: "2024-10-29",
+
+      data: gerarDataAutomatica(302),
+      dataFormatada: gerarDataFormatada(302),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5378,7 +6011,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 303,
-      data: "2024-10-30",
+
+      data: gerarDataAutomatica(303),
+      dataFormatada: gerarDataFormatada(303),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5395,7 +6030,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 304,
-      data: "2024-10-31",
+
+      data: gerarDataAutomatica(304),
+      dataFormatada: gerarDataFormatada(304),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5412,7 +6049,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 305,
-      data: "2024-11-01",
+
+      data: gerarDataAutomatica(305),
+      dataFormatada: gerarDataFormatada(305),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5429,7 +6068,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 306,
-      data: "2024-11-02",
+
+      data: gerarDataAutomatica(306),
+      dataFormatada: gerarDataFormatada(306),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5446,7 +6087,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 307,
-      data: "2024-11-03",
+
+      data: gerarDataAutomatica(307),
+      dataFormatada: gerarDataFormatada(307),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5463,7 +6106,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 308,
-      data: "2024-11-04",
+
+      data: gerarDataAutomatica(308),
+      dataFormatada: gerarDataFormatada(308),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5486,7 +6131,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 309,
-      data: "2024-11-05",
+
+      data: gerarDataAutomatica(309),
+      dataFormatada: gerarDataFormatada(309),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5503,7 +6150,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 310,
-      data: "2024-11-06",
+
+      data: gerarDataAutomatica(310),
+      dataFormatada: gerarDataFormatada(310),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5520,7 +6169,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 311,
-      data: "2024-11-07",
+
+      data: gerarDataAutomatica(311),
+      dataFormatada: gerarDataFormatada(311),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5537,7 +6188,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 312,
-      data: "2024-11-08",
+
+      data: gerarDataAutomatica(312),
+      dataFormatada: gerarDataFormatada(312),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5554,7 +6207,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 313,
-      data: "2024-11-09",
+
+      data: gerarDataAutomatica(313),
+      dataFormatada: gerarDataFormatada(313),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5571,7 +6226,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 314,
-      data: "2024-11-10",
+
+      data: gerarDataAutomatica(314),
+      dataFormatada: gerarDataFormatada(314),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5588,7 +6245,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 315,
-      data: "2024-11-11",
+
+      data: gerarDataAutomatica(315),
+      dataFormatada: gerarDataFormatada(315),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5605,7 +6264,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 316,
-      data: "2024-11-12",
+
+      data: gerarDataAutomatica(316),
+      dataFormatada: gerarDataFormatada(316),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5622,7 +6283,9 @@ const planoCronologico = {
     }),
     new Dia({
       numero: 317,
-      data: "2024-11-13",
+
+      data: gerarDataAutomatica(317),
+      dataFormatada: gerarDataFormatada(317),
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5644,7 +6307,7 @@ const planoCronologico = {
   -------------------------------------------------------------------------- */
 
   getDia(numero) {
-    return this.dias.find(dia => dia.numero === numero);
+    return this.dias.find((dia) => dia.numero === numero);
   },
 
   getDias() {
@@ -5660,6 +6323,10 @@ validarPlano(planoCronologico);
 
 /* --------------------------------------------------------------------------
    EXPORTAÇÃO
+   --------------------------------------------------------------------------
+   Exporta apenas o plano principal
+   As funções de data não são mais exportadas pois estão centralizadas
+   em utils/geradorDatas.js
 -------------------------------------------------------------------------- */
 
 export default planoCronologico;

@@ -201,6 +201,4 @@ export function initNotasOverlay(notasManager) {
       alert("Funcionalidade de exportação será implementada em breve!");
     });
   }
-
-  console.log("Bloco de notas inicializado: NÃO fecha ao clicar fora");
 }

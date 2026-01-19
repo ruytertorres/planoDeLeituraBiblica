@@ -5,8 +5,6 @@
 export function initNotasToolbar(editor) {
   if (!editor) return;
 
-  console.log("Toolbar inicializada para editor:", editor);
-
   /* ------------------------------------------------------------------------
      HISTÓRICO PARA UNDO/REDO
   ------------------------------------------------------------------------ */
@@ -37,8 +35,6 @@ export function initNotasToolbar(editor) {
       historico.shift();
       historicoIndex--;
     }
-
-    console.log(`Histórico: ${historicoIndex + 1}/${historico.length} estados`);
   }
 
   function undo() {
@@ -50,7 +46,6 @@ export function initNotasToolbar(editor) {
 
       // Mantém o foco no editor
       editor.focus();
-      console.log(`Undo para estado ${historicoIndex + 1}/${historico.length}`);
     }
   }
 
@@ -62,7 +57,6 @@ export function initNotasToolbar(editor) {
       salvandoHistorico = false;
 
       editor.focus();
-      console.log(`Redo para estado ${historicoIndex + 1}/${historico.length}`);
     }
   }
 
@@ -160,7 +154,6 @@ export function initNotasToolbar(editor) {
 
     const selecaoSalva = salvarSelecao();
     if (!selecaoSalva || !selecaoSalva.range) {
-      console.log("Nenhuma seleção para formatar");
       return;
     }
 
@@ -415,8 +408,6 @@ export function initNotasToolbar(editor) {
     const action = btn.dataset.notaAction;
     const value = btn.dataset.value;
 
-    console.log("Toolbar action:", action, value);
-
     editor.focus();
 
     switch (action) {
@@ -542,9 +533,4 @@ export function initNotasToolbar(editor) {
   editor.addEventListener("click", atualizarEstadoBotoes);
 
   setTimeout(atualizarEstadoBotoes, 100);
-
-  /* ------------------------------------------------------------------------
-     INICIALIZAÇÃO FINAL
-  ------------------------------------------------------------------------ */
-  console.log("Toolbar inicializada com histórico de undo/redo");
 }
