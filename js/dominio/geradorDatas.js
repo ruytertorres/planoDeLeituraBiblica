@@ -72,3 +72,20 @@ export class GeradorDatas {
     }
   }
 }
+/**
+ * Retorna o número do dia do ano (1–366)
+ * Usa horário seguro para evitar fuso
+ */
+export function getDiaDoAnoAtual() {
+  const agora = new Date();
+  const inicioAno = new Date(agora.getFullYear(), 0, 1, 12);
+  const hoje = new Date(
+    agora.getFullYear(),
+    agora.getMonth(),
+    agora.getDate(),
+    12,
+  );
+
+  const diffMs = hoje - inicioAno;
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+}

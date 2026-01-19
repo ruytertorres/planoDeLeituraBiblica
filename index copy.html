@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="pt-BR" class="light-mode">
+  <head>
+    <!-- =========================================================================
+       index.html — Tela Principal (App de Leitura Bíblica Cronológica)
+       Versão: 0.6
+       Aplicação: Leitura Cronológica Controlada da Bíblia
+       Autor: Ruyter Torres
+       
+       ALTERAÇÕES (v0.6):
+       -------------------------------------------------------------------------
+       - Removidas duplicações de estrutura HTML
+       - Bloco de notas flutuante integrado corretamente
+       - Estrutura HTML limpa e organizada
+       - Comentários detalhados para cada seção
+    ========================================================================= -->
+
+    <!-- Metadados essenciais -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Aplicação de Leitura Bíblica Cronológica e Estruturada"
+    />
+
+    <title>Plano de Leitura Bíblica Cronológica</title>
+
+    <!-- CSS da aplicação -->
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link rel="stylesheet" href="./css/notas.css" />
+
+    <!-- Ícones Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <!-- =========================================================================
+       NAVBAR - Barra de navegação principal
+    ========================================================================= -->
+    <nav id="navbar">
+      <div class="navbar-container">
+        <!-- Título e logo da aplicação -->
+        <a href="#" class="navbar-title">
+          <i class="fas fa-bible"></i>
+          Leitura Bíblica Cronológica
+        </a>
+
+        <!-- Estatísticas e controles -->
+        <div class="navbar-stats">
+          <!-- Total de dias do plano -->
+          <div class="stat-item">
+            <span class="stat-value" id="total-dias">317</span>
+            <span class="stat-label">Dias</span>
+          </div>
+
+          <!-- Dias lidos -->
+          <div class="stat-item">
+            <span class="stat-value" id="dias-lidos">0</span>
+            <span class="stat-label">Lidos</span>
+          </div>
+
+          <!-- Progresso geral -->
+          <div class="stat-item">
+            <span class="stat-value" id="progresso">0%</span>
+            <span class="stat-label">Progresso</span>
+          </div>
+
+          <!-- Botão de alternância de tema -->
+          <button class="theme-toggle" id="theme-toggle" title="Alternar tema">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================================================================
+       CONTEÚDO PRINCIPAL DA APLICAÇÃO
+    ========================================================================= -->
+    <main id="app">
+      <!-- Cabeçalho da aplicação -->
+      <header class="app-header">
+        <h1>Plano Cronológico da Bíblia</h1>
+        <p>
+          Leia toda a Bíblia em 317 dias, seguindo uma ordem cronológica e
+          temática que ajuda a entender a narrativa bíblica como um todo.
+        </p>
+      </header>
+
+      <!-- Seção de informações do plano -->
+      <section class="plano-info">
+        <div>
+          <h2>Detalhes do Plano</h2>
+          <p>
+            Este plano cobre todos os 66 livros da Bíblia, distribuídos em
+            leituras diárias balanceadas.
+          </p>
+        </div>
+
+        <!-- Metadados do plano -->
+        <div class="plano-meta">
+          <div class="meta-item">
+            <div class="meta-value">66</div>
+            <div class="meta-label">Livros</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-value">1,189</div>
+            <div class="meta-label">Capítulos</div>
+          </div>
+          <div class="meta-item">
+            <div class="meta-value">317</div>
+            <div class="meta-label">Dias</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+         CONTAINER DO PLANO DE LEITURA
+         ---------------------------------------------------------------------------
+         Esta seção será populada dinamicamente com os dias de leitura
+      ========================================================================= -->
+      <section id="plano-leitura">
+        <!-- Estado de carregamento -->
+        <div class="loading-state">
+          <i
+            class="fas fa-spinner fa-spin fa-2x"
+            style="margin-bottom: 1rem"
+          ></i>
+          <p>Carregando plano de leitura...</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- =========================================================================
+       BLOCO DE NOTAS FLUTUANTE
+       ---------------------------------------------------------------------------
+       Componente independente para anotações durante a leitura
+    ========================================================================= -->
+    <section id="notasFlutuantes">
+      <!-- Botão flutuante para abrir/fechar as anotações -->
+      <button id="btn-notas" title="Abrir/Fechar anotações (Ctrl+Alt+N)">
+        📝
+      </button>
+
+      <!-- Overlay do bloco de notas (inicialmente oculto) -->
+      <div id="notas-overlay" class="hidden">
+        <!-- Container principal da janela de anotações -->
+        <div class="notas-container">
+          <!-- Cabeçalho da janela -->
+          <div class="notas-header">
+            <div class="notas-title">
+              <i class="fas fa-edit"></i>
+              <span>Minhas Anotações</span>
+            </div>
+
+            <!-- Botões de ação do cabeçalho -->
+            <div class="notas-acoes">
+              <button id="btn-exportar" class="notas-btn-icon" title="Exportar">
+                <i class="fas fa-download"></i>
+              </button>
+              <button
+                id="btn-fechar"
+                class="notas-btn-icon notas-btn-fechar"
+                title="Fechar (ESC)"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- =====================================================================
+             TOOLBAR DE FORMATAÇÃO DE TEXTO
+             -----------------------------------------------------------------------
+             Controles para formatação do texto das anotações
+          ===================================================================== -->
+          <div class="notas-toolbar">
+            <!-- Formatação básica -->
+            <button data-nota-action="bold" title="Negrito (Ctrl+B)"></button>
+            <button data-nota-action="italic" title="Itálico (Ctrl+I)"></button>
+            <button
+              data-nota-action="underline"
+              title="Sublinhado (Ctrl+U)"
+            ></button>
+
+            <!-- Menu dropdown para marca-texto com múltiplas cores -->
+            <div class="highlight-dropdown">
+              <button class="highlight-btn" title="Marca-texto">
+                <span class="highlight-icon">🖍</span>
+              </button>
+              <div class="highlight-colors">
+                <!-- Opções de cores pré-definidas -->
+                <button
+                  data-nota-action="highlight"
+                  data-value="yellow"
+                  title="Amarelo"
+                >
+                  <span
+                    class="color-swatch"
+                    style="background-color: yellow"
+                  ></span>
+                </button>
+                <button
+                  data-nota-action="highlight"
+                  data-value="#b7f7b7"
+                  title="Verde claro"
+                >
+                  <span
+                    class="color-swatch"
+                    style="background-color: #b7f7b7"
+                  ></span>
+                </button>
+                <button
+                  data-nota-action="highlight"
+                  data-value="#b7d8f7"
+                  title="Azul claro"
+                >
+                  <span
+                    class="color-swatch"
+                    style="background-color: #b7d8f7"
+                  ></span>
+                </button>
+                <button
+                  data-nota-action="highlight"
+                  data-value="#f7b7d8"
+                  title="Rosa claro"
+                >
+                  <span
+                    class="color-swatch"
+                    style="background-color: #f7b7d8"
+                  ></span>
+                </button>
+                <button
+                  data-nota-action="highlight"
+                  data-value="#f7f0b7"
+                  title="Bege"
+                >
+                  <span
+                    class="color-swatch"
+                    style="background-color: #f7f0b7"
+                  ></span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Formatação avançada -->
+            <button data-nota-action="ul" title="Lista com marcadores"></button>
+            <button data-nota-action="h2" title="Título nível 2"></button>
+            <button data-nota-action="h3" title="Título nível 3"></button>
+            <button data-nota-action="clear" title="Limpar formatação"></button>
+          </div>
+
+          <!-- =====================================================================
+             EDITOR DE ANOTAÇÕES
+             -----------------------------------------------------------------------
+             Área principal onde o usuário digita suas anotações
+          ===================================================================== -->
+          <div id="notas-editor" contenteditable="true">
+            <p></p>
+          </div>
+
+          <!-- Rodapé da janela -->
+          <div class="notas-footer">
+            <button
+              id="btn-limpar"
+              class="danger"
+              title="Apagar todas as anotações"
+            >
+              🗑️ Limpar Tudo
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+       FOOTER - Rodapé da aplicação
+    ========================================================================= -->
+    <footer id="footer">
+      <div class="footer-container">
+        <!-- Informações de copyright e versão -->
+        <div>
+          <p>
+            &copy; <span id="current-year">2024</span> Leitura Bíblica
+            Cronológica
+          </p>
+          <p class="app-version">Versão 0.2</p>
+        </div>
+
+        <!-- Links do rodapé -->
+        <div class="footer-links">
+          <a href="#" class="footer-link">Sobre</a>
+          <a href="#" class="footer-link">Contato</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- =========================================================================
+       ENTRY POINT DA APLICAÇÃO
+       ---------------------------------------------------------------------------
+       Script principal que inicializa toda a aplicação
+    ========================================================================= -->
+    <script type="module" src="./js/main.js"></script>
+
+    <!-- =========================================================================
+       SCRIPT DE CONFIGURAÇÃO BÁSICA
+       ---------------------------------------------------------------------------
+       Configurações iniciais que não dependem dos módulos principais
+    ========================================================================= -->
+    <script>
+      // Inicialização após o carregamento do DOM
+      document.addEventListener("DOMContentLoaded", function () {
+        // =====================================================================
+        // ATUALIZAÇÃO DO ANO NO FOOTER
+        // ---------------------------------------------------------------------
+        // Atualiza automaticamente o ano de copyright
+        document.getElementById("current-year").textContent =
+          new Date().getFullYear();
+
+        // =====================================================================
+        // ALTERNADOR DE TEMA CLARO/ESCURO
+        // ---------------------------------------------------------------------
+        const themeToggle = document.getElementById("theme-toggle");
+        const themeIcon = themeToggle.querySelector("i");
+
+        themeToggle.addEventListener("click", function () {
+          const html = document.documentElement;
+          const isDark = html.classList.contains("dark-mode");
+
+          if (isDark) {
+            // Alternar para tema claro
+            html.classList.remove("dark-mode");
+            themeIcon.className = "fas fa-moon";
+            themeToggle.title = "Alternar para modo escuro";
+            localStorage.setItem("theme", "light");
+          } else {
+            // Alternar para tema escuro
+            html.classList.add("dark-mode");
+            themeIcon.className = "fas fa-sun";
+            themeToggle.title = "Alternar para modo claro";
+            localStorage.setItem("theme", "dark");
+          }
+        });
+
+        // =====================================================================
+        // RESTAURAÇÃO DO TEMA SALVO
+        // ---------------------------------------------------------------------
+        // Verifica se há um tema preferido salvo no localStorage
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+          document.documentElement.classList.add("dark-mode");
+          themeIcon.className = "fas fa-sun";
+          themeToggle.title = "Alternar para modo claro";
+        }
+
+        // =====================================================================
+        // TRATAMENTO DE ERRO NO CARREGAMENTO
+        // ---------------------------------------------------------------------
+        // Timeout para mostrar mensagem de erro se o plano não carregar
+        const planoContainer = document.getElementById("plano-leitura");
+
+        setTimeout(() => {
+          const loadingDiv = planoContainer.querySelector(".loading-state");
+
+          // Se ainda estiver carregando após 5 segundos, mostra erro
+          if (loadingDiv && !planoContainer.querySelector(".dia-wrapper")) {
+            loadingDiv.innerHTML = `
+              <div class="error-state">
+                <i class="fas fa-exclamation-triangle fa-2x" style="margin-bottom: 1rem;"></i>
+                <p>Erro ao carregar o plano de leitura</p>
+                <button onclick="window.location.reload()" class="btn btn-primary" style="margin-top: 1rem;">
+                  <i class="fas fa-redo"></i> Tentar novamente
+                </button>
+              </div>
+            `;
+          }
+        }, 5000); // 5 segundos de timeout
+      });
+    </script>
+  </body>
+</html>

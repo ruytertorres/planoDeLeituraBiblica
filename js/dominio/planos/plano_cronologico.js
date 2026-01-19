@@ -1,77 +1,103 @@
 /* ============================================================================
-   plano_cronologico.js — Entidade de Plano: Plano Cronológico de Leitura
-   Versão: 0.7
+   plano_cronologico.js — MODELO REFATORADO (GUIA CANÔNICO)
+   Versão: 0.8.0
    Aplicação: Bíblia Responsiva App
 
-   RESPONSABILIDADE ÚNICA:
+   OBJETIVO DESTE ARQUIVO:
    ----------------------------------------------------------------------------
-   - Representar o plano cronológico diário de leitura bíblica
-   - Expor estrutura estável conforme contrato de plano
-   - NÃO conter lógica de UI
-   - NÃO conter lógica de progresso
-   - NÃO conter persistência
-   - NÃO conter lógica de datas (usa gerador centralizado)
+   - Servir como guia definitivo de como o plano cronológico deve ser escrito
+   - Aplicar o novo prisma arquitetural baseado no relógio universal
+   - Evitar duplicação de lógica de datas
+   - Manter o plano como agregado de domínio puro
+
+   PRINCÍPIOS APLICADOS:
+   ----------------------------------------------------------------------------
+   - Datas NÃO são calculadas aqui
+   - Datas NÃO são formatadas aqui
+   - O plano APENAS consome o geradorDatas.js
+   - Cada Dia é criado de forma determinística e imutável
 ============================================================================ */
 
-/* --------------------------------------------------------------------------
+/* ---------------------------------------------------------------------------
    IMPORTAÇÕES
--------------------------------------------------------------------------- */
+   ---------------------------------------------------------------------------
+   - Dia: entidade de domínio pura
+   - validarPlano: guardião do contrato do plano
+   - gerarDataISO / gerarDataBR: relógio universal do sistema
+--------------------------------------------------------------------------- */
 
 import { Dia } from "../dia.js";
-import { validarPlano } from "./contrato_plano.js";
-import { gerarDataISO, gerarDataBR } from "./utils/geradorDatas.js";
+import { validarPlano } from "./config/contrato_plano.js";
+import { gerarDataISO, gerarDataBR } from "../geradorDatas.js";
 
-/* --------------------------------------------------------------------------
-   FUNÇÕES AUXILIARES USANDO GERADOR CENTRALIZADO
-   --------------------------------------------------------------------------
-   Estas funções usam o gerador centralizado em utils/geradorDatas.js
-   Isso garante consistência em todos os planos e facilita manutenção
-   IMPORTANTE: Usa ANO FIXO 2026 definido no geradorDatas.js
--------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   FACTORY LOCAL — CRIAÇÃO PADRONIZADA DE DIA
+   ---------------------------------------------------------------------------
+   RESPONSABILIDADE:
+   - Centralizar a criação de objetos Dia
+   - Garantir que TODA data venha do relógio universal
+   - Evitar repetição de código ao longo dos 317 dias
 
-/**
- * Gera data automática usando gerador centralizado
- * @param {number} diaNumero - Número do dia no plano (1-317)
- * @returns {string} Data no formato YYYY-MM-DD
- */
-function gerarDataAutomatica(diaNumero) {
-  // Usa função centralizada - ano 2026 já é padrão em geradorDatas.js
-  return gerarDataISO(diaNumero);
-}
+   REGRA DE OURO:
+   - Nenhum new Dia() deve existir fora desta função
+--------------------------------------------------------------------------- */
 
 /**
- * Gera data formatada usando gerador centralizado
- * @param {number} diaNumero - Número do dia no plano (1-317)
- * @returns {string} Data no formato DD/MM/YYYY
+ * Cria um Dia de leitura de forma padronizada
+ * @param {number} numero - Número do dia (1–317)
+ * @param {Object} dados - Conteúdo do dia (leituras, observações, etc.)
+ * @returns {Dia}
  */
-function gerarDataFormatada(diaNumero) {
-  // Usa função centralizada - ano 2026 já é padrão em geradorDatas.js
-  return gerarDataBR(diaNumero);
+function criarDia(numero, dados) {
+  return new Dia({
+    // Número sequencial do dia
+    numero,
+
+    // Datas SEMPRE derivadas do geradorDatas.js (relógio universal)
+    data: gerarDataISO(numero),
+    dataFormatada: gerarDataBR(numero),
+
+    // Conteúdo bíblico
+    antigoTestamento: dados.antigoTestamento ?? [],
+    novoTestamento: dados.novoTestamento ?? [],
+
+    // Metadados
+    livros: dados.livros ?? [],
+    capitulos: dados.capitulos ?? [],
+    versiculos: dados.versiculos ?? [],
+    observacoes: dados.observacoes ?? "",
+  });
 }
 
-/* --------------------------------------------------------------------------
-   DEFINIÇÃO DO PLANO (CONTRATO)
--------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   DEFINIÇÃO DO PLANO (AGREGADO DE DOMÍNIO)
+--------------------------------------------------------------------------- */
 
 const planoCronologico = {
-  /* --------------------------------------------------------------------------
+  /* -------------------------------------------------------------------------
      METADADOS DO PLANO
-  -------------------------------------------------------------------------- */
+  ------------------------------------------------------------------------- */
 
   id: "plano_cronologico",
   nome: "Plano Cronológico da Bíblia",
   descricao: "Leitura diária da Bíblia em ordem cronológica e temática",
   totalDias: 317,
 
-  /* --------------------------------------------------------------------------
-     DIAS DO PLANO (DOMÍNIO PURO)
-  -------------------------------------------------------------------------- */
-  dias: [
-    new Dia({
-      numero: 1,
+  /* -------------------------------------------------------------------------
+     DIAS DO PLANO
+     -------------------------------------------------------------------------
+     IMPORTANTE:
+     - Nenhuma data aparece aqui
+     - Cada dia declara SOMENTE seu conteúdo
+     - A numeração é explícita para clareza histórica
+  ------------------------------------------------------------------------- */
 
-      data: gerarDataAutomatica(1),
-      dataFormatada: gerarDataFormatada(1), //apaga
+  dias: [
+    /* ======================================================================
+       DIA 1
+    ====================================================================== */
+    criarDia(1, {
+      //apaga
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -86,11 +112,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, criação",
     }),
-    new Dia({
-      numero: 2,
 
-      data: gerarDataAutomatica(2),
-      dataFormatada: gerarDataFormatada(2),
+    criarDia(2, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -105,11 +128,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, queda, genealogia",
     }),
-    new Dia({
-      numero: 3,
 
-      data: gerarDataAutomatica(3),
-      dataFormatada: gerarDataFormatada(3),
+    criarDia(3, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -124,11 +144,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, dilúvio, aliança",
     }),
-    new Dia({
-      numero: 4,
 
-      data: gerarDataAutomatica(4),
-      dataFormatada: gerarDataFormatada(4),
+    criarDia(4, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -143,11 +160,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, nações, torreDeBabel",
     }),
-    new Dia({
-      numero: 5,
 
-      data: gerarDataAutomatica(5),
-      dataFormatada: gerarDataFormatada(5),
+    criarDia(5, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -162,11 +176,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, Abraão, promessa",
     }),
-    new Dia({
-      numero: 6,
 
-      data: gerarDataAutomatica(6),
-      dataFormatada: gerarDataFormatada(6),
+    criarDia(6, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -181,11 +192,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, Hagar, Sodoma",
     }),
-    new Dia({
-      numero: 7,
 
-      data: gerarDataAutomatica(7),
-      dataFormatada: gerarDataFormatada(7),
+    criarDia(7, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -200,11 +208,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, sacrifícioDeIsaque",
     }),
-    new Dia({
-      numero: 8,
 
-      data: gerarDataAutomatica(8),
-      dataFormatada: gerarDataFormatada(8),
+    criarDia(8, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -219,11 +224,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, Rebeca, Isaque",
     }),
-    new Dia({
-      numero: 9,
 
-      data: gerarDataAutomatica(9),
-      dataFormatada: gerarDataFormatada(9),
+    criarDia(9, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -238,11 +240,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, Jacó, Esaú",
     }),
-    new Dia({
-      numero: 10,
 
-      data: gerarDataAutomatica(10),
-      dataFormatada: gerarDataFormatada(10),
+    criarDia(10, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -257,11 +256,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, famíliaDeJacó, Peniel",
     }),
-    new Dia({
-      numero: 11,
 
-      data: gerarDataAutomatica(11),
-      dataFormatada: gerarDataFormatada(11),
+    criarDia(11, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -276,11 +272,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, Edom, reconciliação",
     }),
-    new Dia({
-      numero: 12,
 
-      data: gerarDataAutomatica(12),
-      dataFormatada: gerarDataFormatada(12),
+    criarDia(12, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -295,11 +288,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, José, Egito",
     }),
-    new Dia({
-      numero: 13,
 
-      data: gerarDataAutomatica(13),
-      dataFormatada: gerarDataFormatada(13),
+    criarDia(13, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -314,11 +304,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, sonhos, providência",
     }),
-    new Dia({
-      numero: 14,
 
-      data: gerarDataAutomatica(14),
-      dataFormatada: gerarDataFormatada(14),
+    criarDia(14, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -333,11 +320,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, reconciliação, migração",
     }),
-    new Dia({
-      numero: 15,
 
-      data: gerarDataAutomatica(15),
-      dataFormatada: gerarDataFormatada(15),
+    criarDia(15, {
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -352,11 +336,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, bênção, morteDeJacó",
     }),
-    new Dia({
-      numero: 16,
 
-      data: gerarDataAutomatica(16),
-      dataFormatada: gerarDataFormatada(16),
+    criarDia(16, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 1, capituloFim: 4 },
       ],
@@ -366,11 +347,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, sofrimento, provação",
     }),
-    new Dia({
-      numero: 17,
 
-      data: gerarDataAutomatica(17),
-      dataFormatada: gerarDataFormatada(17),
+    criarDia(17, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 5, capituloFim: 7 },
       ],
@@ -380,11 +358,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, lamento, debate",
     }),
-    new Dia({
-      numero: 18,
 
-      data: gerarDataAutomatica(18),
-      dataFormatada: gerarDataFormatada(18),
+    criarDia(18, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 8, capituloFim: 10 },
       ],
@@ -394,11 +369,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, justiçaDivina",
     }),
-    new Dia({
-      numero: 19,
 
-      data: gerarDataAutomatica(19),
-      dataFormatada: gerarDataFormatada(19),
+    criarDia(19, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 11, capituloFim: 13 },
       ],
@@ -408,11 +380,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, defesaDeJó",
     }),
-    new Dia({
-      numero: 20,
 
-      data: gerarDataAutomatica(20),
-      dataFormatada: gerarDataFormatada(20),
+    criarDia(20, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 14, capituloFim: 17 },
       ],
@@ -422,11 +391,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, esperança",
     }),
-    new Dia({
-      numero: 21,
 
-      data: gerarDataAutomatica(21),
-      dataFormatada: gerarDataFormatada(21),
+    criarDia(21, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 18, capituloFim: 20 },
       ],
@@ -436,11 +402,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, discurso",
     }),
-    new Dia({
-      numero: 22,
 
-      data: gerarDataAutomatica(22),
-      dataFormatada: gerarDataFormatada(22),
+    criarDia(22, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 21, capituloFim: 24 },
       ],
@@ -450,11 +413,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, impiedade",
     }),
-    new Dia({
-      numero: 23,
 
-      data: gerarDataAutomatica(23),
-      dataFormatada: gerarDataFormatada(23),
+    criarDia(23, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 25, capituloFim: 27 },
       ],
@@ -464,11 +424,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, respostas",
     }),
-    new Dia({
-      numero: 24,
 
-      data: gerarDataAutomatica(24),
-      dataFormatada: gerarDataFormatada(24),
+    criarDia(24, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 28, capituloFim: 31 },
       ],
@@ -478,11 +435,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, sabedoria",
     }),
-    new Dia({
-      numero: 25,
 
-      data: gerarDataAutomatica(25),
-      dataFormatada: gerarDataFormatada(25),
+    criarDia(25, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 32, capituloFim: 34 },
       ],
@@ -492,11 +446,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, Eliú",
     }),
-    new Dia({
-      numero: 26,
 
-      data: gerarDataAutomatica(26),
-      dataFormatada: gerarDataFormatada(26),
+    criarDia(26, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 35, capituloFim: 37 },
       ],
@@ -506,11 +457,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, justiça",
     }),
-    new Dia({
-      numero: 27,
 
-      data: gerarDataAutomatica(27),
-      dataFormatada: gerarDataFormatada(27),
+    criarDia(27, {
       antigoTestamento: [
         { livroId: "jo", livroNome: "Jó", capituloInicio: 38, capituloFim: 42 },
       ],
@@ -520,11 +468,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, DeusFala, restauração",
     }),
-    new Dia({
-      numero: 28,
 
-      data: gerarDataAutomatica(28),
-      dataFormatada: gerarDataFormatada(28),
+    criarDia(28, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -539,11 +484,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, Moisés, chamado",
     }),
-    new Dia({
-      numero: 29,
 
-      data: gerarDataAutomatica(29),
-      dataFormatada: gerarDataFormatada(29),
+    criarDia(29, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -558,11 +500,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, Faraó, pragas",
     }),
-    new Dia({
-      numero: 30,
 
-      data: gerarDataAutomatica(30),
-      dataFormatada: gerarDataFormatada(30),
+    criarDia(30, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -577,11 +516,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, pragas",
     }),
-    new Dia({
-      numero: 31,
 
-      data: gerarDataAutomatica(31),
-      dataFormatada: gerarDataFormatada(31),
+    criarDia(31, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -596,11 +532,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, Páscoa, Êxodo",
     }),
-    new Dia({
-      numero: 32,
 
-      data: gerarDataAutomatica(32),
-      dataFormatada: gerarDataFormatada(32),
+    criarDia(32, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -615,11 +548,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, MarVermelho, maná",
     }),
-    new Dia({
-      numero: 33,
 
-      data: gerarDataAutomatica(33),
-      dataFormatada: gerarDataFormatada(33),
+    criarDia(33, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -634,11 +564,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, dezMandamentos",
     }),
-    new Dia({
-      numero: 34,
 
-      data: gerarDataAutomatica(34),
-      dataFormatada: gerarDataFormatada(34),
+    criarDia(34, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -653,11 +580,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, aliança",
     }),
-    new Dia({
-      numero: 35,
 
-      data: gerarDataAutomatica(35),
-      dataFormatada: gerarDataFormatada(35),
+    criarDia(35, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -672,11 +596,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, tabernáculo",
     }),
-    new Dia({
-      numero: 36,
 
-      data: gerarDataAutomatica(36),
-      dataFormatada: gerarDataFormatada(36),
+    criarDia(36, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -691,11 +612,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, sacerdócio",
     }),
-    new Dia({
-      numero: 37,
 
-      data: gerarDataAutomatica(37),
-      dataFormatada: gerarDataFormatada(37),
+    criarDia(37, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -710,11 +628,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, bezerroDeOuro",
     }),
-    new Dia({
-      numero: 38,
 
-      data: gerarDataAutomatica(38),
-      dataFormatada: gerarDataFormatada(38),
+    criarDia(38, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -729,11 +644,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, construção",
     }),
-    new Dia({
-      numero: 39,
 
-      data: gerarDataAutomatica(39),
-      dataFormatada: gerarDataFormatada(39),
+    criarDia(39, {
       antigoTestamento: [
         {
           livroId: "exodo",
@@ -748,11 +660,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, glória",
     }),
-    new Dia({
-      numero: 40,
 
-      data: gerarDataAutomatica(40),
-      dataFormatada: gerarDataFormatada(40),
+    criarDia(40, {
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -767,11 +676,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, sacrifícios",
     }),
-    new Dia({
-      numero: 41,
 
-      data: gerarDataAutomatica(41),
-      dataFormatada: gerarDataFormatada(41),
+    criarDia(41, {
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -786,11 +692,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, ofertas",
     }),
-    new Dia({
-      numero: 42,
 
-      data: gerarDataAutomatica(42),
-      dataFormatada: gerarDataFormatada(42),
+    criarDia(42, {
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -805,11 +708,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, consagração",
     }),
-    new Dia({
-      numero: 43,
 
-      data: gerarDataAutomatica(43),
-      dataFormatada: gerarDataFormatada(43),
+    criarDia(43, {
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -824,11 +724,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, pureza",
     }),
-    new Dia({
-      numero: 44,
 
-      data: gerarDataAutomatica(44),
-      dataFormatada: gerarDataFormatada(44),
+    criarDia(44, {
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -843,11 +740,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, expiação",
     }),
-    new Dia({
-      numero: 45,
 
-      data: gerarDataAutomatica(45),
-      dataFormatada: gerarDataFormatada(45),
+    criarDia(45, {
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -862,11 +756,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, santidade",
     }),
-    new Dia({
-      numero: 46,
 
-      data: gerarDataAutomatica(46),
-      dataFormatada: gerarDataFormatada(46),
+    criarDia(46, {
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -887,11 +778,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, adoração",
     }),
-    new Dia({
-      numero: 47,
 
-      data: gerarDataAutomatica(47),
-      dataFormatada: gerarDataFormatada(47),
+    criarDia(47, {
       antigoTestamento: [
         {
           livroId: "levitico",
@@ -906,11 +794,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, festas",
     }),
-    new Dia({
-      numero: 48,
 
-      data: gerarDataAutomatica(48),
-      dataFormatada: gerarDataFormatada(48),
+    criarDia(48, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -925,11 +810,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, censo",
     }),
-    new Dia({
-      numero: 49,
 
-      data: gerarDataAutomatica(49),
-      dataFormatada: gerarDataFormatada(49),
+    criarDia(49, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -944,11 +826,11 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, nazireu",
     }),
-    new Dia({
-      numero: 50,
 
-      data: gerarDataAutomatica(50),
-      dataFormatada: gerarDataFormatada(50),
+    /* ======================================================================
+       DIA 50
+    ====================================================================== */
+    criarDia(50, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -963,11 +845,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, partida",
     }),
-    new Dia({
-      numero: 51,
 
-      data: gerarDataAutomatica(51),
-      dataFormatada: gerarDataFormatada(51),
+    criarDia(51, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -988,11 +867,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, murmuração",
     }),
-    new Dia({
-      numero: 52,
 
-      data: gerarDataAutomatica(52),
-      dataFormatada: gerarDataFormatada(52),
+    criarDia(52, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1013,11 +889,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, rebelião",
     }),
-    new Dia({
-      numero: 53,
 
-      data: gerarDataAutomatica(53),
-      dataFormatada: gerarDataFormatada(53),
+    criarDia(53, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -1032,11 +905,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, autoridade",
     }),
-    new Dia({
-      numero: 54,
 
-      data: gerarDataAutomatica(54),
-      dataFormatada: gerarDataFormatada(54),
+    criarDia(54, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -1051,11 +921,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, falhaDeMoisés",
     }),
-    new Dia({
-      numero: 55,
 
-      data: gerarDataAutomatica(55),
-      dataFormatada: gerarDataFormatada(55),
+    criarDia(55, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -1070,11 +937,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, Balaão",
     }),
-    new Dia({
-      numero: 56,
 
-      data: gerarDataAutomatica(56),
-      dataFormatada: gerarDataFormatada(56),
+    criarDia(56, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -1089,11 +953,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, sucessão",
     }),
-    new Dia({
-      numero: 57,
 
-      data: gerarDataAutomatica(57),
-      dataFormatada: gerarDataFormatada(57),
+    criarDia(57, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -1108,11 +969,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, votos",
     }),
-    new Dia({
-      numero: 58,
 
-      data: gerarDataAutomatica(58),
-      dataFormatada: gerarDataFormatada(58),
+    criarDia(58, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -1127,11 +985,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, itinerário",
     }),
-    new Dia({
-      numero: 59,
 
-      data: gerarDataAutomatica(59),
-      dataFormatada: gerarDataFormatada(59),
+    criarDia(59, {
       antigoTestamento: [
         {
           livroId: "numeros",
@@ -1146,11 +1001,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, herança",
     }),
-    new Dia({
-      numero: 60,
 
-      data: gerarDataAutomatica(60),
-      dataFormatada: gerarDataFormatada(60),
+    criarDia(60, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1165,11 +1017,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, recapitulação",
     }),
-    new Dia({
-      numero: 61,
 
-      data: gerarDataAutomatica(61),
-      dataFormatada: gerarDataFormatada(61),
+    criarDia(61, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1184,11 +1033,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, aliança, Shema",
     }),
-    new Dia({
-      numero: 62,
 
-      data: gerarDataAutomatica(62),
-      dataFormatada: gerarDataFormatada(62),
+    criarDia(62, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1203,11 +1049,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, eleição, memória",
     }),
-    new Dia({
-      numero: 63,
 
-      data: gerarDataAutomatica(63),
-      dataFormatada: gerarDataFormatada(63),
+    criarDia(63, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1222,11 +1065,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, adoração",
     }),
-    new Dia({
-      numero: 64,
 
-      data: gerarDataAutomatica(64),
-      dataFormatada: gerarDataFormatada(64),
+    criarDia(64, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1241,11 +1081,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, leisSociais",
     }),
-    new Dia({
-      numero: 65,
 
-      data: gerarDataAutomatica(65),
-      dataFormatada: gerarDataFormatada(65),
+    criarDia(65, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1260,11 +1097,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, festas, profeta",
     }),
-    new Dia({
-      numero: 66,
 
-      data: gerarDataAutomatica(66),
-      dataFormatada: gerarDataFormatada(66),
+    criarDia(66, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1279,11 +1113,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, justiça",
     }),
-    new Dia({
-      numero: 67,
 
-      data: gerarDataAutomatica(67),
-      dataFormatada: gerarDataFormatada(67),
+    criarDia(67, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1298,11 +1129,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, vidaSocial",
     }),
-    new Dia({
-      numero: 68,
 
-      data: gerarDataAutomatica(68),
-      dataFormatada: gerarDataFormatada(68),
+    criarDia(68, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1317,11 +1145,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, bênçãoEMaldição",
     }),
-    new Dia({
-      numero: 69,
 
-      data: gerarDataAutomatica(69),
-      dataFormatada: gerarDataFormatada(69),
+    criarDia(69, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1336,11 +1161,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, bênçãosEMaldições",
     }),
-    new Dia({
-      numero: 70,
 
-      data: gerarDataAutomatica(70),
-      dataFormatada: gerarDataFormatada(70),
+    criarDia(70, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1355,11 +1177,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, renovaçãoDaAliança",
     }),
-    new Dia({
-      numero: 71,
 
-      data: gerarDataAutomatica(71),
-      dataFormatada: gerarDataFormatada(71),
+    criarDia(71, {
       antigoTestamento: [
         {
           livroId: "deuteronomio",
@@ -1374,11 +1193,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "pentateuco, cânticoDeMoisés, morteDeMoisés",
     }),
-    new Dia({
-      numero: 72,
 
-      data: gerarDataAutomatica(72),
-      dataFormatada: gerarDataFormatada(72),
+    criarDia(72, {
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1393,11 +1209,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, entradaNaTerra",
     }),
-    new Dia({
-      numero: 73,
 
-      data: gerarDataAutomatica(73),
-      dataFormatada: gerarDataFormatada(73),
+    criarDia(73, {
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1412,11 +1225,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, conquista",
     }),
-    new Dia({
-      numero: 74,
 
-      data: gerarDataAutomatica(74),
-      dataFormatada: gerarDataFormatada(74),
+    criarDia(74, {
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1431,11 +1241,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, aliançaComGibeão",
     }),
-    new Dia({
-      numero: 75,
 
-      data: gerarDataAutomatica(75),
-      dataFormatada: gerarDataFormatada(75),
+    criarDia(75, {
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1450,11 +1257,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, herança",
     }),
-    new Dia({
-      numero: 76,
 
-      data: gerarDataAutomatica(76),
-      dataFormatada: gerarDataFormatada(76),
+    criarDia(76, {
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1469,11 +1273,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, divisãoDaTerra",
     }),
-    new Dia({
-      numero: 77,
 
-      data: gerarDataAutomatica(77),
-      dataFormatada: gerarDataFormatada(77),
+    criarDia(77, {
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1488,11 +1289,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, refúgio, levitas",
     }),
-    new Dia({
-      numero: 78,
 
-      data: gerarDataAutomatica(78),
-      dataFormatada: gerarDataFormatada(78),
+    criarDia(78, {
       antigoTestamento: [
         {
           livroId: "josue",
@@ -1507,11 +1305,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, aliançaRenovada",
     }),
-    new Dia({
-      numero: 79,
 
-      data: gerarDataAutomatica(79),
-      dataFormatada: gerarDataFormatada(79),
+    criarDia(79, {
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1526,11 +1321,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, cicloDosJuízes",
     }),
-    new Dia({
-      numero: 80,
 
-      data: gerarDataAutomatica(80),
-      dataFormatada: gerarDataFormatada(80),
+    criarDia(80, {
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1545,11 +1337,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Débora, Gideão",
     }),
-    new Dia({
-      numero: 81,
 
-      data: gerarDataAutomatica(81),
-      dataFormatada: gerarDataFormatada(81),
+    criarDia(81, {
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1564,11 +1353,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Gideão",
     }),
-    new Dia({
-      numero: 82,
 
-      data: gerarDataAutomatica(82),
-      dataFormatada: gerarDataFormatada(82),
+    criarDia(82, {
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1583,11 +1369,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Jephte",
     }),
-    new Dia({
-      numero: 83,
 
-      data: gerarDataAutomatica(83),
-      dataFormatada: gerarDataFormatada(83),
+    criarDia(83, {
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1602,11 +1385,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Sansão",
     }),
-    new Dia({
-      numero: 84,
 
-      data: gerarDataAutomatica(84),
-      dataFormatada: gerarDataFormatada(84),
+    criarDia(84, {
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1621,11 +1401,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, idolatria",
     }),
-    new Dia({
-      numero: 85,
 
-      data: gerarDataAutomatica(85),
-      dataFormatada: gerarDataFormatada(85),
+    criarDia(85, {
       antigoTestamento: [
         {
           livroId: "juizes",
@@ -1640,11 +1417,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, decadência",
     }),
-    new Dia({
-      numero: 86,
 
-      data: gerarDataAutomatica(86),
-      dataFormatada: gerarDataFormatada(86),
+    criarDia(86, {
       antigoTestamento: [
         {
           livroId: "rute",
@@ -1659,11 +1433,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, redenção",
     }),
-    new Dia({
-      numero: 87,
 
-      data: gerarDataAutomatica(87),
-      dataFormatada: gerarDataFormatada(87),
+    criarDia(87, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1678,11 +1449,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Samuel",
     }),
-    new Dia({
-      numero: 88,
 
-      data: gerarDataAutomatica(88),
-      dataFormatada: gerarDataFormatada(88),
+    criarDia(88, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1697,11 +1465,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, arcaDaAliança",
     }),
-    new Dia({
-      numero: 89,
 
-      data: gerarDataAutomatica(89),
-      dataFormatada: gerarDataFormatada(89),
+    criarDia(89, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1716,11 +1481,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, monarquia",
     }),
-    new Dia({
-      numero: 90,
 
-      data: gerarDataAutomatica(90),
-      dataFormatada: gerarDataFormatada(90),
+    criarDia(90, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1735,11 +1497,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Saul",
     }),
-    new Dia({
-      numero: 91,
 
-      data: gerarDataAutomatica(91),
-      dataFormatada: gerarDataFormatada(91),
+    criarDia(91, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1754,11 +1513,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, desobediência",
     }),
-    new Dia({
-      numero: 92,
 
-      data: gerarDataAutomatica(92),
-      dataFormatada: gerarDataFormatada(92),
+    criarDia(92, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1773,11 +1529,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Davi",
     }),
-    new Dia({
-      numero: 93,
 
-      data: gerarDataAutomatica(93),
-      dataFormatada: gerarDataFormatada(93),
+    criarDia(93, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1792,11 +1545,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, perseguição",
     }),
-    new Dia({
-      numero: 94,
 
-      data: gerarDataAutomatica(94),
-      dataFormatada: gerarDataFormatada(94),
+    criarDia(94, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1811,11 +1561,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, fuga",
     }),
-    new Dia({
-      numero: 95,
 
-      data: gerarDataAutomatica(95),
-      dataFormatada: gerarDataFormatada(95),
+    criarDia(95, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1830,11 +1577,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, provação",
     }),
-    new Dia({
-      numero: 96,
 
-      data: gerarDataAutomatica(96),
-      dataFormatada: gerarDataFormatada(96),
+    criarDia(96, {
       antigoTestamento: [
         {
           livroId: "1samuel",
@@ -1849,11 +1593,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, quedaDeSaul",
     }),
-    new Dia({
-      numero: 97,
 
-      data: gerarDataAutomatica(97),
-      dataFormatada: gerarDataFormatada(97),
+    criarDia(97, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1874,11 +1615,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, lamento, Davi",
     }),
-    new Dia({
-      numero: 98,
 
-      data: gerarDataAutomatica(98),
-      dataFormatada: gerarDataFormatada(98),
+    criarDia(98, {
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -1893,11 +1631,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, reinoUnificado",
     }),
-    new Dia({
-      numero: 99,
 
-      data: gerarDataAutomatica(99),
-      dataFormatada: gerarDataFormatada(99),
+    criarDia(99, {
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -1912,11 +1647,11 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, aliançaDavídica",
     }),
-    new Dia({
-      numero: 100,
 
-      data: gerarDataAutomatica(100),
-      dataFormatada: gerarDataFormatada(100),
+    /* ======================================================================
+       DIA 100
+    ====================================================================== */
+    criarDia(100, {
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -1931,11 +1666,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, expansão",
     }),
-    new Dia({
-      numero: 101,
 
-      data: gerarDataAutomatica(101),
-      dataFormatada: gerarDataFormatada(101),
+    criarDia(101, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1962,11 +1694,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, messianico",
     }),
-    new Dia({
-      numero: 102,
 
-      data: gerarDataAutomatica(102),
-      dataFormatada: gerarDataFormatada(102),
+    criarDia(102, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -1993,11 +1722,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, refúgio",
     }),
-    new Dia({
-      numero: 103,
 
-      data: gerarDataAutomatica(103),
-      dataFormatada: gerarDataFormatada(103),
+    criarDia(103, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2018,11 +1744,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, confiança",
     }),
-    new Dia({
-      numero: 104,
 
-      data: gerarDataAutomatica(104),
-      dataFormatada: gerarDataFormatada(104),
+    criarDia(104, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2043,11 +1766,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, adoração",
     }),
-    new Dia({
-      numero: 105,
 
-      data: gerarDataAutomatica(105),
-      dataFormatada: gerarDataFormatada(105),
+    criarDia(105, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2074,11 +1794,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, justiça",
     }),
-    new Dia({
-      numero: 106,
 
-      data: gerarDataAutomatica(106),
-      dataFormatada: gerarDataFormatada(106),
+    criarDia(106, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2105,11 +1822,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, pastor",
     }),
-    new Dia({
-      numero: 107,
 
-      data: gerarDataAutomatica(107),
-      dataFormatada: gerarDataFormatada(107),
+    criarDia(107, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2136,11 +1850,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, reinadoDeDeus",
     }),
-    new Dia({
-      numero: 108,
 
-      data: gerarDataAutomatica(108),
-      dataFormatada: gerarDataFormatada(108),
+    criarDia(108, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2167,11 +1878,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, dependência",
     }),
-    new Dia({
-      numero: 109,
 
-      data: gerarDataAutomatica(109),
-      dataFormatada: gerarDataFormatada(109),
+    criarDia(109, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2198,11 +1906,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, justiçaDivina",
     }),
-    new Dia({
-      numero: 110,
 
-      data: gerarDataAutomatica(110),
-      dataFormatada: gerarDataFormatada(110),
+    criarDia(110, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2223,11 +1928,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, refúgio",
     }),
-    new Dia({
-      numero: 111,
 
-      data: gerarDataAutomatica(111),
-      dataFormatada: gerarDataFormatada(111),
+    criarDia(111, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2254,11 +1956,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, livramento",
     }),
-    new Dia({
-      numero: 112,
 
-      data: gerarDataAutomatica(112),
-      dataFormatada: gerarDataFormatada(112),
+    criarDia(112, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2279,11 +1978,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, gratidão",
     }),
-    new Dia({
-      numero: 113,
 
-      data: gerarDataAutomatica(113),
-      dataFormatada: gerarDataFormatada(113),
+    criarDia(113, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2304,11 +2000,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, messianico",
     }),
-    new Dia({
-      numero: 114,
 
-      data: gerarDataAutomatica(114),
-      dataFormatada: gerarDataFormatada(114),
+    criarDia(114, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2323,11 +2016,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, oração",
     }),
-    new Dia({
-      numero: 115,
 
-      data: gerarDataAutomatica(115),
-      dataFormatada: gerarDataFormatada(115),
+    criarDia(115, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2348,11 +2038,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, governoJusto",
     }),
-    new Dia({
-      numero: 116,
 
-      data: gerarDataAutomatica(116),
-      dataFormatada: gerarDataFormatada(116),
+    criarDia(116, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2373,11 +2060,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, misericórdia",
     }),
-    new Dia({
-      numero: 117,
 
-      data: gerarDataAutomatica(117),
-      dataFormatada: gerarDataFormatada(117),
+    criarDia(117, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2398,11 +2082,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, messias, Jerusalém",
     }),
-    new Dia({
-      numero: 118,
 
-      data: gerarDataAutomatica(118),
-      dataFormatada: gerarDataFormatada(118),
+    criarDia(118, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2429,11 +2110,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, comunhão",
     }),
-    new Dia({
-      numero: 119,
 
-      data: gerarDataAutomatica(119),
-      dataFormatada: gerarDataFormatada(119),
+    criarDia(119, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2448,11 +2126,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, onisciência",
     }),
-    new Dia({
-      numero: 120,
 
-      data: gerarDataAutomatica(120),
-      dataFormatada: gerarDataFormatada(120),
+    criarDia(120, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2473,11 +2148,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, súplica",
     }),
-    new Dia({
-      numero: 121,
 
-      data: gerarDataAutomatica(121),
-      dataFormatada: gerarDataFormatada(121),
+    criarDia(121, {
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2492,11 +2164,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, pecadoEDisciplina",
     }),
-    new Dia({
-      numero: 122,
 
-      data: gerarDataAutomatica(122),
-      dataFormatada: gerarDataFormatada(122),
+    criarDia(122, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2517,11 +2186,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, arrependimento",
     }),
-    new Dia({
-      numero: 123,
 
-      data: gerarDataAutomatica(123),
-      dataFormatada: gerarDataFormatada(123),
+    criarDia(123, {
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2536,11 +2202,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, rebelião",
     }),
-    new Dia({
-      numero: 124,
 
-      data: gerarDataAutomatica(124),
-      dataFormatada: gerarDataFormatada(124),
+    criarDia(124, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2561,11 +2224,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, fuga",
     }),
-    new Dia({
-      numero: 125,
 
-      data: gerarDataAutomatica(125),
-      dataFormatada: gerarDataFormatada(125),
+    criarDia(125, {
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2580,11 +2240,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Absalão",
     }),
-    new Dia({
-      numero: 126,
 
-      data: gerarDataAutomatica(126),
-      dataFormatada: gerarDataFormatada(126),
+    criarDia(126, {
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2599,11 +2256,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, restauração",
     }),
-    new Dia({
-      numero: 127,
 
-      data: gerarDataAutomatica(127),
-      dataFormatada: gerarDataFormatada(127),
+    criarDia(127, {
       antigoTestamento: [
         {
           livroId: "2samuel",
@@ -2618,11 +2272,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, últimasPalavras",
     }),
-    new Dia({
-      numero: 128,
 
-      data: gerarDataAutomatica(128),
-      dataFormatada: gerarDataFormatada(128),
+    criarDia(128, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2643,11 +2294,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, arrependimento",
     }),
-    new Dia({
-      numero: 129,
 
-      data: gerarDataAutomatica(129),
-      dataFormatada: gerarDataFormatada(129),
+    criarDia(129, {
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2662,11 +2310,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Salomão",
     }),
-    new Dia({
-      numero: 130,
 
-      data: gerarDataAutomatica(130),
-      dataFormatada: gerarDataFormatada(130),
+    criarDia(130, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2687,11 +2332,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, sabedoria",
     }),
-    new Dia({
-      numero: 131,
 
-      data: gerarDataAutomatica(131),
-      dataFormatada: gerarDataFormatada(131),
+    criarDia(131, {
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2706,11 +2348,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, templo",
     }),
-    new Dia({
-      numero: 132,
 
-      data: gerarDataAutomatica(132),
-      dataFormatada: gerarDataFormatada(132),
+    criarDia(132, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -2731,11 +2370,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, prosperidade",
     }),
-    new Dia({
-      numero: 133,
 
-      data: gerarDataAutomatica(133),
-      dataFormatada: gerarDataFormatada(133),
+    criarDia(133, {
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -2750,11 +2386,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, dedicaçãoDoTemplo",
     }),
-    new Dia({
-      numero: 134,
 
-      data: gerarDataAutomatica(134),
-      dataFormatada: gerarDataFormatada(134),
+    criarDia(134, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2769,11 +2402,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, temorDoSenhor",
     }),
-    new Dia({
-      numero: 135,
 
-      data: gerarDataAutomatica(135),
-      dataFormatada: gerarDataFormatada(135),
+    criarDia(135, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2788,11 +2418,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, disciplina",
     }),
-    new Dia({
-      numero: 136,
 
-      data: gerarDataAutomatica(136),
-      dataFormatada: gerarDataFormatada(136),
+    criarDia(136, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2807,11 +2434,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, escolhas",
     }),
-    new Dia({
-      numero: 137,
 
-      data: gerarDataAutomatica(137),
-      dataFormatada: gerarDataFormatada(137),
+    criarDia(137, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2826,11 +2450,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, vidaPrática",
     }),
-    new Dia({
-      numero: 138,
 
-      data: gerarDataAutomatica(138),
-      dataFormatada: gerarDataFormatada(138),
+    criarDia(138, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2845,11 +2466,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, ética",
     }),
-    new Dia({
-      numero: 139,
 
-      data: gerarDataAutomatica(139),
-      dataFormatada: gerarDataFormatada(139),
+    criarDia(139, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2864,11 +2482,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, governo",
     }),
-    new Dia({
-      numero: 140,
 
-      data: gerarDataAutomatica(140),
-      dataFormatada: gerarDataFormatada(140),
+    criarDia(140, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2883,11 +2498,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, justiça",
     }),
-    new Dia({
-      numero: 141,
 
-      data: gerarDataAutomatica(141),
-      dataFormatada: gerarDataFormatada(141),
+    criarDia(141, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2902,11 +2514,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, justiçaSocial",
     }),
-    new Dia({
-      numero: 142,
 
-      data: gerarDataAutomatica(142),
-      dataFormatada: gerarDataFormatada(142),
+    criarDia(142, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2921,11 +2530,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, liderança",
     }),
-    new Dia({
-      numero: 143,
 
-      data: gerarDataAutomatica(143),
-      dataFormatada: gerarDataFormatada(143),
+    criarDia(143, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2940,11 +2546,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, governoJusto",
     }),
-    new Dia({
-      numero: 144,
 
-      data: gerarDataAutomatica(144),
-      dataFormatada: gerarDataFormatada(144),
+    criarDia(144, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -2959,11 +2562,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, vidaVirtuosa",
     }),
-    new Dia({
-      numero: 145,
 
-      data: gerarDataAutomatica(145),
-      dataFormatada: gerarDataFormatada(145),
+    criarDia(145, {
       antigoTestamento: [
         {
           livroId: "eclesiastes",
@@ -2978,11 +2578,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, vaidade",
     }),
-    new Dia({
-      numero: 146,
 
-      data: gerarDataAutomatica(146),
-      dataFormatada: gerarDataFormatada(146),
+    criarDia(146, {
       antigoTestamento: [
         {
           livroId: "eclesiastes",
@@ -2997,11 +2594,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, tempo",
     }),
-    new Dia({
-      numero: 147,
 
-      data: gerarDataAutomatica(147),
-      dataFormatada: gerarDataFormatada(147),
+    criarDia(147, {
       antigoTestamento: [
         {
           livroId: "eclesiastes",
@@ -3016,11 +2610,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, sentidoDaVida",
     }),
-    new Dia({
-      numero: 148,
 
-      data: gerarDataAutomatica(148),
-      dataFormatada: gerarDataFormatada(148),
+    criarDia(148, {
       antigoTestamento: [
         {
           livroId: "cantares",
@@ -3035,11 +2626,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, amorAliança",
     }),
-    new Dia({
-      numero: 149,
 
-      data: gerarDataAutomatica(149),
-      dataFormatada: gerarDataFormatada(149),
+    criarDia(149, {
       antigoTestamento: [
         {
           livroId: "cantares",
@@ -3054,11 +2642,11 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, amorFiel",
     }),
-    new Dia({
-      numero: 150,
 
-      data: gerarDataAutomatica(150),
-      dataFormatada: gerarDataFormatada(150),
+    /* ======================================================================
+       DIA 150
+    ====================================================================== */
+    criarDia(150, {
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -3073,11 +2661,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, quedaDeSalomão",
     }),
-    new Dia({
-      numero: 151,
 
-      data: gerarDataAutomatica(151),
-      dataFormatada: gerarDataFormatada(151),
+    criarDia(151, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -3098,11 +2683,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, oração",
     }),
-    new Dia({
-      numero: 152,
 
-      data: gerarDataAutomatica(152),
-      dataFormatada: gerarDataFormatada(152),
+    criarDia(152, {
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -3117,11 +2699,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, reinoDividido",
     }),
-    new Dia({
-      numero: 153,
 
-      data: gerarDataAutomatica(153),
-      dataFormatada: gerarDataFormatada(153),
+    criarDia(153, {
       antigoTestamento: [
         {
           livroId: "2cronicas",
@@ -3136,11 +2715,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Roboão",
     }),
-    new Dia({
-      numero: 154,
 
-      data: gerarDataAutomatica(154),
-      dataFormatada: gerarDataFormatada(154),
+    criarDia(154, {
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -3161,11 +2737,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Asa",
     }),
-    new Dia({
-      numero: 155,
 
-      data: gerarDataAutomatica(155),
-      dataFormatada: gerarDataFormatada(155),
+    criarDia(155, {
       antigoTestamento: [
         {
           livroId: "2cronicas",
@@ -3180,11 +2753,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, reforma",
     }),
-    new Dia({
-      numero: 156,
 
-      data: gerarDataAutomatica(156),
-      dataFormatada: gerarDataFormatada(156),
+    criarDia(156, {
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -3199,11 +2769,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetas, Elias",
     }),
-    new Dia({
-      numero: 157,
 
-      data: gerarDataAutomatica(157),
-      dataFormatada: gerarDataFormatada(157),
+    criarDia(157, {
       antigoTestamento: [
         {
           livroId: "1reis",
@@ -3218,11 +2785,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetas, Elias, quedaDeAcabe",
     }),
-    new Dia({
-      numero: 158,
 
-      data: gerarDataAutomatica(158),
-      dataFormatada: gerarDataFormatada(158),
+    criarDia(158, {
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -3237,11 +2801,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetas, Eliseu",
     }),
-    new Dia({
-      numero: 159,
 
-      data: gerarDataAutomatica(159),
-      dataFormatada: gerarDataFormatada(159),
+    criarDia(159, {
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -3256,11 +2817,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetas, milagres",
     }),
-    new Dia({
-      numero: 160,
 
-      data: gerarDataAutomatica(160),
-      dataFormatada: gerarDataFormatada(160),
+    criarDia(160, {
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -3275,11 +2833,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetas, juízo",
     }),
-    new Dia({
-      numero: 161,
 
-      data: gerarDataAutomatica(161),
-      dataFormatada: gerarDataFormatada(161),
+    criarDia(161, {
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -3294,11 +2849,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, Jeú",
     }),
-    new Dia({
-      numero: 162,
 
-      data: gerarDataAutomatica(162),
-      dataFormatada: gerarDataFormatada(162),
+    criarDia(162, {
       antigoTestamento: [
         {
           livroId: "joel",
@@ -3313,11 +2865,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, diaDoSenhor",
     }),
-    new Dia({
-      numero: 163,
 
-      data: gerarDataAutomatica(163),
-      dataFormatada: gerarDataFormatada(163),
+    criarDia(163, {
       antigoTestamento: [
         {
           livroId: "jonas",
@@ -3332,11 +2881,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, misericórdia",
     }),
-    new Dia({
-      numero: 164,
 
-      data: gerarDataAutomatica(164),
-      dataFormatada: gerarDataFormatada(164),
+    criarDia(164, {
       antigoTestamento: [
         {
           livroId: "amos",
@@ -3351,11 +2897,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, justiçaSocial",
     }),
-    new Dia({
-      numero: 165,
 
-      data: gerarDataAutomatica(165),
-      dataFormatada: gerarDataFormatada(165),
+    criarDia(165, {
       antigoTestamento: [
         {
           livroId: "amos",
@@ -3370,11 +2913,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, juízo",
     }),
-    new Dia({
-      numero: 166,
 
-      data: gerarDataAutomatica(166),
-      dataFormatada: gerarDataFormatada(166),
+    criarDia(166, {
       antigoTestamento: [
         {
           livroId: "amos",
@@ -3389,11 +2929,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, restauração",
     }),
-    new Dia({
-      numero: 167,
 
-      data: gerarDataAutomatica(167),
-      dataFormatada: gerarDataFormatada(167),
+    criarDia(167, {
       antigoTestamento: [
         {
           livroId: "oseias",
@@ -3408,11 +2945,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, amorRedentor",
     }),
-    new Dia({
-      numero: 168,
 
-      data: gerarDataAutomatica(168),
-      dataFormatada: gerarDataFormatada(168),
+    criarDia(168, {
       antigoTestamento: [
         {
           livroId: "oseias",
@@ -3427,11 +2961,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, infidelidade",
     }),
-    new Dia({
-      numero: 169,
 
-      data: gerarDataAutomatica(169),
-      dataFormatada: gerarDataFormatada(169),
+    criarDia(169, {
       antigoTestamento: [
         {
           livroId: "oseias",
@@ -3446,11 +2977,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, arrependimento",
     }),
-    new Dia({
-      numero: 170,
 
-      data: gerarDataAutomatica(170),
-      dataFormatada: gerarDataFormatada(170),
+    criarDia(170, {
       antigoTestamento: [
         {
           livroId: "oseias",
@@ -3465,11 +2993,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, restauração",
     }),
-    new Dia({
-      numero: 171,
 
-      data: gerarDataAutomatica(171),
-      dataFormatada: gerarDataFormatada(171),
+    criarDia(171, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3484,11 +3009,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, santidade",
     }),
-    new Dia({
-      numero: 172,
 
-      data: gerarDataAutomatica(172),
-      dataFormatada: gerarDataFormatada(172),
+    criarDia(172, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3503,11 +3025,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, chamado",
     }),
-    new Dia({
-      numero: 173,
 
-      data: gerarDataAutomatica(173),
-      dataFormatada: gerarDataFormatada(173),
+    criarDia(173, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3522,11 +3041,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, messias",
     }),
-    new Dia({
-      numero: 174,
 
-      data: gerarDataAutomatica(174),
-      dataFormatada: gerarDataFormatada(174),
+    criarDia(174, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3541,11 +3057,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, juízoDasNações",
     }),
-    new Dia({
-      numero: 175,
 
-      data: gerarDataAutomatica(175),
-      dataFormatada: gerarDataFormatada(175),
+    criarDia(175, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3560,11 +3073,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, confiança",
     }),
-    new Dia({
-      numero: 176,
 
-      data: gerarDataAutomatica(176),
-      dataFormatada: gerarDataFormatada(176),
+    criarDia(176, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3579,11 +3089,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, redenção",
     }),
-    new Dia({
-      numero: 177,
 
-      data: gerarDataAutomatica(177),
-      dataFormatada: gerarDataFormatada(177),
+    criarDia(177, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3598,11 +3105,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, arrependimento",
     }),
-    new Dia({
-      numero: 178,
 
-      data: gerarDataAutomatica(178),
-      dataFormatada: gerarDataFormatada(178),
+    criarDia(178, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3617,11 +3121,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, salvação",
     }),
-    new Dia({
-      numero: 179,
 
-      data: gerarDataAutomatica(179),
-      dataFormatada: gerarDataFormatada(179),
+    criarDia(179, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3636,11 +3137,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, juízoESocorro",
     }),
-    new Dia({
-      numero: 180,
 
-      data: gerarDataAutomatica(180),
-      dataFormatada: gerarDataFormatada(180),
+    criarDia(180, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3655,11 +3153,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, Ezequias",
     }),
-    new Dia({
-      numero: 181,
 
-      data: gerarDataAutomatica(181),
-      dataFormatada: gerarDataFormatada(181),
+    criarDia(181, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3674,11 +3169,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, consolo",
     }),
-    new Dia({
-      numero: 182,
 
-      data: gerarDataAutomatica(182),
-      dataFormatada: gerarDataFormatada(182),
+    criarDia(182, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3693,11 +3185,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, unicidadeDeDeus",
     }),
-    new Dia({
-      numero: 183,
 
-      data: gerarDataAutomatica(183),
-      dataFormatada: gerarDataFormatada(183),
+    criarDia(183, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3712,11 +3201,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, servoSofredor",
     }),
-    new Dia({
-      numero: 184,
 
-      data: gerarDataAutomatica(184),
-      dataFormatada: gerarDataFormatada(184),
+    criarDia(184, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3731,11 +3217,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, aliançaEterna",
     }),
-    new Dia({
-      numero: 185,
 
-      data: gerarDataAutomatica(185),
-      dataFormatada: gerarDataFormatada(185),
+    criarDia(185, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3750,11 +3233,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, redençãoFinal",
     }),
-    new Dia({
-      numero: 186,
 
-      data: gerarDataAutomatica(186),
-      dataFormatada: gerarDataFormatada(186),
+    criarDia(186, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3769,11 +3249,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, novoCéuETerra",
     }),
-    new Dia({
-      numero: 187,
 
-      data: gerarDataAutomatica(187),
-      dataFormatada: gerarDataFormatada(187),
+    criarDia(187, {
       antigoTestamento: [
         {
           livroId: "miqueias",
@@ -3788,11 +3265,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, justiçaEMessias",
     }),
-    new Dia({
-      numero: 188,
 
-      data: gerarDataAutomatica(188),
-      dataFormatada: gerarDataFormatada(188),
+    criarDia(188, {
       antigoTestamento: [
         {
           livroId: "miqueias",
@@ -3807,11 +3281,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, esperança",
     }),
-    new Dia({
-      numero: 189,
 
-      data: gerarDataAutomatica(189),
-      dataFormatada: gerarDataFormatada(189),
+    criarDia(189, {
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -3826,11 +3297,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, decadência",
     }),
-    new Dia({
-      numero: 190,
 
-      data: gerarDataAutomatica(190),
-      dataFormatada: gerarDataFormatada(190),
+    criarDia(190, {
       antigoTestamento: [
         {
           livroId: "2cronicas",
@@ -3845,11 +3313,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, UziasEAcás",
     }),
-    new Dia({
-      numero: 191,
 
-      data: gerarDataAutomatica(191),
-      dataFormatada: gerarDataFormatada(191),
+    criarDia(191, {
       antigoTestamento: [
         {
           livroId: "isaias",
@@ -3870,11 +3335,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, visãoDoTrono",
     }),
-    new Dia({
-      numero: 192,
 
-      data: gerarDataAutomatica(192),
-      dataFormatada: gerarDataFormatada(192),
+    criarDia(192, {
       antigoTestamento: [
         {
           livroId: "2cronicas",
@@ -3889,11 +3351,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, reformaDeEzequias",
     }),
-    new Dia({
-      numero: 193,
 
-      data: gerarDataAutomatica(193),
-      dataFormatada: gerarDataFormatada(193),
+    criarDia(193, {
       antigoTestamento: [
         {
           livroId: "proverbios",
@@ -3908,11 +3367,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "sabedoria, vidaPrática",
     }),
-    new Dia({
-      numero: 194,
 
-      data: gerarDataAutomatica(194),
-      dataFormatada: gerarDataFormatada(194),
+    criarDia(194, {
       antigoTestamento: [
         {
           livroId: "2reis",
@@ -3927,11 +3383,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "historiaBiblica, quedaDeIsrael",
     }),
-    new Dia({
-      numero: 195,
 
-      data: gerarDataAutomatica(195),
-      dataFormatada: gerarDataFormatada(195),
+    criarDia(195, {
       antigoTestamento: [
         {
           livroId: "naum",
@@ -3946,11 +3399,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, quedaDeNínive",
     }),
-    new Dia({
-      numero: 196,
 
-      data: gerarDataAutomatica(196),
-      dataFormatada: gerarDataFormatada(196),
+    criarDia(196, {
       antigoTestamento: [
         {
           livroId: "sofonias",
@@ -3965,11 +3415,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, diaDoSenhor",
     }),
-    new Dia({
-      numero: 197,
 
-      data: gerarDataAutomatica(197),
-      dataFormatada: gerarDataFormatada(197),
+    criarDia(197, {
       antigoTestamento: [
         {
           livroId: "habacuque",
@@ -3984,11 +3431,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, fé",
     }),
-    new Dia({
-      numero: 198,
 
-      data: gerarDataAutomatica(198),
-      dataFormatada: gerarDataFormatada(198),
+    criarDia(198, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4003,11 +3447,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, chamado",
     }),
-    new Dia({
-      numero: 199,
 
-      data: gerarDataAutomatica(199),
-      dataFormatada: gerarDataFormatada(199),
+    criarDia(199, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4022,11 +3463,11 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, arrependimento",
     }),
-    new Dia({
-      numero: 200,
 
-      data: gerarDataAutomatica(200),
-      dataFormatada: gerarDataFormatada(200),
+    /* ======================================================================
+       DIA 200
+    ====================================================================== */
+    criarDia(200, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4041,11 +3482,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, templo",
     }),
-    new Dia({
-      numero: 201,
 
-      data: gerarDataAutomatica(201),
-      dataFormatada: gerarDataFormatada(201),
+    criarDia(201, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4060,11 +3498,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, idolatria",
     }),
-    new Dia({
-      numero: 202,
 
-      data: gerarDataAutomatica(202),
-      dataFormatada: gerarDataFormatada(202),
+    criarDia(202, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4079,11 +3514,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, oração",
     }),
-    new Dia({
-      numero: 203,
 
-      data: gerarDataAutomatica(203),
-      dataFormatada: gerarDataFormatada(203),
+    criarDia(203, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4098,11 +3530,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, vasoDoOleiro",
     }),
-    new Dia({
-      numero: 204,
 
-      data: gerarDataAutomatica(204),
-      dataFormatada: gerarDataFormatada(204),
+    criarDia(204, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4117,11 +3546,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, falsosProfetas",
     }),
-    new Dia({
-      numero: 205,
 
-      data: gerarDataAutomatica(205),
-      dataFormatada: gerarDataFormatada(205),
+    criarDia(205, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4136,11 +3562,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, exílio",
     }),
-    new Dia({
-      numero: 206,
 
-      data: gerarDataAutomatica(206),
-      dataFormatada: gerarDataFormatada(206),
+    criarDia(206, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4155,11 +3578,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, novaAliança",
     }),
-    new Dia({
-      numero: 207,
 
-      data: gerarDataAutomatica(207),
-      dataFormatada: gerarDataFormatada(207),
+    criarDia(207, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4174,11 +3594,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, perseguição",
     }),
-    new Dia({
-      numero: 208,
 
-      data: gerarDataAutomatica(208),
-      dataFormatada: gerarDataFormatada(208),
+    criarDia(208, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4193,11 +3610,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, quedaDeJerusalém",
     }),
-    new Dia({
-      numero: 209,
 
-      data: gerarDataAutomatica(209),
-      dataFormatada: gerarDataFormatada(209),
+    criarDia(209, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4212,11 +3626,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, remanescente",
     }),
-    new Dia({
-      numero: 210,
 
-      data: gerarDataAutomatica(210),
-      dataFormatada: gerarDataFormatada(210),
+    criarDia(210, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4231,11 +3642,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, juízoDasNações",
     }),
-    new Dia({
-      numero: 211,
 
-      data: gerarDataAutomatica(211),
-      dataFormatada: gerarDataFormatada(211),
+    criarDia(211, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4250,11 +3658,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, quedaDaBabilônia",
     }),
-    new Dia({
-      numero: 212,
 
-      data: gerarDataAutomatica(212),
-      dataFormatada: gerarDataFormatada(212),
+    criarDia(212, {
       antigoTestamento: [
         {
           livroId: "jeremias",
@@ -4269,11 +3674,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, fimDeJerusalém",
     }),
-    new Dia({
-      numero: 213,
 
-      data: gerarDataAutomatica(213),
-      dataFormatada: gerarDataFormatada(213),
+    criarDia(213, {
       antigoTestamento: [
         {
           livroId: "lamentacoes",
@@ -4288,11 +3690,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, lamento",
     }),
-    new Dia({
-      numero: 214,
 
-      data: gerarDataAutomatica(214),
-      dataFormatada: gerarDataFormatada(214),
+    criarDia(214, {
       antigoTestamento: [
         {
           livroId: "lamentacoes",
@@ -4307,11 +3706,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "poesia, esperança",
     }),
-    new Dia({
-      numero: 215,
 
-      data: gerarDataAutomatica(215),
-      dataFormatada: gerarDataFormatada(215),
+    criarDia(215, {
       antigoTestamento: [
         {
           livroId: "obadias",
@@ -4326,11 +3722,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, juízo",
     }),
-    new Dia({
-      numero: 216,
 
-      data: gerarDataAutomatica(216),
-      dataFormatada: gerarDataFormatada(216),
+    criarDia(216, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4345,11 +3738,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, glóriaDeDeus",
     }),
-    new Dia({
-      numero: 217,
 
-      data: gerarDataAutomatica(217),
-      dataFormatada: gerarDataFormatada(217),
+    criarDia(217, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4364,11 +3754,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, idolatria",
     }),
-    new Dia({
-      numero: 218,
 
-      data: gerarDataAutomatica(218),
-      dataFormatada: gerarDataFormatada(218),
+    criarDia(218, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4383,11 +3770,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, juízo",
     }),
-    new Dia({
-      numero: 219,
 
-      data: gerarDataAutomatica(219),
-      dataFormatada: gerarDataFormatada(219),
+    criarDia(219, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4402,11 +3786,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, falsosProfetas",
     }),
-    new Dia({
-      numero: 220,
 
-      data: gerarDataAutomatica(220),
-      dataFormatada: gerarDataFormatada(220),
+    criarDia(220, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4421,11 +3802,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, aliança",
     }),
-    new Dia({
-      numero: 221,
 
-      data: gerarDataAutomatica(221),
-      dataFormatada: gerarDataFormatada(221),
+    criarDia(221, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4440,11 +3818,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, responsabilidade",
     }),
-    new Dia({
-      numero: 222,
 
-      data: gerarDataAutomatica(222),
-      dataFormatada: gerarDataFormatada(222),
+    criarDia(222, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4459,11 +3834,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, idolatria",
     }),
-    new Dia({
-      numero: 223,
 
-      data: gerarDataAutomatica(223),
-      dataFormatada: gerarDataFormatada(223),
+    criarDia(223, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4478,11 +3850,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, juízo",
     }),
-    new Dia({
-      numero: 224,
 
-      data: gerarDataAutomatica(224),
-      dataFormatada: gerarDataFormatada(224),
+    criarDia(224, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4497,11 +3866,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, quedaDasNações",
     }),
-    new Dia({
-      numero: 225,
 
-      data: gerarDataAutomatica(225),
-      dataFormatada: gerarDataFormatada(225),
+    criarDia(225, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4516,11 +3882,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, atalaias",
     }),
-    new Dia({
-      numero: 226,
 
-      data: gerarDataAutomatica(226),
-      dataFormatada: gerarDataFormatada(226),
+    criarDia(226, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4535,11 +3898,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, pastorVerdadeiro",
     }),
-    new Dia({
-      numero: 227,
 
-      data: gerarDataAutomatica(227),
-      dataFormatada: gerarDataFormatada(227),
+    criarDia(227, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4554,11 +3914,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, restauração",
     }),
-    new Dia({
-      numero: 228,
 
-      data: gerarDataAutomatica(228),
-      dataFormatada: gerarDataFormatada(228),
+    criarDia(228, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4573,11 +3930,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, novoTemplo",
     }),
-    new Dia({
-      numero: 229,
 
-      data: gerarDataAutomatica(229),
-      dataFormatada: gerarDataFormatada(229),
+    criarDia(229, {
       antigoTestamento: [
         {
           livroId: "ezequiel",
@@ -4592,11 +3946,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, novaTerra",
     }),
-    new Dia({
-      numero: 230,
 
-      data: gerarDataAutomatica(230),
-      dataFormatada: gerarDataFormatada(230),
+    criarDia(230, {
       antigoTestamento: [
         {
           livroId: "daniel",
@@ -4611,11 +3962,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, fidelidade",
     }),
-    new Dia({
-      numero: 231,
 
-      data: gerarDataAutomatica(231),
-      dataFormatada: gerarDataFormatada(231),
+    criarDia(231, {
       antigoTestamento: [
         {
           livroId: "daniel",
@@ -4630,11 +3978,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, reinos",
     }),
-    new Dia({
-      numero: 232,
 
-      data: gerarDataAutomatica(232),
-      dataFormatada: gerarDataFormatada(232),
+    criarDia(232, {
       antigoTestamento: [
         {
           livroId: "daniel",
@@ -4649,11 +3994,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, escatologia",
     }),
-    new Dia({
-      numero: 233,
 
-      data: gerarDataAutomatica(233),
-      dataFormatada: gerarDataFormatada(233),
+    criarDia(233, {
       antigoTestamento: [
         {
           livroId: "daniel",
@@ -4668,11 +4010,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMaiores, fimDosTempos",
     }),
-    new Dia({
-      numero: 234,
 
-      data: gerarDataAutomatica(234),
-      dataFormatada: gerarDataFormatada(234),
+    criarDia(234, {
       antigoTestamento: [
         {
           livroId: "esdras",
@@ -4687,11 +4026,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, retorno",
     }),
-    new Dia({
-      numero: 235,
 
-      data: gerarDataAutomatica(235),
-      dataFormatada: gerarDataFormatada(235),
+    criarDia(235, {
       antigoTestamento: [
         {
           livroId: "esdras",
@@ -4706,11 +4042,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, reconstrução",
     }),
-    new Dia({
-      numero: 236,
 
-      data: gerarDataAutomatica(236),
-      dataFormatada: gerarDataFormatada(236),
+    criarDia(236, {
       antigoTestamento: [
         {
           livroId: "ageu",
@@ -4731,11 +4064,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, templo",
     }),
-    new Dia({
-      numero: 237,
 
-      data: gerarDataAutomatica(237),
-      dataFormatada: gerarDataFormatada(237),
+    criarDia(237, {
       antigoTestamento: [
         {
           livroId: "zacarias",
@@ -4750,11 +4080,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, visões",
     }),
-    new Dia({
-      numero: 238,
 
-      data: gerarDataAutomatica(238),
-      dataFormatada: gerarDataFormatada(238),
+    criarDia(238, {
       antigoTestamento: [
         {
           livroId: "zacarias",
@@ -4769,11 +4096,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, messias",
     }),
-    new Dia({
-      numero: 239,
 
-      data: gerarDataAutomatica(239),
-      dataFormatada: gerarDataFormatada(239),
+    criarDia(239, {
       antigoTestamento: [
         {
           livroId: "zacarias",
@@ -4788,11 +4112,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, reinoFuturo",
     }),
-    new Dia({
-      numero: 240,
 
-      data: gerarDataAutomatica(240),
-      dataFormatada: gerarDataFormatada(240),
+    criarDia(240, {
       antigoTestamento: [
         {
           livroId: "esdras",
@@ -4807,11 +4128,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, reforma",
     }),
-    new Dia({
-      numero: 241,
 
-      data: gerarDataAutomatica(241),
-      dataFormatada: gerarDataFormatada(241),
+    criarDia(241, {
       antigoTestamento: [
         {
           livroId: "ester",
@@ -4826,11 +4144,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, providência",
     }),
-    new Dia({
-      numero: 242,
 
-      data: gerarDataAutomatica(242),
-      dataFormatada: gerarDataFormatada(242),
+    criarDia(242, {
       antigoTestamento: [
         {
           livroId: "ester",
@@ -4845,11 +4160,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, livramento",
     }),
-    new Dia({
-      numero: 243,
 
-      data: gerarDataAutomatica(243),
-      dataFormatada: gerarDataFormatada(243),
+    criarDia(243, {
       antigoTestamento: [
         {
           livroId: "ester",
@@ -4864,11 +4176,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, vitória",
     }),
-    new Dia({
-      numero: 244,
 
-      data: gerarDataAutomatica(244),
-      dataFormatada: gerarDataFormatada(244),
+    criarDia(244, {
       antigoTestamento: [
         {
           livroId: "neemias",
@@ -4883,11 +4192,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, reconstrução",
     }),
-    new Dia({
-      numero: 245,
 
-      data: gerarDataAutomatica(245),
-      dataFormatada: gerarDataFormatada(245),
+    criarDia(245, {
       antigoTestamento: [
         {
           livroId: "neemias",
@@ -4902,11 +4208,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, perseverança",
     }),
-    new Dia({
-      numero: 246,
 
-      data: gerarDataAutomatica(246),
-      dataFormatada: gerarDataFormatada(246),
+    criarDia(246, {
       antigoTestamento: [
         {
           livroId: "neemias",
@@ -4921,11 +4224,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, arrependimento",
     }),
-    new Dia({
-      numero: 247,
 
-      data: gerarDataAutomatica(247),
-      dataFormatada: gerarDataFormatada(247),
+    criarDia(247, {
       antigoTestamento: [
         {
           livroId: "neemias",
@@ -4940,11 +4240,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "posExilio, aliança",
     }),
-    new Dia({
-      numero: 248,
 
-      data: gerarDataAutomatica(248),
-      dataFormatada: gerarDataFormatada(248),
+    criarDia(248, {
       antigoTestamento: [
         {
           livroId: "malaquias",
@@ -4959,11 +4256,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "profetasMenores, preparaçãoMessiânica",
     }),
-    new Dia({
-      numero: 249,
 
-      data: gerarDataAutomatica(249),
-      dataFormatada: gerarDataFormatada(249),
+    criarDia(249, {
       antigoTestamento: [
         {
           livroId: "salmos",
@@ -4978,11 +4272,11 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "salmos, lei, palavraDeDeus",
     }),
-    new Dia({
-      numero: 250,
 
-      data: gerarDataAutomatica(250),
-      dataFormatada: gerarDataFormatada(250),
+    /* ======================================================================
+       DIA 250
+    ====================================================================== */
+    criarDia(250, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -4997,11 +4291,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, nascimento",
     }),
-    new Dia({
-      numero: 251,
 
-      data: gerarDataAutomatica(251),
-      dataFormatada: gerarDataFormatada(251),
+    criarDia(251, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5016,11 +4307,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, encarnação",
     }),
-    new Dia({
-      numero: 252,
 
-      data: gerarDataAutomatica(252),
-      dataFormatada: gerarDataFormatada(252),
+    criarDia(252, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5035,11 +4323,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, verbo",
     }),
-    new Dia({
-      numero: 253,
 
-      data: gerarDataAutomatica(253),
-      dataFormatada: gerarDataFormatada(253),
+    criarDia(253, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5054,11 +4339,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhoSinótico, autoridade",
     }),
-    new Dia({
-      numero: 254,
 
-      data: gerarDataAutomatica(254),
-      dataFormatada: gerarDataFormatada(254),
+    criarDia(254, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5073,11 +4355,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, sermãoDoMonte",
     }),
-    new Dia({
-      numero: 255,
 
-      data: gerarDataAutomatica(255),
-      dataFormatada: gerarDataFormatada(255),
+    criarDia(255, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5092,11 +4371,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, milagres",
     }),
-    new Dia({
-      numero: 256,
 
-      data: gerarDataAutomatica(256),
-      dataFormatada: gerarDataFormatada(256),
+    criarDia(256, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5111,11 +4387,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhoSinótico, milagres",
     }),
-    new Dia({
-      numero: 257,
 
-      data: gerarDataAutomatica(257),
-      dataFormatada: gerarDataFormatada(257),
+    criarDia(257, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5130,11 +4403,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, ensinamentos",
     }),
-    new Dia({
-      numero: 258,
 
-      data: gerarDataAutomatica(258),
-      dataFormatada: gerarDataFormatada(258),
+    criarDia(258, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5149,11 +4419,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, milagres",
     }),
-    new Dia({
-      numero: 259,
 
-      data: gerarDataAutomatica(259),
-      dataFormatada: gerarDataFormatada(259),
+    criarDia(259, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5168,11 +4435,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhoSinótico, transfiguração",
     }),
-    new Dia({
-      numero: 260,
 
-      data: gerarDataAutomatica(260),
-      dataFormatada: gerarDataFormatada(260),
+    criarDia(260, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5187,11 +4451,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, transfiguração",
     }),
-    new Dia({
-      numero: 261,
 
-      data: gerarDataAutomatica(261),
-      dataFormatada: gerarDataFormatada(261),
+    criarDia(261, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5206,11 +4467,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, parábolas",
     }),
-    new Dia({
-      numero: 262,
 
-      data: gerarDataAutomatica(262),
-      dataFormatada: gerarDataFormatada(262),
+    criarDia(262, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5225,11 +4483,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, discípulado",
     }),
-    new Dia({
-      numero: 263,
 
-      data: gerarDataAutomatica(263),
-      dataFormatada: gerarDataFormatada(263),
+    criarDia(263, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5244,11 +4499,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, reino",
     }),
-    new Dia({
-      numero: 264,
 
-      data: gerarDataAutomatica(264),
-      dataFormatada: gerarDataFormatada(264),
+    criarDia(264, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5263,11 +4515,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhoSinótico, ensinamentos",
     }),
-    new Dia({
-      numero: 265,
 
-      data: gerarDataAutomatica(265),
-      dataFormatada: gerarDataFormatada(265),
+    criarDia(265, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5282,11 +4531,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, Jerusalém",
     }),
-    new Dia({
-      numero: 266,
 
-      data: gerarDataAutomatica(266),
-      dataFormatada: gerarDataFormatada(266),
+    criarDia(266, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5301,11 +4547,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, ensinamentos",
     }),
-    new Dia({
-      numero: 267,
 
-      data: gerarDataAutomatica(267),
-      dataFormatada: gerarDataFormatada(267),
+    criarDia(267, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5320,11 +4563,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, escatologia",
     }),
-    new Dia({
-      numero: 268,
 
-      data: gerarDataAutomatica(268),
-      dataFormatada: gerarDataFormatada(268),
+    criarDia(268, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5339,11 +4579,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhoSinótico, paixãoERessurreição",
     }),
-    new Dia({
-      numero: 269,
 
-      data: gerarDataAutomatica(269),
-      dataFormatada: gerarDataFormatada(269),
+    criarDia(269, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5358,11 +4595,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, paixãoERessurreição",
     }),
-    new Dia({
-      numero: 270,
 
-      data: gerarDataAutomatica(270),
-      dataFormatada: gerarDataFormatada(270),
+    criarDia(270, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5377,11 +4611,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, paixãoERessurreição",
     }),
-    new Dia({
-      numero: 271,
 
-      data: gerarDataAutomatica(271),
-      dataFormatada: gerarDataFormatada(271),
+    criarDia(271, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5396,11 +4627,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, paixãoERessurreição",
     }),
-    new Dia({
-      numero: 272,
 
-      data: gerarDataAutomatica(272),
-      dataFormatada: gerarDataFormatada(272),
+    criarDia(272, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5415,11 +4643,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, sinaisEensinos",
     }),
-    new Dia({
-      numero: 273,
 
-      data: gerarDataAutomatica(273),
-      dataFormatada: gerarDataFormatada(273),
+    criarDia(273, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5434,11 +4659,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, sinaisEensinos",
     }),
-    new Dia({
-      numero: 274,
 
-      data: gerarDataAutomatica(274),
-      dataFormatada: gerarDataFormatada(274),
+    criarDia(274, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5453,11 +4675,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, amor",
     }),
-    new Dia({
-      numero: 275,
 
-      data: gerarDataAutomatica(275),
-      dataFormatada: gerarDataFormatada(275),
+    criarDia(275, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5472,11 +4691,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, espíritoSanto",
     }),
-    new Dia({
-      numero: 276,
 
-      data: gerarDataAutomatica(276),
-      dataFormatada: gerarDataFormatada(276),
+    criarDia(276, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5491,11 +4707,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "evangelhos, ressurreição",
     }),
-    new Dia({
-      numero: 277,
 
-      data: gerarDataAutomatica(277),
-      dataFormatada: gerarDataFormatada(277),
+    criarDia(277, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5510,11 +4723,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "igrejaPrimitiva, pentecostes",
     }),
-    new Dia({
-      numero: 278,
 
-      data: gerarDataAutomatica(278),
-      dataFormatada: gerarDataFormatada(278),
+    criarDia(278, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5529,11 +4739,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "igrejaPrimitiva, expansão",
     }),
-    new Dia({
-      numero: 279,
 
-      data: gerarDataAutomatica(279),
-      dataFormatada: gerarDataFormatada(279),
+    criarDia(279, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5548,11 +4755,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, graça",
     }),
-    new Dia({
-      numero: 280,
 
-      data: gerarDataAutomatica(280),
-      dataFormatada: gerarDataFormatada(280),
+    criarDia(280, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5567,11 +4771,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "igrejaPrimitiva, Paulo",
     }),
-    new Dia({
-      numero: 281,
 
-      data: gerarDataAutomatica(281),
-      dataFormatada: gerarDataFormatada(281),
+    criarDia(281, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5586,11 +4787,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, segundaVinda",
     }),
-    new Dia({
-      numero: 282,
 
-      data: gerarDataAutomatica(282),
-      dataFormatada: gerarDataFormatada(282),
+    criarDia(282, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5611,11 +4809,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, segundaVinda",
     }),
-    new Dia({
-      numero: 283,
 
-      data: gerarDataAutomatica(283),
-      dataFormatada: gerarDataFormatada(283),
+    criarDia(283, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5630,11 +4825,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "igrejaPrimitiva, missões",
     }),
-    new Dia({
-      numero: 284,
 
-      data: gerarDataAutomatica(284),
-      dataFormatada: gerarDataFormatada(284),
+    criarDia(284, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5649,11 +4841,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, graça",
     }),
-    new Dia({
-      numero: 285,
 
-      data: gerarDataAutomatica(285),
-      dataFormatada: gerarDataFormatada(285),
+    criarDia(285, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5668,11 +4857,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, igreja",
     }),
-    new Dia({
-      numero: 286,
 
-      data: gerarDataAutomatica(286),
-      dataFormatada: gerarDataFormatada(286),
+    criarDia(286, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5687,11 +4873,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, vidaCristã",
     }),
-    new Dia({
-      numero: 287,
 
-      data: gerarDataAutomatica(287),
-      dataFormatada: gerarDataFormatada(287),
+    criarDia(287, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5712,11 +4895,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, vidaCristã",
     }),
-    new Dia({
-      numero: 288,
 
-      data: gerarDataAutomatica(288),
-      dataFormatada: gerarDataFormatada(288),
+    criarDia(288, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5731,11 +4911,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, ministério",
     }),
-    new Dia({
-      numero: 289,
 
-      data: gerarDataAutomatica(289),
-      dataFormatada: gerarDataFormatada(289),
+    criarDia(289, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5750,11 +4927,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, vidaCristã",
     }),
-    new Dia({
-      numero: 290,
 
-      data: gerarDataAutomatica(290),
-      dataFormatada: gerarDataFormatada(290),
+    criarDia(290, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5775,11 +4949,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, justificação",
     }),
-    new Dia({
-      numero: 291,
 
-      data: gerarDataAutomatica(291),
-      dataFormatada: gerarDataFormatada(291),
+    criarDia(291, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5794,11 +4965,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, justificação",
     }),
-    new Dia({
-      numero: 292,
 
-      data: gerarDataAutomatica(292),
-      dataFormatada: gerarDataFormatada(292),
+    criarDia(292, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5813,11 +4981,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, vidaNoEspírito",
     }),
-    new Dia({
-      numero: 293,
 
-      data: gerarDataAutomatica(293),
-      dataFormatada: gerarDataFormatada(293),
+    criarDia(293, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5832,11 +4997,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, soberania",
     }),
-    new Dia({
-      numero: 294,
 
-      data: gerarDataAutomatica(294),
-      dataFormatada: gerarDataFormatada(294),
+    criarDia(294, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5851,11 +5013,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, vidaCristã",
     }),
-    new Dia({
-      numero: 295,
 
-      data: gerarDataAutomatica(295),
-      dataFormatada: gerarDataFormatada(295),
+    criarDia(295, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5870,11 +5029,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, igreja",
     }),
-    new Dia({
-      numero: 296,
 
-      data: gerarDataAutomatica(296),
-      dataFormatada: gerarDataFormatada(296),
+    criarDia(296, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5889,11 +5045,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, vidaCristã",
     }),
-    new Dia({
-      numero: 297,
 
-      data: gerarDataAutomatica(297),
-      dataFormatada: gerarDataFormatada(297),
+    criarDia(297, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5908,11 +5061,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, alegria",
     }),
-    new Dia({
-      numero: 298,
 
-      data: gerarDataAutomatica(298),
-      dataFormatada: gerarDataFormatada(298),
+    criarDia(298, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5927,11 +5077,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, perdão",
     }),
-    new Dia({
-      numero: 299,
 
-      data: gerarDataAutomatica(299),
-      dataFormatada: gerarDataFormatada(299),
+    criarDia(299, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5952,11 +5099,11 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "cartasPaulinas, perdão",
     }),
-    new Dia({
-      numero: 300,
 
-      data: gerarDataAutomatica(300),
-      dataFormatada: gerarDataFormatada(300),
+    /* ======================================================================
+       DIA 300
+    ====================================================================== */
+    criarDia(300, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5971,11 +5118,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "igrejaPrimitiva, evangelização",
     }),
-    new Dia({
-      numero: 301,
 
-      data: gerarDataAutomatica(301),
-      dataFormatada: gerarDataFormatada(301),
+    criarDia(301, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -5990,11 +5134,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "igrejaPrimitiva, conflitos",
     }),
-    new Dia({
-      numero: 302,
 
-      data: gerarDataAutomatica(302),
-      dataFormatada: gerarDataFormatada(302),
+    criarDia(302, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6009,11 +5150,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "igrejaPrimitiva, Roma",
     }),
-    new Dia({
-      numero: 303,
 
-      data: gerarDataAutomatica(303),
-      dataFormatada: gerarDataFormatada(303),
+    criarDia(303, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6028,11 +5166,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "epístolaGeral, sacerdócio",
     }),
-    new Dia({
-      numero: 304,
 
-      data: gerarDataAutomatica(304),
-      dataFormatada: gerarDataFormatada(304),
+    criarDia(304, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6047,11 +5182,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "epístolaGeral, aliança",
     }),
-    new Dia({
-      numero: 305,
 
-      data: gerarDataAutomatica(305),
-      dataFormatada: gerarDataFormatada(305),
+    criarDia(305, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6066,11 +5198,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "epístolaGeral, fé",
     }),
-    new Dia({
-      numero: 306,
 
-      data: gerarDataAutomatica(306),
-      dataFormatada: gerarDataFormatada(306),
+    criarDia(306, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6085,11 +5214,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "epístolaGeral, féEObras",
     }),
-    new Dia({
-      numero: 307,
 
-      data: gerarDataAutomatica(307),
-      dataFormatada: gerarDataFormatada(307),
+    criarDia(307, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6104,11 +5230,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "epístolaGeral, sofrimento",
     }),
-    new Dia({
-      numero: 308,
 
-      data: gerarDataAutomatica(308),
-      dataFormatada: gerarDataFormatada(308),
+    criarDia(308, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6129,11 +5252,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "epístolaGeral, falsosMestres",
     }),
-    new Dia({
-      numero: 309,
 
-      data: gerarDataAutomatica(309),
-      dataFormatada: gerarDataFormatada(309),
+    criarDia(309, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6148,11 +5268,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "epístolaGeral, amor",
     }),
-    new Dia({
-      numero: 310,
 
-      data: gerarDataAutomatica(310),
-      dataFormatada: gerarDataFormatada(310),
+    criarDia(310, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6167,11 +5284,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "epístolaGeral, verdade",
     }),
-    new Dia({
-      numero: 311,
 
-      data: gerarDataAutomatica(311),
-      dataFormatada: gerarDataFormatada(311),
+    criarDia(311, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6186,11 +5300,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "escatologia, CristoGlorificado",
     }),
-    new Dia({
-      numero: 312,
 
-      data: gerarDataAutomatica(312),
-      dataFormatada: gerarDataFormatada(312),
+    criarDia(312, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6205,11 +5316,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "escatologia, trono",
     }),
-    new Dia({
-      numero: 313,
 
-      data: gerarDataAutomatica(313),
-      dataFormatada: gerarDataFormatada(313),
+    criarDia(313, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6224,11 +5332,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "escatologia, juízo",
     }),
-    new Dia({
-      numero: 314,
 
-      data: gerarDataAutomatica(314),
-      dataFormatada: gerarDataFormatada(314),
+    criarDia(314, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6243,11 +5348,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "escatologia, conflito",
     }),
-    new Dia({
-      numero: 315,
 
-      data: gerarDataAutomatica(315),
-      dataFormatada: gerarDataFormatada(315),
+    criarDia(315, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6262,11 +5364,8 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "escatologia, besta",
     }),
-    new Dia({
-      numero: 316,
 
-      data: gerarDataAutomatica(316),
-      dataFormatada: gerarDataFormatada(316),
+    criarDia(316, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6281,11 +5380,11 @@ const planoCronologico = {
       versiculos: [],
       observacoes: "escatologia, quedaDaBabilônia",
     }),
-    new Dia({
-      numero: 317,
 
-      data: gerarDataAutomatica(317),
-      dataFormatada: gerarDataFormatada(317),
+    /* ======================================================================
+       DIA 317
+    ====================================================================== */
+    criarDia(317, {
       antigoTestamento: [],
       novoTestamento: [
         {
@@ -6302,31 +5401,41 @@ const planoCronologico = {
     }),
   ],
 
-  /* --------------------------------------------------------------------------
+  /* -------------------------------------------------------------------------
      MÉTODOS DE ACESSO (CONTRATO FUNCIONAL)
-  -------------------------------------------------------------------------- */
+  ------------------------------------------------------------------------- */
 
+  /**
+   * Retorna um dia específico pelo número (O(1))
+   * @param {number} numero
+   * @returns {Dia | undefined}
+   */
   getDia(numero) {
-    return this.dias.find((dia) => dia.numero === numero);
+    return this.dias[numero - 1];
   },
 
+  /**
+   * Retorna todos os dias do plano
+   * @returns {Dia[]}
+   */
   getDias() {
     return this.dias;
   },
 };
 
-/* --------------------------------------------------------------------------
+/* ---------------------------------------------------------------------------
    VALIDAÇÃO DO CONTRATO
--------------------------------------------------------------------------- */
+   ---------------------------------------------------------------------------
+   Garante em runtime que:
+   - Todos os dias são instâncias válidas de Dia
+   - A sequência está correta
+   - O plano é estruturalmente íntegro
+--------------------------------------------------------------------------- */
 
 validarPlano(planoCronologico);
 
-/* --------------------------------------------------------------------------
+/* ---------------------------------------------------------------------------
    EXPORTAÇÃO
-   --------------------------------------------------------------------------
-   Exporta apenas o plano principal
-   As funções de data não são mais exportadas pois estão centralizadas
-   em utils/geradorDatas.js
--------------------------------------------------------------------------- */
+--------------------------------------------------------------------------- */
 
 export default planoCronologico;

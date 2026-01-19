@@ -1,90 +1,87 @@
 /* ============================================================================
    ProgressoLeitura.js — Estado de Progresso de Leitura
-   Versão: 0.6
+   Versão: 0.7.0
    Aplicação: Leitura Controlada da Bíblia
 
    RESPONSABILIDADE ÚNICA:
    ----------------------------------------------------------------------------
    - Gerenciar quais dias foram lidos
    - Calcular progresso
-   - Persistir estado (localStorage por enquanto)
+   - Persistir estado (localStorage)
    - NÃO conter lógica de UI
+   - NÃO depender de plano, datas ou renderização
 ============================================================================ */
 
 export class ProgressoLeitura {
-  constructor(chave = "progresso_leitura") {
-    this.chave = chave;
+  constructor(chaveStorage = "progresso_leitura") {
+    this.chaveStorage = chaveStorage;
     this.diasLidos = new Set();
+
     this._carregar();
   }
 
   /* --------------------------------------------------------------------------
-     MARCAÇÃO DE ESTADO
+     MARCAÇÃO DE ESTADO (DOMÍNIO)
   -------------------------------------------------------------------------- */
 
-  marcarLido(numeroDia) {
+  marcarComoLido(numeroDia) {
     this.diasLidos.add(Number(numeroDia));
     this._salvar();
   }
 
-  desmarcarLido(numeroDia) {
+  desmarcarComoLido(numeroDia) {
     this.diasLidos.delete(Number(numeroDia));
     this._salvar();
   }
 
   alternar(numeroDia) {
-    if (this.isLido(numeroDia)) {
-      this.desmarcarLido(numeroDia);
-    } else {
-      this.marcarLido(numeroDia);
-    }
+    this.estaLido(numeroDia)
+      ? this.desmarcarComoLido(numeroDia)
+      : this.marcarComoLido(numeroDia);
   }
 
   /* --------------------------------------------------------------------------
-     CONSULTAS (API INTERNA)
-  -------------------------------------------------------------------------- */
-
-  isLido(numeroDia) {
-    return this.diasLidos.has(Number(numeroDia));
-  }
-
-  totalLidos() {
-    return this.diasLidos.size;
-  }
-
-  progressoPercentual(totalDias) {
-    if (!totalDias) return 0;
-    return Math.round((this.totalLidos() / totalDias) * 100);
-  }
-
-  /* --------------------------------------------------------------------------
-     CONSULTAS (API PÚBLICA — CONTRATO DO APP)
-     Mantém estabilidade com a main.js
+     CONSULTAS DE ESTADO
   -------------------------------------------------------------------------- */
 
   estaLido(numeroDia) {
-    return this.isLido(numeroDia);
+    return this.diasLidos.has(Number(numeroDia));
   }
 
   getTotalLidos() {
-    return this.totalLidos();
+    return this.diasLidos.size;
+  }
+
+  calcularPercentual(totalDias) {
+    if (!totalDias || totalDias <= 0) return 0;
+    return Math.round((this.getTotalLidos() / totalDias) * 100);
   }
 
   /* --------------------------------------------------------------------------
-     PERSISTÊNCIA
+     PERSISTÊNCIA (INFRA LOCAL)
   -------------------------------------------------------------------------- */
 
   _salvar() {
     localStorage.setItem(
-      this.chave,
-      JSON.stringify([...this.diasLidos])
+      this.chaveStorage,
+      JSON.stringify([...this.diasLidos]),
     );
   }
 
   _carregar() {
-    const dados = JSON.parse(localStorage.getItem(this.chave) || "[]");
-    dados.forEach((n) => this.diasLidos.add(Number(n)));
+    const dados = localStorage.getItem(this.chaveStorage);
+    if (!dados) return;
+
+    try {
+      JSON.parse(dados).forEach((n) => this.diasLidos.add(Number(n)));
+    } catch {
+      this.diasLidos.clear();
+    }
   }
+
+  /* --------------------------------------------------------------------------
+     UTILITÁRIOS
+  -------------------------------------------------------------------------- */
 
   resetar() {
     this.diasLidos.clear();

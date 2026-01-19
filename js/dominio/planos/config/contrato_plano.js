@@ -1,27 +1,27 @@
 /* ============================================================================
    contrato_plano.js — Contrato de Domínio para Planos de Leitura
-   Versão: 0.6
+   Versão: 0.7
    Aplicação: Bíblia Responsiva App
 
    RESPONSABILIDADE ÚNICA:
    ----------------------------------------------------------------------------
    - Definir o contrato mínimo que todo plano de leitura deve cumprir
    - Validar planos em runtime
-   - Proteger a aplicação contra planos inválidos ou incompletos
+   - Garantir consistência estrutural e temporal
+   - Proteger o sistema contra planos inválidos
 
-   ESTE MÓDULO:
+   ESTE MÓDULO NÃO:
    ----------------------------------------------------------------------------
-   ✔ Não cria planos
-   ✔ Não conhece UI
-   ✔ Não conhece persistência
-   ✔ Não conhece progresso
+   ✖ Cria planos
+   ✖ Gera datas
+   ✖ Formata datas
+   ✖ Conhece UI, progresso ou persistência
 ============================================================================ */
 
-import { Dia } from "../dia.js";
+import { Dia } from "../../dia.js";
 
 /* ============================================================================
    CONTRATO DOCUMENTADO (REFERÊNCIA HUMANA)
-============================================================================
 
 Todo plano DEVE expor:
 
@@ -47,49 +47,62 @@ export function validarPlano(plano) {
     throw new Error("Plano inválido: objeto esperado.");
   }
 
-  /* --------------------------------------------------------------------------
-     CAMPOS OBRIGATÓRIOS
-  -------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------
+     METADADOS OBRIGATÓRIOS
+  ------------------------------------------------------------------------ */
 
   validarString(plano.id, "id");
   validarString(plano.nome, "nome");
   validarString(plano.descricao, "descricao");
 
   if (!Number.isInteger(plano.totalDias) || plano.totalDias <= 0) {
-    throw new Error("Plano inválido: totalDias deve ser um número inteiro > 0.");
+    throw new Error(
+      "Plano inválido: totalDias deve ser um número inteiro maior que zero.",
+    );
   }
 
   if (!Array.isArray(plano.dias)) {
     throw new Error("Plano inválido: dias deve ser um array.");
   }
 
-  /* --------------------------------------------------------------------------
-     VALIDAÇÃO DOS DIAS
-  -------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------
+     CONSISTÊNCIA DO AGREGADO
+  ------------------------------------------------------------------------ */
 
   if (plano.dias.length !== plano.totalDias) {
     throw new Error(
-      `Plano inconsistente: totalDias (${plano.totalDias}) difere da quantidade real de dias (${plano.dias.length}).`
+      `Plano inconsistente: totalDias (${plano.totalDias}) difere da quantidade real de dias (${plano.dias.length}).`,
     );
   }
 
+  /* ------------------------------------------------------------------------
+     VALIDAÇÃO DOS DIAS (ENTIDADES)
+  ------------------------------------------------------------------------ */
+
   plano.dias.forEach((dia, index) => {
     if (!(dia instanceof Dia)) {
+      throw new Error(`Plano inválido: dias[${index}] não é instância de Dia.`);
+    }
+
+    const numeroEsperado = index + 1;
+
+    if (dia.numero !== numeroEsperado) {
       throw new Error(
-        `Plano inválido: item em dias[${index}] não é uma instância de Dia.`
+        `Plano inválido: dia.numero (${dia.numero}) fora de sequência. Esperado ${numeroEsperado}.`,
       );
     }
 
-    if (dia.numero !== index + 1) {
+    // Garantia mínima de integridade temporal (sem gerar nada)
+    if (!dia.data || !dia.dataFormatada) {
       throw new Error(
-        `Plano inválido: dia.numero (${dia.numero}) fora de sequência. Esperado ${index + 1}.`
+        `Plano inválido: dia ${dia.numero} não possui data resolvida.`,
       );
     }
   });
 
-  /* --------------------------------------------------------------------------
-     MÉTODOS DE ACESSO (CONTRATO FUNCIONAL)
-  -------------------------------------------------------------------------- */
+  /* ------------------------------------------------------------------------
+     CONTRATO FUNCIONAL
+  ------------------------------------------------------------------------ */
 
   if (typeof plano.getDia !== "function") {
     throw new Error("Plano inválido: método getDia(numero) é obrigatório.");
@@ -99,19 +112,19 @@ export function validarPlano(plano) {
     throw new Error("Plano inválido: método getDias() é obrigatório.");
   }
 
-  /* --------------------------------------------------------------------------
+  /* ------------------------------------------------------------------------
      VALIDAÇÃO DE COMPORTAMENTO
-  -------------------------------------------------------------------------- */
+  ------------------------------------------------------------------------ */
 
-  const testeDia = plano.getDia(1);
-  if (testeDia && !(testeDia instanceof Dia)) {
+  const primeiroDia = plano.getDia(1);
+  if (primeiroDia !== undefined && !(primeiroDia instanceof Dia)) {
     throw new Error(
-      "Plano inválido: getDia(numero) deve retornar Dia ou undefined."
+      "Plano inválido: getDia(numero) deve retornar Dia ou undefined.",
     );
   }
 
-  const testeDias = plano.getDias();
-  if (!Array.isArray(testeDias)) {
+  const todosDias = plano.getDias();
+  if (!Array.isArray(todosDias)) {
     throw new Error("Plano inválido: getDias() deve retornar um array.");
   }
 
@@ -119,11 +132,13 @@ export function validarPlano(plano) {
 }
 
 /* ============================================================================
-   HELPERS
+   HELPERS INTERNOS
 ============================================================================ */
 
 function validarString(valor, campo) {
   if (typeof valor !== "string" || !valor.trim()) {
-    throw new Error(`Plano inválido: campo "${campo}" deve ser string não vazia.`);
+    throw new Error(
+      `Plano inválido: campo "${campo}" deve ser uma string não vazia.`,
+    );
   }
 }

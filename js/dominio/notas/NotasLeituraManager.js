@@ -1,47 +1,57 @@
 /* ============================================================================
-   NotasLeituraManager.js — Domínio de Anotações de Leitura
-   Versão: 0.3 — persistência pura (DOM-safe)
+   NotasLeituraManager.js — Notas por Dia
+   Versão: 1.0 — ETAPA 3.4
 ============================================================================ */
 
 export class NotasLeituraManager {
-  constructor(chave = "notas_leitura_default") {
-    this.chave = chave;
-    this.conteudoHTML = "";
-    this._carregar();
+  constructor(prefixoChave = "notas_dia_") {
+    this.prefixo = prefixoChave;
+    this.diaAtual = null;
   }
 
   /* --------------------------------------------------------------------------
-     CONTEÚDO
-     --------------------------------------------------------------------------
-     Regra:
-       - O domínio NÃO normaliza
-       - O domínio NÃO interpreta
-       - O domínio apenas armazena o HTML produzido pelo editor
+     CONTROLE DE DIA
   -------------------------------------------------------------------------- */
 
-  setConteudo(html) {
-    this.conteudoHTML = html || "";
-    this._salvar();
+  setDiaAtual(numeroDia) {
+    this.diaAtual = Number(numeroDia);
   }
 
+  getDiaAtual() {
+    return this.diaAtual;
+  }
+
+  /* --------------------------------------------------------------------------
+     CHAVE DE PERSISTÊNCIA
+  -------------------------------------------------------------------------- */
+
+  _getChave() {
+    if (!this.diaAtual) return null;
+    return `${this.prefixo}${String(this.diaAtual).padStart(3, "0")}`;
+  }
+
+  /* --------------------------------------------------------------------------
+     API PÚBLICA
+  -------------------------------------------------------------------------- */
+
   getConteudo() {
-    return this.conteudoHTML;
+    const chave = this._getChave();
+    if (!chave) return "";
+
+    return localStorage.getItem(chave) || "";
+  }
+
+  setConteudo(html) {
+    const chave = this._getChave();
+    if (!chave) return;
+
+    localStorage.setItem(chave, html);
   }
 
   limpar() {
-    this.conteudoHTML = "";
-    this._salvar();
-  }
+    const chave = this._getChave();
+    if (!chave) return;
 
-  /* --------------------------------------------------------------------------
-     PERSISTÊNCIA
-  -------------------------------------------------------------------------- */
-
-  _salvar() {
-    localStorage.setItem(this.chave, this.conteudoHTML);
-  }
-
-  _carregar() {
-    this.conteudoHTML = localStorage.getItem(this.chave) || "";
+    localStorage.removeItem(chave);
   }
 }
