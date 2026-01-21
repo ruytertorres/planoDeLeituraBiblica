@@ -1,6 +1,6 @@
 📘 NOTA DE CONTINUIDADE — APP DE LEITURA BÍBLICA
 
-Data: 19/01/2026
+Data: 20/01/2026
 Estado: Arquitetura saudável, evolução controlada, sem dívida técnica
 
 ######
@@ -25,17 +25,14 @@ persistencia parece está em dia, um ponto auto de hoje foi ter o geradorDatas.j
 de segurança de validação para não resetar o progrço por acidentalmente
 2. certificado de conclusão de leitura da biblia (gerar um certificado de conclusão de leitura da biblia com base no plano atual de escolha do usuario [com o nome do usuaro; data de inicio; data de termino; texto de certificado generico])
 esse certificado não pode ser gerado com menos de 90 dias apos o inicio da leitura, para evitar fraude
-
-3. outra mudança, as tgas dos dias de leituras poderiam ficar em uma div que se expande quando clicada, para deixar a visualisação mais clean
-
-4.  adcionar um botão que limpa o progrsso de leitura voltando ele a 0 dias lidos; essa ação precisa de confirmação, um sistema de segurança que 
+3.  adcionar um botão que limpa o progrsso de leitura voltando ele a 0 dias lidos; essa ação precisa de confirmação, um sistema de segurança que 
 impede de limpar acidentalmente
-5. durante a leitura anual a qualquer momento fica um botão de expotação de progreço que envaia um docx com o progresso para o usuario sontendo:
+4. durante a leitura anual a qualquer momento fica um botão de expotação de progreço que envaia um docx com o progresso para o usuario sontendo:
 progresso em %
 total de dias lidos
 total de capitulos lidos
 qual o ultimo dia e o ultimo capitulo lido, qual o proximo dia e proximo capitulo
-6. no fim da leitura emite um certificado simbolico contendo:
+5. no fim da leitura emite um certificado simbolico contendo:
 
 leitura anual da biblia
 conclida por usuario; no periodo do dia xx/xx/xxxx até xx/xx/xxxx
@@ -45,4 +42,3 @@ conclida por usuario; no periodo do dia xx/xx/xxxx até xx/xx/xxxx
 
 vazia hoje, exceto pelo lembreta baixo que so faz sentido pra mim
 
-//agora quero refatorar a index.html
