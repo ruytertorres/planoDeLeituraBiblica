@@ -7,11 +7,8 @@ Estado: Arquitetura saudável, evolução controlada, sem dívida técnica
 🔹 FASE Atual
 ######
 
-reestruturando a nova main. fiz hoje os cards dos dias, amanha vou focar nos calendarios. ainda tem muit chão pela frente
-desabilitei o darkmode;
-o notas_toolbar.js tem meu mini editor de texto; mas o notas_overlay.js está em processo de refatoramento, junto com a index.html
-cuidado apenas para não perder o notas_toolbar.js
-persistencia parece está em dia, um ponto auto de hoje foi ter o geradorDatas.js como nosso carro chefe de manipulação de datas;
+Index - reestruturada
+bloco de notas flutuante - reestruturado
 
 
 #################
@@ -38,7 +35,7 @@ leitura anual da biblia
 conclida por usuario; no periodo do dia xx/xx/xxxx até xx/xx/xxxx
 "texto generico de certificado"
 
-📝 NOTA DE ARQUITETURA — PROGRESSO DE LEITURA (DECISÃO ADIADA)
 
-vazia hoje, exceto pelo lembreta baixo que so faz sentido pra mim
+6. implementar darkmode
 
+7. implementar download do bloco de notas para docx
