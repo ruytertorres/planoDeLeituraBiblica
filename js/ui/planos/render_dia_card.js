@@ -1,6 +1,6 @@
 /* ============================================================================
    render_dia_card.js — Renderizador do Card de Dia
-   Versão: 0.2.0
+   Versão: 0.2.1 (CORRIGIDO: exibição de capítulo único)
 ============================================================================ */
 
 /**
@@ -58,10 +58,14 @@ function renderSecao(titulo, leituras) {
       <h3>${titulo}</h3>
       <ul>
         ${leituras
-          .map(
-            (leitura) =>
-              `<li>${leitura.livroNome} ${leitura.capituloInicio}–${leitura.capituloFim}</li>`,
-          )
+          .map((leitura) => {
+            // CORREÇÃO: Se for apenas um capítulo, mostrar apenas o número
+            if (leitura.capituloInicio === leitura.capituloFim) {
+              return `<li>${leitura.livroNome} ${leitura.capituloInicio}</li>`;
+            } else {
+              return `<li>${leitura.livroNome} ${leitura.capituloInicio}–${leitura.capituloFim}</li>`;
+            }
+          })
           .join("")}
       </ul>
     </div>

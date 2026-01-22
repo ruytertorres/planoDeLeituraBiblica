@@ -1,6 +1,6 @@
 /* ============================================================================
    ProgressoLeitura.js — Estado de Progresso de Leitura
-   Versão: 0.7.0
+   Versão: 0.8.0 — COM MÉTODO DE RESET COMPLETO
    Aplicação: Leitura Controlada da Bíblia
 
    RESPONSABILIDADE ÚNICA:
@@ -8,6 +8,7 @@
    - Gerenciar quais dias foram lidos
    - Calcular progresso
    - Persistir estado (localStorage)
+   - Fornecer método para reset completo
    - NÃO conter lógica de UI
    - NÃO depender de plano, datas ou renderização
 ============================================================================ */
@@ -58,33 +59,156 @@ export class ProgressoLeitura {
   }
 
   /* --------------------------------------------------------------------------
+     RESET COMPLETO DO PROGRESSO
+     Método público para resetar todos os dias lidos
+  -------------------------------------------------------------------------- */
+
+  resetarCompletamente() {
+    console.log("🔄 Iniciando reset completo do progresso...");
+    
+    // Criar backup dos dados atuais antes de resetar
+    const backup = {
+      diasLidos: [...this.diasLidos],
+      total: this.diasLidos.size,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Salvar backup no localStorage (útil para recuperação)
+    try {
+      localStorage.setItem(`${this.chaveStorage}_backup`, JSON.stringify(backup));
+      console.log(`📦 Backup criado com ${backup.total} dias`);
+    } catch (error) {
+      console.warn("Não foi possível criar backup:", error);
+    }
+    
+    // Limpar conjunto de dias lidos
+    this.diasLidos.clear();
+    
+    // Limpar storage principal
+    this._salvar();
+    
+    // Limpar contador de backup
+    localStorage.removeItem("backup_counter");
+    
+    console.log(`✅ Reset completo concluído. ${backup.total} dias foram removidos.`);
+    
+    return {
+      diasResetados: backup.total,
+      timestamp: new Date().toISOString(),
+      backupDisponivel: true
+    };
+  }
+
+  /* --------------------------------------------------------------------------
+     RESTAURAÇÃO DO BACKUP (OPCIONAL)
+     Permite restaurar progresso em caso de erro
+  -------------------------------------------------------------------------- */
+
+  restaurarDoBackup() {
+    try {
+      const backupData = localStorage.getItem(`${this.chaveStorage}_backup`);
+      if (!backupData) {
+        console.warn("Nenhum backup encontrado para restaurar");
+        return null;
+      }
+      
+      const backup = JSON.parse(backupData);
+      this.diasLidos = new Set(backup.diasLidos || []);
+      this._salvar();
+      
+      console.log(`🔄 Progresso restaurado do backup: ${this.diasLidos.size} dias`);
+      
+      return {
+        sucesso: true,
+        diasRestaurados: this.diasLidos.size,
+        timestamp: backup.timestamp
+      };
+    } catch (error) {
+      console.error("Erro ao restaurar backup:", error);
+      return null;
+    }
+  }
+
+  /* --------------------------------------------------------------------------
      PERSISTÊNCIA (INFRA LOCAL)
   -------------------------------------------------------------------------- */
 
   _salvar() {
-    localStorage.setItem(
-      this.chaveStorage,
-      JSON.stringify([...this.diasLidos]),
-    );
+    try {
+      localStorage.setItem(
+        this.chaveStorage,
+        JSON.stringify([...this.diasLidos]),
+      );
+      
+      // Sistema de backup automático
+      this._criarBackupAutomatico();
+      
+    } catch (error) {
+      console.error("Erro ao salvar progresso:", error);
+      throw new Error("Não foi possível salvar o progresso. Verifique o armazenamento local.");
+    }
   }
 
   _carregar() {
-    const dados = localStorage.getItem(this.chaveStorage);
-    if (!dados) return;
-
     try {
+      const dados = localStorage.getItem(this.chaveStorage);
+      if (!dados) return;
+
       JSON.parse(dados).forEach((n) => this.diasLidos.add(Number(n)));
-    } catch {
+      
+      console.log(`📊 Progresso carregado: ${this.diasLidos.size} dias lidos`);
+      
+    } catch (error) {
+      console.error("Erro ao carregar progresso. Iniciando com conjunto vazio:", error);
       this.diasLidos.clear();
     }
   }
 
   /* --------------------------------------------------------------------------
-     UTILITÁRIOS
+     SISTEMA DE BACKUP AUTOMÁTICO
+     Cria backups periódicos para segurança
+  -------------------------------------------------------------------------- */
+
+  _criarBackupAutomatico() {
+    try {
+      // Contador para não criar backup toda hora
+      const contadorStr = localStorage.getItem("backup_counter") || "0";
+      let contador = parseInt(contadorStr);
+      
+      // Criar backup a cada 20 salvamentos ou se for o primeiro
+      if (contador >= 20 || contador === 0) {
+        const backup = {
+          diasLidos: [...this.diasLidos],
+          total: this.diasLidos.size,
+          timestamp: new Date().toISOString(),
+          versao: "1.0"
+        };
+        
+        localStorage.setItem(`${this.chaveStorage}_auto_backup`, JSON.stringify(backup));
+        localStorage.setItem("backup_counter", "1");
+        
+        console.log("📦 Backup automático criado");
+      } else {
+        localStorage.setItem("backup_counter", (contador + 1).toString());
+      }
+    } catch (error) {
+      console.warn("Não foi possível criar backup automático:", error);
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     UTILITÁRIOS (MÉTODOS LEGACY - MANTIDOS PARA COMPATIBILIDADE)
   -------------------------------------------------------------------------- */
 
   resetar() {
+    // Método legacy - mantido para compatibilidade
+    console.warn("⚠️ Usando método legacy resetar(). Use resetarCompletamente() para mais recursos.");
     this.diasLidos.clear();
     this._salvar();
+    return this.diasLidos.size;
+  }
+
+  getDiasLidos() {
+    return [...this.diasLidos].sort((a, b) => a - b);
   }
 }

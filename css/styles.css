@@ -82,6 +82,7 @@ body {
 
 /* =========================================================================
    NAVBAR - 100% DA LARGURA DA VIEWPORT
+   REFATORADO: Ajustado para acomodar sistema de busca
    ========================================================================= */
 #navbar {
   background-color: var(--primary-color);
@@ -105,6 +106,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap; /* NOVO: Permite quebra de linha para mobile */
+  gap: 1rem; /* NOVO: Espaço entre elementos */
 }
 
 .navbar-title {
@@ -115,16 +118,169 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0; /* NOVO: Evita que o título diminua */
 }
 
 .navbar-title i {
   font-size: 1.2rem;
 }
 
+/* =========================================================================
+   SISTEMA DE BUSCA - INTEGRADO NA NAVBAR
+   ========================================================================= */
+.search-container {
+  position: relative;
+  flex: 1; /* NOVO: Ocupa espaço disponível */
+  max-width: 350px; /* NOVO: Largura máxima */
+  min-width: 200px; /* NOVO: Largura mínima */
+  margin: 0 0.5rem; /* NOVO: Margem ajustada */
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-box:focus-within {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.search-icon {
+  color: rgba(255, 255, 255, 0.7);
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 0.9rem;
+  padding: 0.25rem 0;
+  outline: none;
+  width: 100%;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search-clear {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.search-input:not(:placeholder-shown) + .search-clear {
+  opacity: 1;
+}
+
+.search-clear:hover {
+  color: white;
+}
+
+/* Resultados da busca */
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 0.5rem;
+  display: none;
+}
+
+.search-results.active {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.search-results.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.search-result-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background-color: #f3f4f6;
+}
+
+.search-result-item.selected {
+  background-color: #e3f2fd;
+}
+
+.result-type {
+  font-size: 0.7rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  white-space: nowrap;
+}
+
+.result-details {
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-align: right;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.no-results {
+  padding: 1rem;
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* =========================================================================
+   NAVBAR STATS - AJUSTADO PARA CONVIVER COM BUSCA
+   ========================================================================= */
 .navbar-stats {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem; /* NOVO: Gap reduzido para mobile */
   align-items: center;
+  flex-shrink: 0; /* NOVO: Evita que os stats diminuam */
 }
 
 .stat-item {
@@ -163,6 +319,35 @@ body {
 
 .theme-toggle:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================================================
+   BOTÃO DE RESETAR PROGRESSO (APENAS BOTÃO - MODAL VIA JS)
+   ========================================================================= */
+.btn-reset {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  background-color: rgba(220, 53, 69, 0.2);
+}
+
+.btn-reset:hover {
+  background-color: rgba(220, 53, 69, 0.4);
+  transform: scale(1.1);
+}
+
+.btn-reset i {
+  color: #dc3545;
 }
 
 /* =========================================================================
@@ -358,7 +543,7 @@ body {
 }
 
 /* =========================================================================
-   BOTÃO "DESMARCAR COMO LIDO" - CORRIGIDO PARA MESMA COR DO "PRÓXIMO"
+   BOTÃO "DESMARCAR COMO LIDO"
    ========================================================================= */
 .dia-card-footer {
   border-top: 1px solid #e5e7eb;
@@ -398,7 +583,7 @@ body {
   box-shadow: 0 6px 20px rgba(74, 108, 247, 0.45);
 }
 
-/* Quando já está marcado como lido - verde igual ao estado dos cards */
+/* Quando já está marcado como lido */
 .current-day-card.lido .dia-card-footer button {
   background: linear-gradient(135deg, #28a745, #1e7e34);
   box-shadow: 0 4px 14px rgba(40, 167, 69, 0.35);
@@ -409,14 +594,13 @@ body {
   box-shadow: 0 6px 20px rgba(40, 167, 69, 0.45);
 }
 
-/* Adicionar ícone ao botão para ficar mais parecido */
+/* Ícones dos botões */
 .dia-card-footer button::before {
   content: "📖";
   font-size: 1rem;
   margin-right: 0.5rem;
 }
 
-/* Quando está marcado como lido, mudar o ícone */
 .current-day-card.lido .dia-card-footer button::before {
   content: "✅";
 }
@@ -590,7 +774,7 @@ body {
   box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.3);
 }
 
-/* Ícone da Bíblia maior */
+/* Ícone da Bíblia */
 .calendario-dia.calendario-hoje-plano {
   position: relative;
 }
@@ -760,6 +944,7 @@ body {
 
 /* =========================================================================
    RESPONSIVIDADE - TABLETS (768px ou menos)
+   REFATORADO: Ajustado para sistema de busca
    ========================================================================= */
 @media (max-width: 768px) {
   /* Layout geral */
@@ -767,7 +952,7 @@ body {
     padding: 1rem;
   }
 
-  /* Navbar */
+  /* Navbar - REFATORADO para busca */
   .navbar-container {
     flex-direction: column;
     gap: 1rem;
@@ -777,12 +962,29 @@ body {
 
   .navbar-title {
     font-size: 1.3rem;
+    order: 1; /* NOVO: Define ordem de exibição */
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Sistema de busca - REFATORADO para mobile */
+  .search-container {
+    order: 2; /* NOVO: Busca aparece em segundo */
+    width: 100%;
+    max-width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .search-input::placeholder {
+    text-align: center;
   }
 
   .navbar-stats {
+    order: 3; /* NOVO: Stats aparecem em terceiro */
     justify-content: center;
     gap: 1.5rem;
     flex-wrap: wrap;
+    width: 100%;
   }
 
   .stat-item {
@@ -790,6 +992,18 @@ body {
   }
 
   .stat-value {
+    font-size: 1rem;
+  }
+
+  .btn-reset {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+
+  .theme-toggle {
+    width: 35px;
+    height: 35px;
     font-size: 1rem;
   }
 
@@ -905,6 +1119,7 @@ body {
 
 /* =========================================================================
    RESPONSIVIDADE - MOBILE (480px ou menos)
+   REFATORADO: Ajustado para sistema de busca
    ========================================================================= */
 @media (max-width: 480px) {
   /* Layout geral */
@@ -912,13 +1127,26 @@ body {
     padding: 0.75rem;
   }
 
-  /* Navbar */
+  /* Navbar - REFATORADO para busca */
   .navbar-container {
     padding: 0 0.75rem;
   }
 
   .navbar-title {
     font-size: 1.1rem;
+  }
+
+  /* Sistema de busca - REFATORADO para mobile pequeno */
+  .search-container {
+    margin: 0.25rem 0;
+  }
+
+  .search-input {
+    font-size: 0.85rem;
+  }
+
+  .search-input::placeholder {
+    font-size: 0.8rem;
   }
 
   .navbar-stats {
@@ -933,10 +1161,16 @@ body {
     font-size: 0.9rem;
   }
 
+  .btn-reset {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
   .theme-toggle {
-    width: 35px;
-    height: 35px;
-    font-size: 1rem;
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
   }
 
   /* Card do dia */
@@ -1016,8 +1250,14 @@ body {
 
 /* =========================================================================
    RESPONSIVIDADE - TELAS MUITO PEQUENAS (360px ou menos)
+   REFATORADO: Ajustado para sistema de busca
    ========================================================================= */
 @media (max-width: 360px) {
+  /* Sistema de busca - ajustes finos */
+  .search-input::placeholder {
+    font-size: 0.75rem;
+  }
+
   .calendario-dia {
     height: 30px;
     font-size: 0.8rem;
@@ -1056,4 +1296,55 @@ body {
   .stat-item {
     min-width: 40px;
   }
+}
+
+/* =========================================================================
+   DARK MODE PARA SISTEMA DE BUSCA
+   ========================================================================= */
+.dark-mode .search-box {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .search-box:focus-within {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .search-input {
+  color: var(--text-dark);
+}
+
+.dark-mode .search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.dark-mode .search-results {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+.dark-mode .search-result-item {
+  border-bottom-color: var(--border-color);
+  color: var(--text-light);
+}
+
+.dark-mode .search-result-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .search-result-item.selected {
+  background-color: rgba(33, 150, 243, 0.2);
+}
+
+.dark-mode .result-type {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.dark-mode .result-details {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dark-mode .no-results {
+  color: rgba(255, 255, 255, 0.6);
 }

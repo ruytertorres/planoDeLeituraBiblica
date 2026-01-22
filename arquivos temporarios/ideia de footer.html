@@ -1,0 +1,382 @@
+<!-- =========================================================================
+     FOOTER PROFISSIONAL
+========================================================================= -->
+<footer id="footer" class="footer">
+  <div class="footer-container">
+    
+    <!-- SEÇÃO 1: MARCA E DESCRIÇÃO -->
+    <div class="footer-section footer-brand">
+      <div class="footer-logo">
+        <i class="fas fa-bible"></i>
+        <span class="footer-app-name">Leitura Bíblica Cronológica</span>
+      </div>
+      
+      <p class="footer-description">
+        Transforme sua vida através da leitura organizada das Escrituras. 
+        Um capítulo por dia, do Gênesis ao Apocalipse.
+      </p>
+      
+      <div class="footer-social">
+        <a href="#" class="social-icon" title="Compartilhar" aria-label="Compartilhar">
+          <i class="fas fa-share-alt"></i>
+        </a>
+        <a href="#" class="social-icon" title="Feedback" aria-label="Enviar feedback">
+          <i class="fas fa-comment-alt"></i>
+        </a>
+        <a href="#" class="social-icon" title="Ajuda" aria-label="Ajuda">
+          <i class="fas fa-question-circle"></i>
+        </a>
+      </div>
+    </div>
+    
+    <!-- SEÇÃO 2: NAVEGAÇÃO RÁPIDA -->
+    <div class="footer-section footer-nav">
+      <h3 class="footer-title">Navegação</h3>
+      <ul class="footer-links">
+        <li><a href="#" data-nav="home"><i class="fas fa-home"></i> Início</a></li>
+        <li><a href="#" data-nav="calendar"><i class="fas fa-calendar-alt"></i> Calendário</a></li>
+        <li><a href="#" data-nav="stats"><i class="fas fa-chart-line"></i> Estatísticas</a></li>
+        <li><a href="#" data-nav="notes"><i class="fas fa-edit"></i> Anotações</a></li>
+        <li><a href="#" data-nav="settings"><i class="fas fa-cog"></i> Configurações</a></li>
+      </ul>
+    </div>
+    
+    <!-- SEÇÃO 3: RECURSOS -->
+    <div class="footer-section footer-resources">
+      <h3 class="footer-title">Recursos</h3>
+      <ul class="footer-links">
+        <li><a href="#" data-action="faq"><i class="fas fa-question"></i> FAQ</a></li>
+        <li><a href="#" data-action="tips"><i class="fas fa-lightbulb"></i> Dicas de Leitura</a></li>
+        <li><a href="#" data-action="versions"><i class="fas fa-book"></i> Versões da Bíblia</a></li>
+        <li><a href="#" data-action="guide"><i class="fas fa-graduation-cap"></i> Guia de Uso</a></li>
+        <li><a href="#" data-action="contact"><i class="fas fa-envelope"></i> Contato</a></li>
+      </ul>
+    </div>
+    
+    <!-- SEÇÃO 4: LEGAL + TÉCNICO -->
+    <div class="footer-section footer-legal">
+      <h3 class="footer-title">Informações</h3>
+      
+      <div class="footer-info">
+        <div class="footer-info-item">
+          <i class="fas fa-code-branch"></i>
+          <span>Versão: <strong id="app-version">2.1.0</strong></span>
+        </div>
+        
+        <div class="footer-info-item">
+          <i class="fas fa-sync-alt"></i>
+          <span>Última atualização: <strong id="last-update">21/01/2024</strong></span>
+        </div>
+        
+        <div class="footer-info-item">
+          <i class="fas fa-database"></i>
+          <span>Progresso salvo localmente</span>
+        </div>
+      </div>
+      
+      <div class="footer-copyright">
+        <p>
+          &copy; <span id="current-year">2024</span> 
+          Leitura Bíblica Cronológica. 
+          <span class="footer-rights">Todos os direitos reservados.</span>
+        </p>
+        
+        <div class="footer-legal-links">
+          <a href="#" class="legal-link">Política de Privacidade</a>
+          <span class="separator">•</span>
+          <a href="#" class="legal-link">Termos de Uso</a>
+          <span class="separator">•</span>
+          <a href="#" class="legal-link">Créditos</a>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- BADGE DE STATUS (opcional) -->
+  <div class="footer-status">
+    <span class="status-badge status-online">
+      <i class="fas fa-circle"></i>
+      Aplicação funcionando normalmente
+    </span>
+  </div>
+</footer>
+
+<!-- CSS do Footer Profissional -->
+<style>
+  /* ===================== FOOTER PROFISSIONAL ===================== */
+  .footer {
+    background: linear-gradient(135deg, var(--dm-bg-card) 0%, var(--dm-bg-secondary) 100%);
+    border-top: 1px solid var(--dm-border-color);
+    color: var(--dm-text-secondary);
+    padding: 2.5rem 0 1rem;
+    margin-top: 3rem;
+    font-size: 0.9rem;
+  }
+  
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2.5rem;
+  }
+  
+  /* SEÇÕES DO FOOTER */
+  .footer-section {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .footer-brand {
+    grid-column: span 2;
+  }
+  
+  @media (max-width: 768px) {
+    .footer-container {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .footer-brand {
+      grid-column: span 1;
+    }
+  }
+  
+  /* LOGO E MARCA */
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .footer-logo i {
+    font-size: 1.8rem;
+    color: var(--dm-accent);
+  }
+  
+  .footer-app-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--dm-text-primary);
+  }
+  
+  .footer-description {
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    max-width: 300px;
+  }
+  
+  /* REDES SOCIAIS */
+  .footer-social {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  .social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: var(--dm-bg-hover);
+    color: var(--dm-text-secondary);
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  
+  .social-icon:hover {
+    background-color: var(--dm-accent);
+    color: white;
+    transform: translateY(-2px);
+  }
+  
+  /* TÍTULOS DAS SEÇÕES */
+  .footer-title {
+    color: var(--dm-text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--dm-accent);
+    display: inline-block;
+  }
+  
+  /* LISTAS DE LINKS */
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .footer-links li {
+    margin-bottom: 0.7rem;
+  }
+  
+  .footer-links a {
+    color: var(--dm-text-secondary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s ease;
+  }
+  
+  .footer-links a:hover {
+    color: var(--dm-accent);
+  }
+  
+  .footer-links i {
+    width: 20px;
+    font-size: 0.9rem;
+  }
+  
+  /* INFORMAÇÕES TÉCNICAS */
+  .footer-info {
+    margin-bottom: 1.5rem;
+  }
+  
+  .footer-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .footer-info-item i {
+    color: var(--dm-accent);
+    font-size: 0.9rem;
+  }
+  
+  .footer-info-item strong {
+    color: var(--dm-text-primary);
+  }
+  
+  /* COPYRIGHT E LINKS LEGAIS */
+  .footer-copyright {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--dm-border-light);
+  }
+  
+  .footer-copyright p {
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+  }
+  
+  .footer-rights {
+    font-size: 0.85rem;
+    opacity: 0.8;
+  }
+  
+  .footer-legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .legal-link {
+    color: var(--dm-text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s ease;
+  }
+  
+  .legal-link:hover {
+    color: var(--dm-accent);
+  }
+  
+  .separator {
+    opacity: 0.5;
+    font-size: 0.8rem;
+  }
+  
+  /* STATUS BADGE */
+  .footer-status {
+    max-width: 1200px;
+    margin: 1.5rem auto 0;
+    padding: 0 1.5rem;
+    text-align: center;
+  }
+  
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    background-color: rgba(81, 207, 102, 0.1);
+    color: var(--dm-success);
+    border-radius: 20px;
+    font-size: 0.85rem;
+  }
+  
+  .status-badge i {
+    font-size: 0.6rem;
+    animation: pulse 2s infinite;
+  }
+  
+  .status-offline {
+    background-color: rgba(255, 107, 107, 0.1);
+    color: var(--dm-danger);
+  }
+  
+  /* DARK MODE ESPECÍFICO */
+  body.dark-mode .footer {
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+  }
+  
+  body.dark-mode .footer-links a {
+    color: #b0b0b0;
+  }
+  
+  body.dark-mode .footer-info-item {
+    color: #a0a0a0;
+  }
+  
+  /* ANIMAÇÕES */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
+
+<!-- JavaScript para funcionalidade do footer -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Atualizar ano atual
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+    
+    // Atualizar versão do app (exemplo - pode vir de um config)
+    document.getElementById('app-version').textContent = '2.1.0';
+    
+    // Atualizar data da última atualização
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('pt-BR');
+    document.getElementById('last-update').textContent = formattedDate;
+    
+    // Adicionar funcionalidade aos links de navegação
+    document.querySelectorAll('[data-nav]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const section = this.getAttribute('data-nav');
+        console.log(`Navegando para: ${section}`);
+        // Implementar navegação real aqui
+      });
+    });
+    
+    // Adicionar funcionalidade aos links de ação
+    document.querySelectorAll('[data-action]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const action = this.getAttribute('data-action');
+        console.log(`Ação: ${action}`);
+        // Implementar ações reais aqui
+      });
+    });
+  });
+</script>

@@ -1,14 +1,23 @@
 📘 NOTA DE CONTINUIDADE — APP DE LEITURA BÍBLICA
 
-Data: 20/01/2026
+Data: 21/01/2026
 Estado: Arquitetura saudável, evolução controlada, sem dívida técnica
 
 ######
-🔹 FASE Atual
+🔹 NA ULTIMA ATUALIZAÇÃO
 ######
 
-Index - reestruturada
-bloco de notas flutuante - reestruturado
+- IMPLEMENTAÇÃO DO RESET DO PLANO DE LEITURA COM SISTEMA DE SEGURANÇA
+- DARKMODE INSERIDO (TROCAR A COR AMARELA DOS DIAS LIDOS)
+- INSERÇÃO DE BARRA DE PESQUISA
+- ATUALIZAÇÕES DE QUALIDADE DE VIDA
+
+######
+🔹 FASE ATUAL
+######
+
+
+
 
 
 #################
@@ -18,24 +27,31 @@ bloco de notas flutuante - reestruturado
 
 
 
-1. botão de redefinir progresso do plano de leitura (zerando ele com apenas um click); esse botã oprecisa de um seistema 
-de segurança de validação para não resetar o progrço por acidentalmente
-2. certificado de conclusão de leitura da biblia (gerar um certificado de conclusão de leitura da biblia com base no plano atual de escolha do usuario [com o nome do usuaro; data de inicio; data de termino; texto de certificado generico])
+1. certificado de conclusão de leitura da biblia (gerar um certificado de conclusão de leitura da biblia com base no plano atual de escolha do usuario [com o nome do usuaro; data de inicio; data de termino; texto de certificado generico])
 esse certificado não pode ser gerado com menos de 90 dias apos o inicio da leitura, para evitar fraude
-3.  adcionar um botão que limpa o progrsso de leitura voltando ele a 0 dias lidos; essa ação precisa de confirmação, um sistema de segurança que 
-impede de limpar acidentalmente
-4. durante a leitura anual a qualquer momento fica um botão de expotação de progreço que envaia um docx com o progresso para o usuario sontendo:
+2. durante a leitura anual a qualquer momento fica um botão de expotação de progreço que envaia um docx com o progresso para o usuario sontendo:
 progresso em %
 total de dias lidos
 total de capitulos lidos
 qual o ultimo dia e o ultimo capitulo lido, qual o proximo dia e proximo capitulo
-5. no fim da leitura emite um certificado simbolico contendo:
+3. no fim da leitura emite um certificado simbolico contendo:
 
 leitura anual da biblia
 conclida por usuario; no periodo do dia xx/xx/xxxx até xx/xx/xxxx
 "texto generico de certificado"
 
+4. implementar download do bloco de notas para docx
 
-6. implementar darkmode
+5. trabalhar na ideia de insrir versões da biblia para leitura (kja, kj11; ara (94;2009;2017); arc; vni)
 
-7. implementar download do bloco de notas para docx
+6. fluxo futuro a ser inclementado
+
+login.html
+|
+index.html (a index sera responsavel pela seleçao de planos de leitura ou das versões da biblia para ler)
+|
+|----> biblia sagrada (.html) (kja, kj11; ara (94;2009;2017); arc; vni)(bloco de anotações flutuantes deve persistir nessa pagina)
+|
+|----> plano de leitura (.html) (cronologico;expresso;canonico;etc)
+
+7. -BIBLIA.HTML TAMBEM VAI TER UMA METODOLOGIADE BUSCA

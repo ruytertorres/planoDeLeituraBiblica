@@ -13,6 +13,11 @@
     <!-- CSS -->
     <link rel="stylesheet" href="./css/styles.css" />
     <link rel="stylesheet" href="./css/notas.css" />
+	<link rel="stylesheet" href="./css/darkmode.css" />
+	<link rel="stylesheet" href="./css/search_styles.css" />
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Ícones -->
     <link rel="icon" type="image/png" href="./assets/favicon.png" />
@@ -45,9 +50,15 @@
               <span class="stat-value" id="progresso">—%</span>
               <span class="stat-label">Progresso</span>
             </div>
+			
+			  <!-- NOVO: Botão de resetar progresso -->
+  <button id="btn-resetar-progresso" class="btn-reset" title="Resetar progresso">
+    <i class="fas fa-redo"></i>
+  </button>
 
-            <button class="theme-toggle" id="theme-toggle">
-              <i class="fas fa-moon"></i>
+<button class="theme-toggle" id="theme-toggle">
+  <i class="fas fa-moon"></i>
+</button>
             </button>
           </div>
         </div>
