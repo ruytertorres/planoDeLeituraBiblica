@@ -16,8 +16,324 @@ Estado: Arquitetura saudável, evolução controlada, sem dívida técnica
 🔹 FASE ATUAL
 ######
 
+--------------------------------------------------
 
+RESUMO: 
 
+Checklist da Frente 1 arquivo por arquivo (ESTOU NESSA ETAPA)
+(começamos pelo tempo)
+
+Formalizar estados e decisões no contrato agora
+(antes de tocar código)
+
+Desenhar o novo PlanoManager em pseudocódigo contratual
+(sem JS ainda)
+
+Qualquer um dos três mantém o sistema sob controle.
+
+---------------------------------------------------
+
+🧭 NOVO PLANO MESTRE — ORIENTADO POR CONTRATO
+
+Este plano substitui o plano anterior.
+O plano anterior foi correto para diagnóstico.
+Este é o plano para execução real.
+
+🧱 FRENTE 1 — VALIDAR E CONFORMAR O SISTEMA AO CONTRATO
+
+(robustez, correção, eliminação de fragilidades)
+
+🎯 Objetivo da Frente 1
+
+Garantir que nenhuma parte do sistema viole o CONTRATO_DO_SISTEMA.md.
+
+Aqui não se adiciona funcionalidade nova.
+Aqui você remove ambiguidades, centraliza responsabilidades e fortalece o núcleo.
+
+1.1 Auditoria técnica guiada pelo contrato (obrigatória)
+
+Checklist fixo para cada arquivo tocado:
+
+❓ Este arquivo gera tempo?
+
+Se sim → violação
+
+❓ Este arquivo decide fluxo?
+
+Se não for PlanoManager → violação
+
+❓ Este arquivo interpreta estado?
+
+Se for UI → violação
+
+❓ Esta regra aparece em mais de um lugar?
+
+Se sim → violação
+
+📌 Saída esperada
+Nenhuma função “sem dono conceitual”.
+
+1.2 Tempo: conformidade absoluta com geradorDatas.js
+
+Ações obrigatórias:
+
+Remover todo new Date() fora do gerador
+
+Eliminar:
+
+cálculo duplicado de dia do ano
+
+suposições de ano corrente
+
+Fazer com que:
+
+dia.js
+
+plano_cronologico.js
+
+render_calendario.js
+
+perguntem ao geradorDatas, nunca decidam.
+
+📌 Critério de conclusão
+Se o geradorDatas falhar, o sistema inteiro falha — e isso é correto.
+
+1.3 Regra de atraso (Fase Zero efetiva)
+
+Criar função única, por exemplo:
+
+calcularAtrasoPlano(...)
+
+obterDiasDeAtraso(...)
+
+Ela deve:
+
+viver em módulo de domínio
+
+ser usada por:
+
+PlanoManager
+
+UI (apenas para exibição)
+
+📌 Nenhum número mágico no sistema.
+
+1.4 PlanoManager como autoridade única
+
+PlanoManager deve:
+
+Detectar eventos
+
+Declarar estado
+
+Expor decisões possíveis
+
+Executar decisões explicitamente
+
+Ele não deve:
+
+adaptar silenciosamente
+
+reorganizar sem decisão
+
+“continuar porque sempre continuou”
+
+📌 Saída da Frente 1
+Sistema mais chato, menos mágico, mais confiável.
+
+📘 FRENTE 2 — FORTALECER O CONTRATO COMO FONTE ABSOLUTA
+
+Essa frente roda em paralelo com todas as outras.
+
+🎯 Objetivo da Frente 2
+
+Transformar o CONTRATO_DO_SISTEMA.md em:
+
+documentação viva
+
+referência humana
+
+referência para IA
+
+escudo contra regressão conceitual
+
+2.1 Regra de ouro
+
+Se uma decisão existe no código, ela deve existir no contrato.
+Se uma regra existe no contrato, ela deve existir no código.
+
+Nada fora disso.
+
+2.2 O que adicionar ao contrato durante a refatoração
+
+Progressivamente:
+
+Definição formal de:
+
+atraso
+
+lacuna
+
+ciclo
+
+reancoragem
+
+Contrato explícito de:
+
+reset total
+
+reset inteligente
+
+Estados e transições válidas
+
+Eventos reconhecidos pelo sistema
+
+📌 O contrato cresce, mas não muda de direção.
+
+🔄 FRENTE 3 — FUNCIONALIDADES DE ADAPTAÇÃO DO PLANO
+
+(onde o valor para o usuário aparece)
+
+Agora sim entramos no que o usuário sente.
+
+3.1 Atraso longo → AGUARDANDO_DECISAO
+
+Cenário alvo (como você descreveu):
+
+Dia 15 → pausa
+
+Retorno no dia 41
+
+Sistema:
+
+detecta lacuna
+
+não decide
+
+entra em AGUARDANDO_DECISAO
+
+Decisões oferecidas:
+
+Continuar adaptando
+
+Reset inteligente
+
+Reset total
+
+📌 Nenhuma adaptação automática.
+
+3.2 Reset inteligente (conceito-chave)
+
+Reset inteligente não volta no tempo.
+
+Ele:
+
+ancora o plano no “hoje”
+
+redefine:
+
+dia 01 do plano
+
+data atual como início
+
+respeita ciclos
+
+respeita o calendário real
+
+Se ultrapassar 31/12:
+
+sistema detecta
+
+entra em FIM_DE_CICLO
+
+aguarda decisão
+
+3.3 Reset total
+
+Volta ao plano original
+
+Dia 01 / 01
+
+Progresso apagado
+
+Confirmação explícita (dupla)
+
+3.4 UI como espelho
+
+Navbar mostra botões somente se:
+
+estado permitir
+
+UI não calcula nada
+
+UI só pergunta:
+
+“o que você deseja fazer?”
+
+🧩 FRENTE 4 — PREPARAR O SISTEMA PARA O FUTURO (sem implementar agora)
+
+Essa frente não é código, é arquitetura limpa.
+
+4.1 Separação de domínios (desde já)
+
+Garantir que:
+
+Plano ≠ Bíblia
+
+Bíblia ≠ Usuário
+
+Usuário ≠ Sessão
+
+UI ≠ Domínio
+
+📌 Isso evita reescrita quando vier:
+
+API bíblica
+
+login
+
+multiusuário
+
+4.2 Decisões importantes agora (para não quebrar depois)
+
+Plano não pertence a um usuário diretamente
+→ pertence a um contexto
+
+Progresso deve ser:
+
+serializável
+
+versionável
+
+PlanoManager deve ser:
+
+instanciável
+
+independente da UI
+
+4.3 O que NÃO implementar agora (mas preparar)
+
+Login social
+
+Multiusuário
+
+Compartilhamento
+
+Mobile
+
+Mas:
+
+não travar o domínio para isso
+
+não acoplar plano à sessão local
+
+🧠 FRASE-GUIA FINAL (atualizada)
+
+O contrato governa.
+O tempo é soberano.
+O sistema detecta.
+O usuário decide.
+O código executa com verdade.
 
 
 #################
