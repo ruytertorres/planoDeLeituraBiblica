@@ -77,7 +77,8 @@ body.dark-mode .calendar-title {
 }
 
 /* Botões de navegação do calendário */
-body.dark-mode .calendar-nav-btn {
+body.dark-mode .calendar-nav-btn,
+body.dark-mode .nav-mes-btn {
   background-color: var(--dm-bg-card) !important;
   color: var(--dm-text-primary) !important;
   border: 1px solid var(--dm-border-color) !important;
@@ -86,7 +87,8 @@ body.dark-mode .calendar-nav-btn {
   cursor: pointer;
 }
 
-body.dark-mode .calendar-nav-btn:hover {
+body.dark-mode .calendar-nav-btn:hover,
+body.dark-mode .nav-mes-btn:hover {
   background-color: var(--dm-accent) !important;
   color: white !important;
 }

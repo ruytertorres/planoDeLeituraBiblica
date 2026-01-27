@@ -1,6 +1,6 @@
 /* ============================================================================
-   main.js — Orquestrador Central REFATORADO com Sistema de Busca
-   Versão: 2.0.0 — COM SISTEMA DE RESET E BUSCA INTEGRADOS
+   main.js — Orquestrador Central
+   Versão: 2.1.0 — REFATORAÇÃO COM CALENDARIO VIEWMODEL
 ============================================================================ */
 
 /* ===================== IMPORTAÇÕES ===================== */
@@ -8,24 +8,20 @@ import planoCronologico from "./dominio/planos/plano_cronologico.js";
 import { PlanoManager } from "./dominio/planos/config/PlanoManager.js";
 import { ProgressoLeitura } from "./dominio/planos/config/ProgressoLeitura.js";
 
-// NOVO: Import do sistema de busca
 import { SearchEngine } from "./dominio/busca/SearchEngine.js";
 import { SearchUI } from "./ui/busca/search_ui.js";
 
-// NOVO: Import do ResetProgresso
 import { ResetProgresso } from "./dominio/planos/config/ResetProgresso.js";
 
 import { renderDiaCard } from "./ui/planos/render_dia_card.js";
 import { renderCalendario } from "./ui/calendario/render_calendario.js";
+import { CalendarioViewModel } from "./ui/calendario/CalendarioViewModel.js";
 
 import { NotasLeituraManager } from "./dominio/notas/NotasLeituraManager.js";
 import { initNotasOverlay } from "./dominio/notas/notas_overlay.js";
 
-// NOVO: Import do Dark Mode
 import { initDarkMode } from "./ui/darkmode.js";
-
-/* 🔧 RELÓGIO CENTRAL (ANO REAL → POSIÇÃO NO PLANO) */
-import { getDiaDoAnoAtual } from "./dominio/geradorDatas.js";
+import { getDiaDoAnoAtual, getAnoAtual } from "./dominio/geradorDatas.js";
 
 /* ===================== ESTADO GLOBAL ===================== */
 let diaAtualNumero = 1;
@@ -35,9 +31,9 @@ let planoManagerGlobal;
 let progressoGlobal;
 let notasManagerGlobal;
 let calendarioAPI = null;
+let calendarioVM = null;
 let resetManagerGlobal;
 
-// NOVO: Variáveis para sistema de busca
 let searchEngineGlobal = null;
 let searchUIGlobal = null;
 
@@ -49,83 +45,29 @@ function descobrirDiaDeHoje(plano) {
   return diaDoAno;
 }
 
-/* ===================== FUNÇÃO: SCROLL PARA CARD ===================== */
+/* ===================== SCROLL PARA CARD ===================== */
 function scrollParaCardDoDia() {
   setTimeout(() => {
     const cardDia = document.getElementById("card-dia");
-    if (cardDia) {
-      cardDia.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-      cardDia.classList.add("card-highlight");
-      setTimeout(() => cardDia.classList.remove("card-highlight"), 1500);
-    }
+    if (!cardDia) return;
+
+    cardDia.scrollIntoView({ behavior: "smooth", block: "start" });
+    cardDia.classList.add("card-highlight");
+    setTimeout(() => cardDia.classList.remove("card-highlight"), 1500);
   }, 100);
 }
 
-/* ============================================================================
-   FUNÇÃO: GERAR DADOS DO CALENDÁRIO
-   CORREÇÃO: Prevenir espelhamento usando apenas dados válidos
-============================================================================ */
-function gerarDadosCalendario(plano, progresso) {
-  const todosDiasDoAno = [];
-
-  // Criar um mapa rápido de dias do plano por dataISO
-  const diasPlanoPorData = new Map();
-  plano.dias.forEach((dia) => {
-    if (dia.data) {
-      diasPlanoPorData.set(dia.data, {
-        numero: dia.numero,
-        dataISO: dia.data,
-        // Estados SÓ se aplicam a dias que existem no plano
-        isHoje: dia.numero === diaHojeNumero,
-        isLido: progresso.estaLido(dia.numero),
-        isAtivo: dia.numero === diaAtualNumero,
-      });
-    }
-  });
-
-  // Usar gerador de datas para criar todos os dias do ano
-  const ano = 2026; // Ano fixo do plano
-  for (let diaNumero = 1; diaNumero <= 366; diaNumero++) {
-    const data = new Date(ano, 0, diaNumero);
-    const anoStr = String(data.getFullYear());
-    const mesStr = String(data.getMonth() + 1).padStart(2, "0");
-    const diaStr = String(data.getDate()).padStart(2, "0");
-    const dataISO = `${anoStr}-${mesStr}-${diaStr}`;
-
-    // Verificar se este dia existe no plano
-    const diaDoPlano = diasPlanoPorData.get(dataISO);
-
-    if (diaDoPlano) {
-      // Dia existe no plano - usar dados reais
-      todosDiasDoAno.push(diaDoPlano);
-    } else {
-      // Dia não existe no plano - criar objeto vazio SEM estados
-      todosDiasDoAno.push({
-        numero: null,
-        dataISO: dataISO,
-        isHoje: false,
-        isLido: false,
-        isAtivo: false,
-        semPlano: true,
-      });
-    }
-  }
-
-  return todosDiasDoAno;
-}
-
-/* ============================================================================
-   FUNÇÃO: ATUALIZAR CALENDÁRIO
-============================================================================ */
+/* ===================== CALENDÁRIO ===================== */
 function atualizarCalendario(plano, progresso) {
-  const dadosCalendario = {
-    containerId: "calendario",
-    dias: gerarDadosCalendario(plano, progresso),
-    onSelecionarDia: (numeroDia) => {
-      if (numeroDia && numeroDia > 0) {
+  if (!calendarioVM) {
+    calendarioVM = new CalendarioViewModel(
+      plano,
+      progresso,
+      () => diaHojeNumero,
+      () => diaAtualNumero,
+      (numeroDia) => {
+        if (!numeroDia) return;
+
         diaAtualNumero = numeroDia;
         atualizarDiaAtivo(
           planoManagerGlobal,
@@ -133,79 +75,70 @@ function atualizarCalendario(plano, progresso) {
           notasManagerGlobal,
         );
         scrollParaCardDoDia();
-        if (calendarioAPI) calendarioAPI.highlightDay(numeroDia);
-      }
-    },
-  };
+        calendarioAPI?.highlightDay(numeroDia);
+      },
+    );
+  }
 
-  calendarioAPI = renderCalendario(dadosCalendario);
+  // Obter ano real de geradorDatas (Contrato §2.1)
+  const anoAtual = getAnoAtual();
+
+  // Gerar ViewModel (estrutura pronta para renderizar)
+  const viewModel = calendarioVM.gerarViewModel(anoAtual);
+
+  // Renderizar (função burra que apenas desenha)
+  calendarioAPI = renderCalendario({
+    containerId: "calendario",
+    viewModel,
+  });
 }
 
-/* ============================================================================
-   FUNÇÃO: ATUALIZAR DIA ATIVO
-============================================================================ */
+/* ===================== DIA ATIVO ===================== */
 function atualizarDiaAtivo(planoManager, progresso, notasManager) {
   const plano = planoManager.getPlano();
   const dia = plano.getDia(diaAtualNumero);
   const container = document.getElementById("dia-view");
 
-  if (!container || !dia) {
-    console.error("Container ou dia não encontrado:", { diaAtualNumero, dia });
-    return;
-  }
+  if (!container || !dia) return;
 
-  // 1. Renderizar card do dia
   container.innerHTML = renderDiaCard(dia, {
     isHoje: dia.numero === diaHojeNumero,
     isLido: progresso.estaLido(dia.numero),
   });
 
-  // 2. Configurar botão "marcar como lido"
   const btnLido = container.querySelector("[data-action='toggle-lido']");
-  if (btnLido) {
-    btnLido.addEventListener("click", () => {
-      progresso.alternar(dia.numero);
-      atualizarDiaAtivo(planoManager, progresso, notasManager);
-      atualizarEstatisticas(plano, progresso);
-      atualizarCalendario(plano, progresso);
-    });
-  }
+  btnLido?.addEventListener("click", () => {
+    progresso.alternar(dia.numero);
+    atualizarDiaAtivo(planoManager, progresso, notasManager);
+    atualizarEstatisticas(plano, progresso);
+    atualizarCalendario(plano, progresso);
+  });
 
-  // 3. Sincronizar notas
   notasManager.setDiaAtual(dia.numero);
   document.dispatchEvent(new CustomEvent("dia-alterado"));
 
-  // 4. Atualizar navegação
   atualizarNavegacao(plano.dias.length);
-
-  // 5. Destacar no calendário
-  if (calendarioAPI) {
-    calendarioAPI.highlightDay(dia.numero);
-  }
+  calendarioAPI?.highlightDay(dia.numero);
 }
 
 /* ===================== NAVEGAÇÃO ===================== */
 function atualizarNavegacao(total) {
-  const btnAnterior = document.getElementById("btn-dia-anterior");
-  const btnProximo = document.getElementById("btn-dia-proximo");
-  if (btnAnterior) btnAnterior.disabled = diaAtualNumero <= 1;
-  if (btnProximo) btnProximo.disabled = diaAtualNumero >= total;
+  document.getElementById("btn-dia-anterior").disabled = diaAtualNumero <= 1;
+  document.getElementById("btn-dia-proximo").disabled = diaAtualNumero >= total;
 }
 
 /* ===================== ESTATÍSTICAS ===================== */
 function atualizarEstatisticas(plano, progresso) {
   const lidos = progresso.getTotalLidos();
   const total = plano.dias.length;
-  const percentual = Math.round((lidos / total) * 100);
   document.getElementById("dias-lidos").textContent = lidos;
-  document.getElementById("progresso").textContent = `${percentual}%`;
+  document.getElementById("progresso").textContent =
+    `${Math.round((lidos / total) * 100)}%`;
 }
 
-/* ===================== FUNÇÃO DE NAVEGAÇÃO ===================== */
+/* ===================== NAVEGAR ===================== */
 function navegarParaDia(numeroDia) {
-  const plano = planoManagerGlobal?.getPlano();
-  if (!plano) return false;
-
+  const plano = planoManagerGlobal.getPlano();
   if (numeroDia < 1 || numeroDia > plano.dias.length) return false;
 
   diaAtualNumero = numeroDia;
@@ -215,196 +148,79 @@ function navegarParaDia(numeroDia) {
   return true;
 }
 
-/* ============================================================================
-   FUNÇÃO: CALLBACK PARA SELEÇÃO DE DIA VIA BUSCA
-   Responsável por navegar para o dia selecionado nos resultados da busca
-============================================================================ */
+/* ===================== BUSCA ===================== */
 function onSelecionarDiaViaBusca(diaNumero) {
   navegarParaDia(diaNumero);
 }
 
-/* ============================================================================
-   FUNÇÃO: INICIALIZAR SISTEMA DE BUSCA
-   Configura o motor de busca e a interface de usuário
-============================================================================ */
 function inicializarSistemaDeBusca(plano) {
-  try {
-    // 1. Criar motor de busca com índice do plano
-    searchEngineGlobal = new SearchEngine(plano);
-
-    // 2. Criar interface de busca
-    searchUIGlobal = new SearchUI(searchEngineGlobal, onSelecionarDiaViaBusca);
-
-    // 3. Mostrar estatísticas do índice (apenas para debug)
-    console.log(
-      "📊 Estatísticas do índice de busca:",
-      searchEngineGlobal.getEstatisticas(),
-    );
-
-    console.log("✅ Sistema de busca inicializado com sucesso");
-    return true;
-  } catch (error) {
-    console.error("❌ Erro ao inicializar sistema de busca:", error);
-    return false;
-  }
+  searchEngineGlobal = new SearchEngine(plano);
+  searchUIGlobal = new SearchUI(searchEngineGlobal, onSelecionarDiaViaBusca);
 }
 
-/* ============================================================================
-   FUNÇÃO: CONFIGURAR ATALHOS DE TECLADO GLOBAIS
-   Inclui atalhos para busca e navegação
-============================================================================ */
+/* ===================== ATALHOS ===================== */
 function configurarAtalhosDeTeclado() {
   document.addEventListener("keydown", (e) => {
-    // Atalho: Ctrl/Cmd + F para focar na busca
     if ((e.ctrlKey || e.metaKey) && e.key === "f") {
       e.preventDefault();
-      if (searchUIGlobal) {
-        searchUIGlobal.focus();
-      }
-      return;
+      searchUIGlobal?.focus();
     }
 
-    // Atalho: Barra (/) para focar na busca (exceto quando já em input)
-    if (
-      e.key === "/" &&
-      !e.ctrlKey &&
-      !e.metaKey &&
-      e.target.tagName !== "INPUT" &&
-      e.target.tagName !== "TEXTAREA"
-    ) {
+    if (e.key === "/" && e.target.tagName !== "INPUT") {
       e.preventDefault();
-      if (searchUIGlobal) {
-        searchUIGlobal.focus();
-      }
-      return;
+      searchUIGlobal?.focus();
     }
 
-    // Navegação por setas (mantido do código original)
-    if (
-      e.key === "ArrowRight" &&
-      !e.altKey &&
-      diaAtualNumero < planoManagerGlobal.getPlano().dias.length
-    ) {
-      e.preventDefault();
-      navegarParaDia(diaAtualNumero + 1);
-    }
-    if (e.key === "ArrowLeft" && !e.altKey && diaAtualNumero > 1) {
-      e.preventDefault();
-      navegarParaDia(diaAtualNumero - 1);
-    }
-    if (
-      e.key === " " &&
-      !e.ctrlKey &&
-      !e.altKey &&
-      e.target.tagName !== "BUTTON"
-    ) {
-      e.preventDefault();
+    if (e.key === "ArrowRight") navegarParaDia(diaAtualNumero + 1);
+    if (e.key === "ArrowLeft") navegarParaDia(diaAtualNumero - 1);
+    if (e.key === " ")
       document.querySelector("[data-action='toggle-lido']")?.click();
-    }
   });
 }
 
-/* ============================================================================
-   FUNÇÃO: CONFIGURAR EVENTO DE RESET
-   Responsável por sincronizar UI após reset de progresso
-============================================================================ */
+/* ===================== RESET ===================== */
 function configurarEventoReset() {
-  document.addEventListener("progresso-resetado", (evento) => {
-    console.log("🔄 Evento de progresso resetado recebido", evento.detail);
-
-    const plano = planoManagerGlobal?.getPlano();
-    if (plano && progressoGlobal) {
-      // Forçar atualização do calendário
-      atualizarCalendario(plano, progressoGlobal);
-
-      // Atualizar estatísticas
-      atualizarEstatisticas(plano, progressoGlobal);
-
-      // Atualizar card do dia ativo
-      atualizarDiaAtivo(
-        planoManagerGlobal,
-        progressoGlobal,
-        notasManagerGlobal,
-      );
-    }
+  document.addEventListener("progresso-resetado", () => {
+    const plano = planoManagerGlobal.getPlano();
+    atualizarCalendario(plano, progressoGlobal);
+    atualizarEstatisticas(plano, progressoGlobal);
+    atualizarDiaAtivo(planoManagerGlobal, progressoGlobal, notasManagerGlobal);
   });
 }
 
 /* ===================== INIT ===================== */
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("🚀 Inicializando aplicação com sistema de busca...");
+  initDarkMode();
 
-  try {
-    // 0. Inicializar Dark Mode (deve vir primeiro)
-    initDarkMode();
+  planoManagerGlobal = new PlanoManager(planoCronologico);
+  progressoGlobal = new ProgressoLeitura();
+  notasManagerGlobal = new NotasLeituraManager();
 
-    // 1. Inicializar núcleo do aplicativo
-    planoManagerGlobal = new PlanoManager(planoCronologico);
-    progressoGlobal = new ProgressoLeitura();
-    notasManagerGlobal = new NotasLeituraManager();
-    const plano = planoManagerGlobal.getPlano();
+  const plano = planoManagerGlobal.getPlano();
 
-    // 2. Resolver "hoje" no plano
-    diaHojeNumero = descobrirDiaDeHoje(plano);
-    diaAtualNumero = diaHojeNumero;
-    console.log(`📍 Dia de hoje no plano: ${diaHojeNumero}`);
-    console.log(`📊 Total de dias no plano: ${plano.dias.length}`);
+  diaHojeNumero = descobrirDiaDeHoje(plano);
+  diaAtualNumero = diaHojeNumero;
 
-    // 3. Inicializar sistema de busca (NOVO)
-    inicializarSistemaDeBusca(plano);
+  inicializarSistemaDeBusca(plano);
 
-    // 4. Inicializar sistema de reset de progresso
-    resetManagerGlobal = new ResetProgresso(
-      progressoGlobal,
-      planoManagerGlobal,
-    );
-    resetManagerGlobal.inicializar();
+  resetManagerGlobal = new ResetProgresso(progressoGlobal, planoManagerGlobal);
+  resetManagerGlobal.inicializar();
+  configurarEventoReset();
 
-    // 5. Configurar listeners para eventos de reset
-    configurarEventoReset();
+  document.getElementById("total-dias").textContent = plano.dias.length;
 
-    // 6. Atualizar indicadores na navbar
-    document.getElementById("total-dias").textContent = plano.dias.length;
+  atualizarDiaAtivo(planoManagerGlobal, progressoGlobal, notasManagerGlobal);
+  atualizarEstatisticas(plano, progressoGlobal);
+  atualizarCalendario(plano, progressoGlobal);
 
-    // 7. Inicializar dia ativo (card do dia)
-    atualizarDiaAtivo(planoManagerGlobal, progressoGlobal, notasManagerGlobal);
-    atualizarEstatisticas(plano, progressoGlobal);
+  document
+    .getElementById("btn-dia-proximo")
+    ?.addEventListener("click", () => navegarParaDia(diaAtualNumero + 1));
 
-    // 8. Inicializar calendário (IMPORTANTE: depois de definir diaAtualNumero)
-    atualizarCalendario(plano, progressoGlobal);
+  document
+    .getElementById("btn-dia-anterior")
+    ?.addEventListener("click", () => navegarParaDia(diaAtualNumero - 1));
 
-    // 9. Configurar navegação principal (botões anterior/próximo)
-    document
-      .getElementById("btn-dia-proximo")
-      ?.addEventListener("click", () => {
-        if (diaAtualNumero < plano.dias.length)
-          navegarParaDia(diaAtualNumero + 1);
-      });
-
-    document
-      .getElementById("btn-dia-anterior")
-      ?.addEventListener("click", () => {
-        if (diaAtualNumero > 1) navegarParaDia(diaAtualNumero - 1);
-      });
-
-    // 10. Inicializar sistema de notas
-    initNotasOverlay(notasManagerGlobal);
-
-    // 11. Configurar atalhos de teclado globais (incluindo busca)
-    configurarAtalhosDeTeclado();
-
-    console.log("✅ Aplicação inicializada com sistema de busca!");
-  } catch (error) {
-    console.error("❌ Erro na inicialização:", error);
-    const container = document.getElementById("dia-view");
-    if (container) {
-      container.innerHTML = `
-        <div class="dia-card erro">
-          <h2>Erro na inicialização</h2>
-          <p>${error.message}</p>
-          <button onclick="location.reload()">Recarregar</button>
-        </div>
-      `;
-    }
-  }
+  initNotasOverlay(notasManagerGlobal);
+  configurarAtalhosDeTeclado();
 });
