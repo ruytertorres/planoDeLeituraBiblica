@@ -18,7 +18,7 @@
    ✖ Conhece UI, progresso ou persistência
 ============================================================================ */
 
-import { Dia } from "../../dia.js";
+import { Dia } from "../../models/parametroDia.js";
 
 /* ============================================================================
    CONTRATO DOCUMENTADO (REFERÊNCIA HUMANA)

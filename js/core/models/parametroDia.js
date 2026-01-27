@@ -25,7 +25,7 @@
    - Se precisar recalcular datas, usa geradorDatas
 ============================================================================ */
 
-import { gerarDataISO, gerarDataBR, getAnoAtual } from "./geradorDatas.js";
+import { gerarDataISO, gerarDataBR, getAnoAtual } from "./parametroGerador.js";
 
 /* ============================================================================
    TIPOS SUPORTADOS

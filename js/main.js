@@ -4,24 +4,27 @@
 ============================================================================ */
 
 /* ===================== IMPORTAÇÕES ===================== */
-import planoCronologico from "./dominio/planos/plano_cronologico.js";
-import { PlanoManager } from "./dominio/planos/config/PlanoManager.js";
-import { ProgressoLeitura } from "./dominio/planos/config/ProgressoLeitura.js";
+import planoCronologico from "./core/services/planos/plano_cronologico.js";
+import { PlanoManager } from "./core/services/planos/PlanoManager.js";
+import { ProgressoLeitura } from "./core/services/planos/ProgressoLeitura.js";
 
-import { SearchEngine } from "./dominio/busca/SearchEngine.js";
-import { SearchUI } from "./ui/busca/search_ui.js";
+import { SearchEngine } from "./core/services/busca/SearchEngine.js";
+import { SearchUI } from "./ui/components/busca/search_ui.js";
 
-import { ResetProgresso } from "./dominio/planos/config/ResetProgresso.js";
+import { ResetProgresso } from "./core/services/planos/ResetProgresso.js";
 
-import { renderDiaCard } from "./ui/planos/render_dia_card.js";
-import { renderCalendario } from "./ui/calendario/render_calendario.js";
-import { CalendarioViewModel } from "./ui/calendario/CalendarioViewModel.js";
+import { renderDiaCard } from "./ui/components/planos/render_dia_card.js";
+import { renderCalendario } from "./ui/components/calendario/render_calendario.js";
+import { CalendarioViewModel } from "./ui/components/calendario/CalendarioViewModel.js";
 
-import { NotasLeituraManager } from "./dominio/notas/NotasLeituraManager.js";
-import { initNotasOverlay } from "./dominio/notas/notas_overlay.js";
+import { NotasLeituraManager } from "./core/services/notas/NotasLeituraManager.js";
+import { initNotasOverlay } from "./core/services/notas/notas_overlay.js";
 
-import { initDarkMode } from "./ui/darkmode.js";
-import { getDiaDoAnoAtual, getAnoAtual } from "./dominio/geradorDatas.js";
+import { initDarkMode } from "./ui/components/darkmode.js";
+import {
+  getDiaDoAnoAtual,
+  getAnoAtual,
+} from "./core/models/parametroGerador.js";
 
 /* ===================== ESTADO GLOBAL ===================== */
 let diaAtualNumero = 1;

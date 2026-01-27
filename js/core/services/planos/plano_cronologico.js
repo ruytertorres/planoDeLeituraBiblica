@@ -26,9 +26,13 @@
    - gerarDataISO / gerarDataBR: relógio universal do sistema
 --------------------------------------------------------------------------- */
 
-import { Dia } from "../dia.js";
-import { validarPlano } from "./config/contrato_plano.js";
-import { gerarDataISO, gerarDataBR, getAnoAtual } from "../geradorDatas.js";
+import { Dia } from "../../models/parametroDia.js";
+import { validarPlano } from "./contrato_plano.js";
+import {
+  gerarDataISO,
+  gerarDataBR,
+  getAnoAtual,
+} from "../../models/parametroGerador.js";
 
 /* ---------------------------------------------------------------------------
    FACTORY LOCAL — CRIAÇÃO PADRONIZADA DE DIA
