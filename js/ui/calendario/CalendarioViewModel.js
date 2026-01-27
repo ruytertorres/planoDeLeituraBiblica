@@ -76,7 +76,23 @@ export class CalendarioViewModel {
   gerarViewModel(ano) {
     // Atualizar ano ao inicializar
     this.anoAtual = ano;
+    return {
+      mes: this.gerarMesAtual(),
+      onSelecionarDia: this.onSelecionarDia,
+      onProximoMes: () => this.proximoMes(),
+      onMesPosterior: () => this.mesPosterior(),
+      gerarMesAtual: () => this.gerarMesAtual(), // Adicionar método para recalcular dinâmicamente
+    };
+  }
 
+  /**
+   * Gera apenas o mês atualmente selecionado
+   * Pode ser chamado múltiplas vezes para atualizar após navegação
+   *
+   * @private
+   * @returns {Object} Estrutura do mês com dias
+   */
+  gerarMesAtual() {
     const diasPlanoPorData = new Map();
 
     // 1. Mapear dias do plano por data ISO
@@ -167,11 +183,6 @@ export class CalendarioViewModel {
       }
     }
 
-    return {
-      mes, // apenas um mês
-      onSelecionarDia: this.onSelecionarDia,
-      onProximoMes: () => this.proximoMes(),
-      onMesPosterior: () => this.mesPosterior(),
-    };
+    return mes;
   }
 }

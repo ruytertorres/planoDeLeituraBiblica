@@ -15,8 +15,8 @@ export function renderCalendario({ containerId, viewModel }) {
   const wrapper = document.createElement("div");
   wrapper.className = "calendar-wrapper";
 
-  // Renderizar apenas um mês (mesAtual em viewModel.mes)
-  const mes = viewModel.mes;
+  // Renderizar apenas um mês (recalcular dinamicamente via gerarMesAtual)
+  const mes = viewModel.gerarMesAtual();
 
   // Header com botões de navegação
   const header = document.createElement("div");
@@ -28,7 +28,7 @@ export function renderCalendario({ containerId, viewModel }) {
   btnAnterior.textContent = "◀ anterior";
   btnAnterior.addEventListener("click", () => {
     viewModel.onMesPosterior();
-    // Regenerar renderização
+    // Regenerar renderização (o mes será recalculado)
     renderCalendario({ containerId, viewModel });
   });
 
@@ -42,7 +42,7 @@ export function renderCalendario({ containerId, viewModel }) {
   btnProximo.textContent = "posterior ▶";
   btnProximo.addEventListener("click", () => {
     viewModel.onProximoMes();
-    // Regenerar renderização
+    // Regenerar renderização (o mes será recalculado)
     renderCalendario({ containerId, viewModel });
   });
 
