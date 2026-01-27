@@ -25,8 +25,6 @@ export function renderCalendario({ containerId, dias, onSelecionarDia }) {
     return null;
   }
 
-  console.log("📅 Renderizando calendário com", dias.length, "dias totais");
-
   // Estado
   const anoAtual = new Date().getFullYear();
   let mesAtual = new Date().getMonth();
@@ -49,8 +47,6 @@ export function renderCalendario({ containerId, dias, onSelecionarDia }) {
   // RENDERIZAR MÊS - VERSÃO CORRIGIDA
   // --------------------------------------------------------------------------
   function renderizarMes(ano, mes) {
-    console.log(`📅 Renderizando ${MESES[mes]} ${ano}`);
-
     container.innerHTML = "";
 
     // Criar wrapper
@@ -124,12 +120,6 @@ export function renderCalendario({ containerId, dias, onSelecionarDia }) {
       diaEl.type = "button";
       diaEl.textContent = dia;
 
-      // CONSOLE DEBUG - importante para diagnóstico
-      console.log(
-        `Dia ${dia} (${dataISO}):`,
-        infoDia ? `Plano dia ${infoDia.numero}` : "Sem plano",
-      );
-
       if (infoDia && infoDia.numero !== null && infoDia.numero !== undefined) {
         // DIA COM PLANO
         diaEl.dataset.diaNumero = infoDia.numero;
@@ -156,8 +146,6 @@ export function renderCalendario({ containerId, dias, onSelecionarDia }) {
         diaEl.addEventListener("click", function (e) {
           e.preventDefault();
           e.stopPropagation();
-
-          console.log(`📅 Clicou no dia ${infoDia.numero} (${dataISO})`);
 
           if (typeof onSelecionarDia === "function") {
             onSelecionarDia(infoDia.numero);
@@ -193,8 +181,6 @@ export function renderCalendario({ containerId, dias, onSelecionarDia }) {
     wrapper.appendChild(diasSemana);
     wrapper.appendChild(grid);
     container.appendChild(wrapper);
-
-    console.log(`✅ Mês ${MESES[mes]} renderizado com ${diasNoMes} dias`);
   }
 
   // --------------------------------------------------------------------------
@@ -216,9 +202,6 @@ export function renderCalendario({ containerId, dias, onSelecionarDia }) {
 
       if (anoDia === anoAtual) {
         mesInicial = mesDia;
-        console.log(
-          `📍 Mês inicial definido pelo dia ativo: ${MESES[mesInicial]}`,
-        );
       }
     }
 
@@ -226,13 +209,9 @@ export function renderCalendario({ containerId, dias, onSelecionarDia }) {
     mesAtual = mesInicial;
     renderizarMes(anoAtual, mesAtual);
 
-    console.log("✅ Calendário renderizado com sucesso");
-
     // Retornar API simples para controle externo
     return {
       highlightDay: (diaNumero) => {
-        console.log(`✨ Destacando dia ${diaNumero} no calendário`);
-
         // 1. Remover destaque anterior de TODOS os dias
         document.querySelectorAll(".calendario-dia.ativo").forEach((el) => {
           el.classList.remove("ativo");
@@ -245,7 +224,6 @@ export function renderCalendario({ containerId, dias, onSelecionarDia }) {
 
         if (diaEl) {
           diaEl.classList.add("ativo");
-          console.log(`✅ Dia ${diaNumero} destacado`);
         } else {
           console.warn(`⚠️ Dia ${diaNumero} não encontrado no calendário`);
         }

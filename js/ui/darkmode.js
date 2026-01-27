@@ -14,10 +14,10 @@
 
 export class DarkModeManager {
   constructor() {
-    this.storageKey = 'dark_mode_preference';
-    this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    this.storageKey = "dark_mode_preference";
+    this.mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     this.themeToggle = null;
-    
+
     this.init();
   }
 
@@ -26,21 +26,17 @@ export class DarkModeManager {
   ======================================================================== */
 
   init() {
-    console.log('🌓 Inicializando DarkModeManager...');
-    
     // 1. Carregar preferência salva ou detectar do sistema
     this.loadPreference();
-    
+
     // 2. Configurar listener para mudanças do sistema
     this.setupSystemPreferenceListener();
-    
+
     // 3. Encontrar e configurar botão de alternância
     this.findThemeToggle();
-    
+
     // 4. Aplicar tema inicial
     this.applyTheme();
-    
-    console.log(`✅ DarkModeManager inicializado. Tema: ${this.isDarkMode ? 'escuro' : 'claro'}`);
   }
 
   /* ========================================================================
@@ -50,18 +46,16 @@ export class DarkModeManager {
   loadPreference() {
     try {
       const savedPreference = localStorage.getItem(this.storageKey);
-      
+
       if (savedPreference !== null) {
         // Usar preferência salva
-        this.isDarkMode = savedPreference === 'true';
-        console.log(`📂 Preferência carregada do localStorage: ${this.isDarkMode ? 'escuro' : 'claro'}`);
+        this.isDarkMode = savedPreference === "true";
       } else {
         // Se não houver preferência salva, usar preferência do sistema
         this.isDarkMode = this.mediaQuery.matches;
-        console.log(`🌐 Usando preferência do sistema: ${this.isDarkMode ? 'escuro' : 'claro'}`);
       }
     } catch (error) {
-      console.error('❌ Erro ao carregar preferência do tema:', error);
+      console.error("❌ Erro ao carregar preferência do tema:", error);
       // Fallback para tema claro
       this.isDarkMode = false;
     }
@@ -70,9 +64,8 @@ export class DarkModeManager {
   savePreference() {
     try {
       localStorage.setItem(this.storageKey, this.isDarkMode.toString());
-      console.log(`💾 Preferência salva: ${this.isDarkMode ? 'escuro' : 'claro'}`);
     } catch (error) {
-      console.error('❌ Erro ao salvar preferência do tema:', error);
+      console.error("❌ Erro ao salvar preferência do tema:", error);
     }
   }
 
@@ -81,12 +74,11 @@ export class DarkModeManager {
   ======================================================================== */
 
   setupSystemPreferenceListener() {
-    this.mediaQuery.addEventListener('change', (event) => {
+    this.mediaQuery.addEventListener("change", (event) => {
       // Só mudar se o usuário não tiver uma preferência explícita
       const hasUserPreference = localStorage.getItem(this.storageKey) !== null;
-      
+
       if (!hasUserPreference) {
-        console.log(`🌐 Preferência do sistema alterada para: ${event.matches ? 'escuro' : 'claro'}`);
         this.isDarkMode = event.matches;
         this.applyTheme();
       }
@@ -98,23 +90,25 @@ export class DarkModeManager {
   ======================================================================== */
 
   findThemeToggle() {
-    this.themeToggle = document.getElementById('theme-toggle');
-    
+    this.themeToggle = document.getElementById("theme-toggle");
+
     if (this.themeToggle) {
       this.updateToggleIcon();
-      this.themeToggle.addEventListener('click', () => this.toggle());
+      this.themeToggle.addEventListener("click", () => this.toggle());
     } else {
-      console.warn('⚠️ Botão de alternância de tema não encontrado');
+      console.warn("⚠️ Botão de alternância de tema não encontrado");
     }
   }
 
   updateToggleIcon() {
     if (!this.themeToggle) return;
-    
-    const icon = this.themeToggle.querySelector('i');
+
+    const icon = this.themeToggle.querySelector("i");
     if (icon) {
-      icon.className = this.isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
-      this.themeToggle.title = this.isDarkMode ? 'Alternar para tema claro' : 'Alternar para tema escuro';
+      icon.className = this.isDarkMode ? "fas fa-sun" : "fas fa-moon";
+      this.themeToggle.title = this.isDarkMode
+        ? "Alternar para tema claro"
+        : "Alternar para tema escuro";
     }
   }
 
@@ -124,31 +118,31 @@ export class DarkModeManager {
 
   toggle() {
     this.isDarkMode = !this.isDarkMode;
-    console.log(`🔄 Alternando para tema ${this.isDarkMode ? 'escuro' : 'claro'}`);
-    
     this.savePreference();
     this.applyTheme();
     this.updateToggleIcon();
-    
+
     // Disparar evento customizado para outros módulos
-    document.dispatchEvent(new CustomEvent('theme-changed', {
-      detail: { isDarkMode: this.isDarkMode }
-    }));
+    document.dispatchEvent(
+      new CustomEvent("theme-changed", {
+        detail: { isDarkMode: this.isDarkMode },
+      }),
+    );
   }
 
   applyTheme() {
     if (this.isDarkMode) {
-      document.body.classList.add('dark-mode');
-      document.body.classList.remove('light-mode');
+      document.body.classList.add("dark-mode");
+      document.body.classList.remove("light-mode");
     } else {
-      document.body.classList.add('light-mode');
-      document.body.classList.remove('dark-mode');
+      document.body.classList.add("light-mode");
+      document.body.classList.remove("dark-mode");
     }
-    
+
     // Adicionar classe de transição (após a primeira aplicação)
-    if (!document.body.classList.contains('theme-initialized')) {
+    if (!document.body.classList.contains("theme-initialized")) {
       setTimeout(() => {
-        document.body.classList.add('theme-initialized');
+        document.body.classList.add("theme-initialized");
       }, 100);
     }
   }
@@ -176,7 +170,7 @@ export class DarkModeManager {
   }
 
   getCurrentTheme() {
-    return this.isDarkMode ? 'dark' : 'light';
+    return this.isDarkMode ? "dark" : "light";
   }
 
   isDarkModeEnabled() {
@@ -208,8 +202,8 @@ export function getDarkModeManager() {
 ======================================================================= */
 
 export function setupDarkMode() {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => initDarkMode());
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => initDarkMode());
   } else {
     initDarkMode();
   }

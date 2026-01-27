@@ -28,7 +28,7 @@
 
 import { Dia } from "../dia.js";
 import { validarPlano } from "./config/contrato_plano.js";
-import { gerarDataISO, gerarDataBR } from "../geradorDatas.js";
+import { gerarDataISO, gerarDataBR, getAnoAtual } from "../geradorDatas.js";
 
 /* ---------------------------------------------------------------------------
    FACTORY LOCAL — CRIAÇÃO PADRONIZADA DE DIA
@@ -49,13 +49,19 @@ import { gerarDataISO, gerarDataBR } from "../geradorDatas.js";
  * @returns {Dia}
  */
 function criarDia(numero, dados) {
+  // Consulta soberana ao tempo real (CONTRATO §2.1)
+  const ano = getAnoAtual();
+
   return new Dia({
     // Número sequencial do dia
     numero,
 
+    // Ano civil real (consultado ao geradorDatas)
+    ano,
+
     // Datas SEMPRE derivadas do geradorDatas.js (relógio universal)
-    data: gerarDataISO(numero),
-    dataFormatada: gerarDataBR(numero),
+    data: gerarDataISO(numero, ano),
+    dataFormatada: gerarDataBR(numero, ano),
 
     // Conteúdo bíblico
     antigoTestamento: dados.antigoTestamento ?? [],

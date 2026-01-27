@@ -35,7 +35,7 @@ let planoManagerGlobal;
 let progressoGlobal;
 let notasManagerGlobal;
 let calendarioAPI = null;
-let resetManagerGlobal; 
+let resetManagerGlobal;
 
 // NOVO: Variáveis para sistema de busca
 let searchEngineGlobal = null;
@@ -121,13 +121,10 @@ function gerarDadosCalendario(plano, progresso) {
    FUNÇÃO: ATUALIZAR CALENDÁRIO
 ============================================================================ */
 function atualizarCalendario(plano, progresso) {
-  console.log("📅 Atualizando calendário...");
-
   const dadosCalendario = {
     containerId: "calendario",
     dias: gerarDadosCalendario(plano, progresso),
     onSelecionarDia: (numeroDia) => {
-      console.log(`📅 Calendário: navegando para dia ${numeroDia}`);
       if (numeroDia && numeroDia > 0) {
         diaAtualNumero = numeroDia;
         atualizarDiaAtivo(
@@ -157,10 +154,6 @@ function atualizarDiaAtivo(planoManager, progresso, notasManager) {
     return;
   }
 
-  console.log(
-    `📖 Atualizando para dia ${diaAtualNumero} - ${dia.dataFormatada}`,
-  );
-
   // 1. Renderizar card do dia
   container.innerHTML = renderDiaCard(dia, {
     isHoje: dia.numero === diaHojeNumero,
@@ -172,9 +165,6 @@ function atualizarDiaAtivo(planoManager, progresso, notasManager) {
   if (btnLido) {
     btnLido.addEventListener("click", () => {
       progresso.alternar(dia.numero);
-      console.log(
-        `✅ Dia ${dia.numero} ${progresso.estaLido(dia.numero) ? "lido" : "não lido"}`,
-      );
       atualizarDiaAtivo(planoManager, progresso, notasManager);
       atualizarEstatisticas(plano, progresso);
       atualizarCalendario(plano, progresso);
@@ -230,7 +220,6 @@ function navegarParaDia(numeroDia) {
    Responsável por navegar para o dia selecionado nos resultados da busca
 ============================================================================ */
 function onSelecionarDiaViaBusca(diaNumero) {
-  console.log(`🔍 Navegando para dia ${diaNumero} via busca`);
   navegarParaDia(diaNumero);
 }
 
@@ -239,22 +228,23 @@ function onSelecionarDiaViaBusca(diaNumero) {
    Configura o motor de busca e a interface de usuário
 ============================================================================ */
 function inicializarSistemaDeBusca(plano) {
-  console.log('🔍 Inicializando sistema de busca...');
-  
   try {
     // 1. Criar motor de busca com índice do plano
     searchEngineGlobal = new SearchEngine(plano);
-    
+
     // 2. Criar interface de busca
     searchUIGlobal = new SearchUI(searchEngineGlobal, onSelecionarDiaViaBusca);
-    
+
     // 3. Mostrar estatísticas do índice (apenas para debug)
-    console.log('📊 Estatísticas do índice de busca:', searchEngineGlobal.getEstatisticas());
-    
-    console.log('✅ Sistema de busca inicializado com sucesso');
+    console.log(
+      "📊 Estatísticas do índice de busca:",
+      searchEngineGlobal.getEstatisticas(),
+    );
+
+    console.log("✅ Sistema de busca inicializado com sucesso");
     return true;
   } catch (error) {
-    console.error('❌ Erro ao inicializar sistema de busca:', error);
+    console.error("❌ Erro ao inicializar sistema de busca:", error);
     return false;
   }
 }
@@ -266,25 +256,35 @@ function inicializarSistemaDeBusca(plano) {
 function configurarAtalhosDeTeclado() {
   document.addEventListener("keydown", (e) => {
     // Atalho: Ctrl/Cmd + F para focar na busca
-    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+    if ((e.ctrlKey || e.metaKey) && e.key === "f") {
       e.preventDefault();
       if (searchUIGlobal) {
         searchUIGlobal.focus();
       }
       return;
     }
-    
+
     // Atalho: Barra (/) para focar na busca (exceto quando já em input)
-    if (e.key === '/' && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+    if (
+      e.key === "/" &&
+      !e.ctrlKey &&
+      !e.metaKey &&
+      e.target.tagName !== "INPUT" &&
+      e.target.tagName !== "TEXTAREA"
+    ) {
       e.preventDefault();
       if (searchUIGlobal) {
         searchUIGlobal.focus();
       }
       return;
     }
-    
+
     // Navegação por setas (mantido do código original)
-    if (e.key === "ArrowRight" && !e.altKey && diaAtualNumero < planoManagerGlobal.getPlano().dias.length) {
+    if (
+      e.key === "ArrowRight" &&
+      !e.altKey &&
+      diaAtualNumero < planoManagerGlobal.getPlano().dias.length
+    ) {
       e.preventDefault();
       navegarParaDia(diaAtualNumero + 1);
     }
@@ -292,7 +292,12 @@ function configurarAtalhosDeTeclado() {
       e.preventDefault();
       navegarParaDia(diaAtualNumero - 1);
     }
-    if (e.key === " " && !e.ctrlKey && !e.altKey && e.target.tagName !== 'BUTTON') {
+    if (
+      e.key === " " &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      e.target.tagName !== "BUTTON"
+    ) {
       e.preventDefault();
       document.querySelector("[data-action='toggle-lido']")?.click();
     }
@@ -306,17 +311,21 @@ function configurarAtalhosDeTeclado() {
 function configurarEventoReset() {
   document.addEventListener("progresso-resetado", (evento) => {
     console.log("🔄 Evento de progresso resetado recebido", evento.detail);
-    
+
     const plano = planoManagerGlobal?.getPlano();
     if (plano && progressoGlobal) {
       // Forçar atualização do calendário
       atualizarCalendario(plano, progressoGlobal);
-      
+
       // Atualizar estatísticas
       atualizarEstatisticas(plano, progressoGlobal);
-      
+
       // Atualizar card do dia ativo
-      atualizarDiaAtivo(planoManagerGlobal, progressoGlobal, notasManagerGlobal);
+      atualizarDiaAtivo(
+        planoManagerGlobal,
+        progressoGlobal,
+        notasManagerGlobal,
+      );
     }
   });
 }
@@ -328,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try {
     // 0. Inicializar Dark Mode (deve vir primeiro)
     initDarkMode();
-    
+
     // 1. Inicializar núcleo do aplicativo
     planoManagerGlobal = new PlanoManager(planoCronologico);
     progressoGlobal = new ProgressoLeitura();
@@ -345,9 +354,12 @@ document.addEventListener("DOMContentLoaded", () => {
     inicializarSistemaDeBusca(plano);
 
     // 4. Inicializar sistema de reset de progresso
-    resetManagerGlobal = new ResetProgresso(progressoGlobal, planoManagerGlobal);
+    resetManagerGlobal = new ResetProgresso(
+      progressoGlobal,
+      planoManagerGlobal,
+    );
     resetManagerGlobal.inicializar();
-    
+
     // 5. Configurar listeners para eventos de reset
     configurarEventoReset();
 
@@ -382,7 +394,6 @@ document.addEventListener("DOMContentLoaded", () => {
     configurarAtalhosDeTeclado();
 
     console.log("✅ Aplicação inicializada com sistema de busca!");
-    
   } catch (error) {
     console.error("❌ Erro na inicialização:", error);
     const container = document.getElementById("dia-view");
