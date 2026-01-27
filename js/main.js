@@ -19,7 +19,8 @@ import { renderCalendario } from "./ui/components/calendario/render_calendario.j
 import { CalendarioViewModel } from "./ui/components/calendario/CalendarioViewModel.js";
 
 import { NotasLeituraManager } from "./core/services/notas/NotasLeituraManager.js";
-import { initNotasOverlay } from "./core/services/notas/notas_overlay.js";
+import { NotasOverlayOrquestrador } from "./core/services/notas/NotasOverlayOrquestrador.js";
+import { initNotasOverlayUI } from "./ui/componentes/notas/NotasOverlayUI.js";
 
 import { initDarkMode } from "./ui/components/darkmode.js";
 import {
@@ -34,6 +35,7 @@ let diaHojeNumero = 1;
 let planoManagerGlobal;
 let progressoGlobal;
 let notasManagerGlobal;
+let notasOrquestradorGlobal = null;
 let calendarioAPI = null;
 let calendarioVM = null;
 let resetOrquestrador = null;
@@ -208,6 +210,18 @@ function inicializarResetProgresso() {
   configurarEventoReset();
 }
 
+/* ===================== NOTAS ===================== */
+function inicializarNotasOverlay() {
+  // Criar orquestrador de notas (domínio)
+  notasOrquestradorGlobal = new NotasOverlayOrquestrador(notasManagerGlobal);
+
+  // Inicializar UI de notas
+  initNotasOverlayUI(notasOrquestradorGlobal);
+
+  // Carregar notas do dia inicial
+  notasOrquestradorGlobal.carregarNotasDoDia();
+}
+
 /* ===================== INIT ===================== */
 document.addEventListener("DOMContentLoaded", () => {
   initDarkMode();
@@ -239,6 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .getElementById("btn-dia-anterior")
     ?.addEventListener("click", () => navegarParaDia(diaAtualNumero - 1));
 
-  initNotasOverlay(notasManagerGlobal);
+  inicializarNotasOverlay();
   configurarAtalhosDeTeclado();
 });
