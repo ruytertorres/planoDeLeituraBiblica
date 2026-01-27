@@ -11,7 +11,8 @@ import { ProgressoLeitura } from "./core/services/planos/ProgressoLeitura.js";
 import { SearchEngine } from "./core/services/busca/SearchEngine.js";
 import { SearchUI } from "./ui/components/busca/search_ui.js";
 
-import { ResetProgresso } from "./core/services/planos/ResetProgresso.js";
+import { ResetProgressoOrquestrador } from "./core/services/planos/ResetProgressoOrquestrador.js";
+import { ResetModal } from "./ui/componentes/ResetModal.js";
 
 import { renderDiaCard } from "./ui/components/planos/render_dia_card.js";
 import { renderCalendario } from "./ui/components/calendario/render_calendario.js";
@@ -35,7 +36,8 @@ let progressoGlobal;
 let notasManagerGlobal;
 let calendarioAPI = null;
 let calendarioVM = null;
-let resetManagerGlobal;
+let resetOrquestrador = null;
+let resetModal = null;
 
 let searchEngineGlobal = null;
 let searchUIGlobal = null;
@@ -191,6 +193,21 @@ function configurarEventoReset() {
   });
 }
 
+function inicializarResetProgresso() {
+  // Criar orquestrador (domínio)
+  resetOrquestrador = new ResetProgressoOrquestrador(
+    progressoGlobal,
+    planoManagerGlobal,
+  );
+
+  // Criar modal (UI) com referência ao orquestrador
+  resetModal = new ResetModal(resetOrquestrador);
+  resetModal.inicializar();
+
+  // Configurar reação aos eventos de reset
+  configurarEventoReset();
+}
+
 /* ===================== INIT ===================== */
 document.addEventListener("DOMContentLoaded", () => {
   initDarkMode();
@@ -206,9 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   inicializarSistemaDeBusca(plano);
 
-  resetManagerGlobal = new ResetProgresso(progressoGlobal, planoManagerGlobal);
-  resetManagerGlobal.inicializar();
-  configurarEventoReset();
+  inicializarResetProgresso();
 
   document.getElementById("total-dias").textContent = plano.dias.length;
 

@@ -1,195 +1,171 @@
 <!doctype html>
 <html lang="pt-BR" class="light-mode">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Aplicação de Leitura Bíblica Cronológica e Estruturada"
-    />
 
-    <title>Plano de Leitura Bíblica Cronológica</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Aplicação de Leitura Bíblica Cronológica e Estruturada" />
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="./css/styles.css" />
-    <link rel="stylesheet" href="./css/notas.css" />
-	<link rel="stylesheet" href="./css/darkmode.css" />
-	<link rel="stylesheet" href="./css/search_styles.css" />
+  <title>Plano de Leitura Bíblica Cronológica</title>
 
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="stylesheet" href="./css/notas.css" />
+  <link rel="stylesheet" href="./css/darkmode.css" />
+  <link rel="stylesheet" href="./css/search_styles.css" />
+  <link rel="stylesheet" href="./css/componentes/reset-modal.css" />
 
-    <!-- Ícones -->
-    <link rel="icon" type="image/png" href="./assets/favicon.png" />
-  </head>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <body>
-    <div class="app-container">
-      <!-- =========================================================================
+  <!-- Ícones -->
+  <link rel="icon" type="image/png" href="./assets/favicon.png" />
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- =========================================================================
          NAVBAR
       ========================================================================= -->
-      <nav id="navbar">
-        <div class="navbar-container">
-          <a href="#" class="navbar-title">
-            <i class="fas fa-bible"></i>
-            Leitura Bíblica Cronológica
-          </a>
+    <nav id="navbar">
+      <div class="navbar-container">
+        <a href="#" class="navbar-title">
+          <i class="fas fa-bible"></i>
+          Leitura Bíblica Cronológica
+        </a>
 
-          <div class="navbar-stats">
-            <div class="stat-item">
-              <span class="stat-value" id="total-dias">—</span>
-              <span class="stat-label">Dias</span>
-            </div>
-
-            <div class="stat-item">
-              <span class="stat-value" id="dias-lidos">—</span>
-              <span class="stat-label">Lidos</span>
-            </div>
-
-            <div class="stat-item">
-              <span class="stat-value" id="progresso">—%</span>
-              <span class="stat-label">Progresso</span>
-            </div>
-			
-			  <!-- NOVO: Botão de resetar progresso -->
-  <button id="btn-resetar-progresso" class="btn-reset" title="Resetar progresso">
-    <i class="fas fa-redo"></i>
-  </button>
-
-<button class="theme-toggle" id="theme-toggle">
-  <i class="fas fa-moon"></i>
-</button>
-            </button>
+        <div class="navbar-stats">
+          <div class="stat-item">
+            <span class="stat-value" id="total-dias">—</span>
+            <span class="stat-label">Dias</span>
           </div>
-        </div>
-      </nav>
 
-      <!-- =========================================================================
+          <div class="stat-item">
+            <span class="stat-value" id="dias-lidos">—</span>
+            <span class="stat-label">Lidos</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-value" id="progresso">—%</span>
+            <span class="stat-label">Progresso</span>
+          </div>
+
+          <!-- NOVO: Botão de resetar progresso -->
+          <button id="btn-resetar-progresso" class="btn-reset" title="Resetar progresso">
+            <i class="fas fa-redo"></i>
+          </button>
+
+          <button class="theme-toggle" id="theme-toggle">
+            <i class="fas fa-moon"></i>
+          </button>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================================================================
          CONTEÚDO PRINCIPAL
       ========================================================================= -->
-      <main id="app" class="app-container">
-        <!-- ===============================================================
+    <main id="app" class="app-container">
+      <!-- ===============================================================
              NAVEGAÇÃO + CARD DO DIA
         =============================================================== -->
-        <section class="dia-navegacao">
-          <!-- Botão anterior -->
-          <div class="nav-buttons">
-            <button
-              id="btn-dia-anterior"
-              class="btn btn-secondary btn-nav"
-              aria-label="Dia anterior"
-            >
-              ◀ Anterior
-            </button>
+      <section class="dia-navegacao">
+        <!-- Botão anterior -->
+        <div class="nav-buttons">
+          <button id="btn-dia-anterior" class="btn btn-secondary btn-nav" aria-label="Dia anterior">
+            ◀ Anterior
+          </button>
+        </div>
+
+        <!-- CARD DO DIA -->
+        <div class="dia-atual-container">
+          <div id="card-dia" aria-live="polite" class="card-dia current-day-card pendente">
+            <section id="dia-view">
+              <!-- render_dia_card.js injeta aqui -->
+            </section>
           </div>
+        </div>
 
-          <!-- CARD DO DIA -->
-          <div class="dia-atual-container">
-            <div
-              id="card-dia"
-              aria-live="polite"
-              class="card-dia current-day-card pendente"
-            >
-              <section id="dia-view">
-                <!-- render_dia_card.js injeta aqui -->
-              </section>
-            </div>
-          </div>
-
-          <!-- Botão próximo -->
-          <div class="nav-buttons">
-            <button
-              id="btn-dia-proximo"
-              class="btn btn-secondary btn-nav"
-              aria-label="Próximo dia"
-            >
-              Próximo ▶
-            </button>
-          </div>
-        </section>
-
-        <!-- ===============================================================
-             CALENDÁRIO
-        =============================================================== -->
-        <section
-          id="calendar"
-          class="section-card calendar-section"
-          aria-label="Calendário de leitura"
-        >
-          <div class="calendar-header">
-            <span class="calendar-title"> Calendário de Leitura </span>
-          </div>
-
-          <div class="calendar-wrapper">
-            <div id="calendario">
-              <!-- render_calendario.js injeta aqui -->
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <!-- =========================================================================
-         NOTAS FLUTUANTES
-      ========================================================================= -->
-      <section id="notasFlutuantes">
-        <button id="btn-notas" title="Abrir/Fechar anotações">📝</button>
-
-        <div id="notas-overlay" class="hidden">
-          <div class="notas-container">
-            <div class="notas-header">
-              <div class="notas-title">
-                <i class="fas fa-edit"></i>
-                <span>Minhas Anotações</span>
-              </div>
-
-              <div class="notas-acoes">
-                <button
-                  id="btn-exportar"
-                  class="notas-btn-icon"
-                  title="Exportar"
-                ></button>
-                <button
-                  id="btn-fechar"
-                  class="notas-btn-icon notas-btn-fechar"
-                  title="Fechar"
-                ></button>
-              </div>
-            </div>
-
-            <div class="notas-toolbar">
-              <button data-nota-action="bold"></button>
-              <button data-nota-action="italic"></button>
-              <button data-nota-action="underline"></button>
-            </div>
-
-            <div id="notas-editor" contenteditable="true">
-              <p></p>
-            </div>
-
-            <div class="notas-footer">
-              <button id="btn-limpar" class="danger">🗑️ Limpar Tudo</button>
-            </div>
-          </div>
+        <!-- Botão próximo -->
+        <div class="nav-buttons">
+          <button id="btn-dia-proximo" class="btn btn-secondary btn-nav" aria-label="Próximo dia">
+            Próximo ▶
+          </button>
         </div>
       </section>
 
-      <!-- =========================================================================
-         FOOTER
-      ========================================================================= -->
-      <footer id="footer" class="footer">
-        <div class="footer-container container">
-          <div>
-            <p>
-              &copy; <span id="current-year">—</span>
-              Leitura Bíblica Cronológica
-            </p>
-            <p class="app-version">Versão 2.0</p>
+      <!-- ===============================================================
+             CALENDÁRIO
+        =============================================================== -->
+      <section id="calendar" class="section-card calendar-section" aria-label="Calendário de leitura">
+        <div class="calendar-header">
+          <span class="calendar-title"> Calendário de Leitura </span>
+        </div>
+
+        <div class="calendar-wrapper">
+          <div id="calendario">
+            <!-- render_calendario.js injeta aqui -->
           </div>
         </div>
-      </footer>
-    </div>
+      </section>
+    </main>
 
-    <!-- ENTRY POINT -->
-    <script type="module" src="./js/main.js"></script>
-  </body>
+    <!-- =========================================================================
+         NOTAS FLUTUANTES
+      ========================================================================= -->
+    <section id="notasFlutuantes">
+      <button id="btn-notas" title="Abrir/Fechar anotações">📝</button>
+
+      <div id="notas-overlay" class="hidden">
+        <div class="notas-container">
+          <div class="notas-header">
+            <div class="notas-title">
+              <i class="fas fa-edit"></i>
+              <span>Minhas Anotações</span>
+            </div>
+
+            <div class="notas-acoes">
+              <button id="btn-exportar" class="notas-btn-icon" title="Exportar"></button>
+              <button id="btn-fechar" class="notas-btn-icon notas-btn-fechar" title="Fechar"></button>
+            </div>
+          </div>
+
+          <div class="notas-toolbar">
+            <button data-nota-action="bold"></button>
+            <button data-nota-action="italic"></button>
+            <button data-nota-action="underline"></button>
+          </div>
+
+          <div id="notas-editor" contenteditable="true">
+            <p></p>
+          </div>
+
+          <div class="notas-footer">
+            <button id="btn-limpar" class="danger">🗑️ Limpar Tudo</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         FOOTER
+      ========================================================================= -->
+    <footer id="footer" class="footer">
+      <div class="footer-container container">
+        <div>
+          <p>
+            &copy; <span id="current-year">—</span>
+            Leitura Bíblica Cronológica
+          </p>
+          <p class="app-version">Versão 2.0</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ENTRY POINT -->
+  <script type="module" src="./js/main.js"></script>
+</body>
+
 </html>

@@ -1,0 +1,267 @@
+/* ============================================================================
+   reset-modal.css — Estilos para Modal de Reset
+   Versão: 2.0.0
+   Aplicação: Leitura Bíblica Cronológica
+============================================================================ */
+
+/* ============================================================================
+   BOTÃO NA NAVBAR
+============================================================================ */
+
+.btn-reset {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-reset:hover {
+  background-color: var(--hover-bg);
+  transform: scale(1.1);
+}
+
+.btn-reset:active {
+  transform: scale(0.95);
+}
+
+/* ============================================================================
+   OVERLAY E MODAL
+============================================================================ */
+
+.reset-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.reset-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================================
+   CONTEÚDO DO MODAL
+============================================================================ */
+
+.reset-modal {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border: 1px solid var(--border-color);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reset-modal h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-color);
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.reset-modal p {
+  margin: 0.75rem 0;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.reset-modal p strong {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+/* ============================================================================
+   SEGURANÇA E CHECKBOX
+============================================================================ */
+
+.reset-modal-security {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--hover-bg);
+  border-radius: 8px;
+  border-left: 3px solid #ffc107;
+}
+
+.reset-modal-security label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.reset-modal-security input[type="checkbox"] {
+  margin-top: 3px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+/* ============================================================================
+   AÇÕES DO MODAL
+============================================================================ */
+
+.reset-modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
+}
+
+.reset-modal-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Botão de Cancelar */
+.reset-modal-btn.cancel {
+  background: var(--hover-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.reset-modal-btn.cancel:hover:not(:disabled) {
+  background: var(--border-color);
+  transform: translateY(-2px);
+}
+
+.reset-modal-btn.cancel:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Botão de Confirmar */
+.reset-modal-btn.confirm {
+  background: #dc3545;
+  color: white;
+  border: 1px solid #dc3545;
+}
+
+.reset-modal-btn.confirm:hover:not(:disabled) {
+  background: #c82333;
+  border-color: #c82333;
+  transform: translateY(-2px);
+}
+
+.reset-modal-btn.confirm:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.reset-modal-btn.confirm:disabled {
+  background: var(--hover-bg);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.5;
+  border-color: var(--border-color);
+}
+
+/* ============================================================================
+   TOASTS (FEEDBACK)
+============================================================================ */
+
+.reset-toast {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+}
+
+.reset-toast.success {
+  color: #155724;
+  background: #d4edda;
+}
+
+.reset-toast.error {
+  color: #721c24;
+  background: #f8d7da;
+}
+
+.reset-toast i {
+  font-size: 1.2rem;
+}
+
+/* ============================================================================
+   RESPONSIVIDADE
+============================================================================ */
+
+@media (max-width: 600px) {
+  .reset-modal {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .reset-modal h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .reset-modal p {
+    font-size: 0.9rem;
+  }
+
+  .reset-modal-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .reset-modal-btn {
+    padding: 0.65rem 0.75rem;
+  }
+}
+
+/* ============================================================================
+   DARK MODE (COMPATIBILIDADE)
+============================================================================ */
+
+@media (prefers-color-scheme: dark) {
+  .reset-modal {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+  }
+
+  .reset-modal-security {
+    background: var(--hover-bg);
+    border-left-color: #ffc107;
+  }
+}

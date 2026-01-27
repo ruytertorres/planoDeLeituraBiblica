@@ -448,3 +448,14 @@ O que você quer fazer agora?
 📖 Criar documento de evolução?
 🚀 Começar com novas features?
 🔒 Implementar segurança de backend?
+
+
+render_calendario.js ⭐ CRÍTICO (UI - núcleo visual)
+plano_cronologico.js ⭐ CRÍTICO (Domínio - 5000+ linhas de dados)
+CalendarioViewModel.js 🔴 IMPORTANTE (Orquestração - novo)
+SearchEngine.js 🟡 MÉDIO (Domínio - busca)
+darkmode.js 🟡 MÉDIO (UI - tema)
+render_dia_card.js 🟡 MÉDIO (UI - card)
+notas_overlay.js 🟡 MÉDIO (UI - notas)
+SearchUI.js 🟡 MÉDIO (UI - busca)
+Qual quer que eu audite primeiro? Reco
