@@ -18,7 +18,7 @@ export class SearchUI {
     this.resultsContainer = null;
     this.searchInput = null;
     this.isOpen = false;
-    
+
     this._init();
   }
 
@@ -28,7 +28,6 @@ export class SearchUI {
   _init() {
     this._criarDOM();
     this._configurarEventos();
-    console.log('🔍 SearchUI inicializada');
   }
 
   /* --------------------------------------------------------------------------
@@ -36,49 +35,53 @@ export class SearchUI {
   -------------------------------------------------------------------------- */
   _criarDOM() {
     // Container principal
-    const searchContainer = document.createElement('div');
-    searchContainer.className = 'search-container';
-    
+    const searchContainer = document.createElement("div");
+    searchContainer.className = "search-container";
+
     // Caixa de busca
-    const searchBox = document.createElement('div');
-    searchBox.className = 'search-box';
-    
+    const searchBox = document.createElement("div");
+    searchBox.className = "search-box";
+
     // Ícone de busca
-    const searchIcon = document.createElement('i');
-    searchIcon.className = 'fas fa-search search-icon';
-    
+    const searchIcon = document.createElement("i");
+    searchIcon.className = "fas fa-search search-icon";
+
     // Input de busca
-    this.searchInput = document.createElement('input');
-    this.searchInput.type = 'text';
-    this.searchInput.id = 'search-input';
-    this.searchInput.className = 'search-input';
-    this.searchInput.placeholder = 'Buscar dia ou capítulo (ex: "Dia 15" ou "Gênesis 1")';
-    this.searchInput.setAttribute('aria-label', 'Buscar no plano de leitura');
-    
+    this.searchInput = document.createElement("input");
+    this.searchInput.type = "text";
+    this.searchInput.id = "search-input";
+    this.searchInput.className = "search-input";
+    this.searchInput.placeholder =
+      'Buscar dia ou capítulo (ex: "Dia 15" ou "Gênesis 1")';
+    this.searchInput.setAttribute("aria-label", "Buscar no plano de leitura");
+
     // Botão limpar
-    const clearBtn = document.createElement('button');
-    clearBtn.id = 'search-clear';
-    clearBtn.className = 'search-clear';
-    clearBtn.title = 'Limpar busca';
+    const clearBtn = document.createElement("button");
+    clearBtn.id = "search-clear";
+    clearBtn.className = "search-clear";
+    clearBtn.title = "Limpar busca";
     clearBtn.innerHTML = '<i class="fas fa-times"></i>';
-    
+
     // Container de resultados
-    this.resultsContainer = document.createElement('div');
-    this.resultsContainer.id = 'search-results';
-    this.resultsContainer.className = 'search-results hidden';
-    
+    this.resultsContainer = document.createElement("div");
+    this.resultsContainer.id = "search-results";
+    this.resultsContainer.className = "search-results hidden";
+
     // Montar estrutura
     searchBox.appendChild(searchIcon);
     searchBox.appendChild(this.searchInput);
     searchBox.appendChild(clearBtn);
-    
+
     searchContainer.appendChild(searchBox);
     searchContainer.appendChild(this.resultsContainer);
-    
+
     // Inserir na navbar (após o título)
-    const navbarContainer = document.querySelector('.navbar-container');
+    const navbarContainer = document.querySelector(".navbar-container");
     if (navbarContainer) {
-      navbarContainer.insertBefore(searchContainer, navbarContainer.querySelector('.navbar-stats'));
+      navbarContainer.insertBefore(
+        searchContainer,
+        navbarContainer.querySelector(".navbar-stats"),
+      );
     }
   }
 
@@ -87,41 +90,43 @@ export class SearchUI {
   -------------------------------------------------------------------------- */
   _configurarEventos() {
     // Input de busca
-    this.searchInput.addEventListener('input', (e) => {
+    this.searchInput.addEventListener("input", (e) => {
       this._onSearchInput(e.target.value);
     });
-    
+
     // Foco no input
-    this.searchInput.addEventListener('focus', () => {
+    this.searchInput.addEventListener("focus", () => {
       this._showResults();
     });
-    
+
     // Clique fora para fechar
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.search-container')) {
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-container")) {
         this._hideResults();
       }
     });
-    
+
     // Tecla Escape para fechar
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.isOpen) {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && this.isOpen) {
         this._hideResults();
         this.searchInput.blur();
       }
-      
+
       // Tecla Enter para selecionar primeiro resultado
-      if (e.key === 'Enter' && this.isOpen && this.searchInput.value.trim()) {
-        const firstResult = this.resultsContainer.querySelector('.search-result-item');
+      if (e.key === "Enter" && this.isOpen && this.searchInput.value.trim()) {
+        const firstResult = this.resultsContainer.querySelector(
+          ".search-result-item",
+        );
         if (firstResult) {
           firstResult.click();
         }
       }
     });
-    
+
     // Botão limpar
-    document.getElementById('search-clear').addEventListener('click', () => {
-      this.searchInput.value = '';
+    document.getElementById("search-clear").addEventListener("click", () => {
+      this.searchInput.value = "";
       this._hideResults();
       this.searchInput.focus();
     });
@@ -132,12 +137,12 @@ export class SearchUI {
   -------------------------------------------------------------------------- */
   _onSearchInput(termo) {
     const trimmed = termo.trim();
-    
+
     if (trimmed.length < 2) {
       this._hideResults();
       return;
     }
-    
+
     const resultados = this.searchEngine.buscar(termo);
     this._renderResults(resultados);
     this._showResults();
@@ -155,11 +160,12 @@ export class SearchUI {
       `;
       return;
     }
-    
-    const resultadosHTML = resultados.map((result, index) => {
-      const isFirst = index === 0;
-      return `
-        <div class="search-result-item ${isFirst ? 'selected' : ''}" 
+
+    const resultadosHTML = resultados
+      .map((result, index) => {
+        const isFirst = index === 0;
+        return `
+        <div class="search-result-item ${isFirst ? "selected" : ""}" 
              data-dia="${result.dia}"
              data-type="${result.type}">
           <div>
@@ -169,24 +175,29 @@ export class SearchUI {
           <div class="result-details">${result.subtitle}</div>
         </div>
       `;
-    }).join('');
-    
+      })
+      .join("");
+
     this.resultsContainer.innerHTML = resultadosHTML;
-    
+
     // Adicionar eventos aos resultados
-    this.resultsContainer.querySelectorAll('.search-result-item').forEach(item => {
-      item.addEventListener('click', (e) => {
-        const diaNumero = parseInt(item.dataset.dia);
-        this._selecionarResultado(diaNumero);
-      });
-      
-      item.addEventListener('mouseenter', () => {
-        this.resultsContainer.querySelectorAll('.search-result-item').forEach(r => {
-          r.classList.remove('selected');
+    this.resultsContainer
+      .querySelectorAll(".search-result-item")
+      .forEach((item) => {
+        item.addEventListener("click", (e) => {
+          const diaNumero = parseInt(item.dataset.dia);
+          this._selecionarResultado(diaNumero);
         });
-        item.classList.add('selected');
+
+        item.addEventListener("mouseenter", () => {
+          this.resultsContainer
+            .querySelectorAll(".search-result-item")
+            .forEach((r) => {
+              r.classList.remove("selected");
+            });
+          item.classList.add("selected");
+        });
       });
-    });
   }
 
   /* --------------------------------------------------------------------------
@@ -194,27 +205,20 @@ export class SearchUI {
   -------------------------------------------------------------------------- */
   _getTypeLabel(type) {
     const labels = {
-      'dia': 'Dia',
-      'capitulo': 'Capítulo',
-      'cap_range': 'Capítulos',
-      'livro': 'Livro'
+      dia: "Dia",
+      capitulo: "Capítulo",
+      cap_range: "Capítulos",
+      livro: "Livro",
     };
-    return labels[type] || 'Resultado';
+    return labels[type] || "Resultado";
   }
 
   /* --------------------------------------------------------------------------
      SELECIONAR RESULTADO
   -------------------------------------------------------------------------- */
   _selecionarResultado(diaNumero) {
-    console.log(`🔍 Navegando para dia ${diaNumero} via busca`);
-    
-    // Fechar resultados
-    this._hideResults();
-    this.searchInput.value = '';
-    this.searchInput.blur();
-    
     // Chamar callback para navegar para o dia
-    if (typeof this.onSelecionarDia === 'function') {
+    if (typeof this.onSelecionarDia === "function") {
       this.onSelecionarDia(diaNumero);
     }
   }
@@ -223,14 +227,14 @@ export class SearchUI {
      MOSTRAR/ESCONDER RESULTADOS
   -------------------------------------------------------------------------- */
   _showResults() {
-    this.resultsContainer.classList.remove('hidden');
-    this.resultsContainer.classList.add('active');
+    this.resultsContainer.classList.remove("hidden");
+    this.resultsContainer.classList.add("active");
     this.isOpen = true;
   }
 
   _hideResults() {
-    this.resultsContainer.classList.remove('active');
-    this.resultsContainer.classList.add('hidden');
+    this.resultsContainer.classList.remove("active");
+    this.resultsContainer.classList.add("hidden");
     this.isOpen = false;
   }
 
@@ -245,7 +249,7 @@ export class SearchUI {
      LIMPAR BUSCA (método público)
   -------------------------------------------------------------------------- */
   clear() {
-    this.searchInput.value = '';
+    this.searchInput.value = "";
     this._hideResults();
   }
 }

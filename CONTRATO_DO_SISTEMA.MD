@@ -269,7 +269,208 @@ Regras absolutas:
 
 # ============================================================================
 
-# 5. ESTADOS DO PLANO (CONTRATO DE ESTADO)
+# 5. PRINCÍPIO DO CARTUCHO: MODULARIDADE DE PLANOS
+
+# ============================================================================
+
+# FUNDAMENTO
+
+Um plano é um **CARTUCHO** — uma unidade independente e intercambiável
+que encaixa no sistema mediante uma interface padronizada.
+
+Analogia: Assim como um cartucho de videogame é independente mas funciona
+em qualquer console que respeita a especificação de encaixe, um plano deve
+ser completamente independente mas funcionar em qualquer sistema que
+respeita o **Contrato de Plano**.
+
+# PRINCÍPIO
+
+O sistema NÃO é "simbiótico" com plano_cronologico.js.
+O sistema é "modular" com QUALQUER plano que respeita a interface.
+
+Cada plano é um arquivo isolado que pode ser:
+
+- usado em outro projeto sem modificação
+- testado independentemente do sistema
+- trocado por outro plano sem quebrar nada
+- desenvolvido em paralelo por outro desenvolvedor
+
+# ============================================================================
+
+# 5.1 O QUE UM PLANO DEVE SER
+
+# ============================================================================
+
+Um plano DEVE:
+
+**Independência Total**
+
+- ✅ Conter TODOS seus dados internamente
+- ✅ NÃO importar de nenhum módulo do sistema
+- ✅ NÃO depender de geradorDatas.js
+- ✅ NÃO depender de main.js ou orquestrador
+- ✅ NÃO depender de UI ou renderização
+
+**Estrutura Padronizada**
+
+- ✅ Exportar objeto com interface definida (vide 5.2)
+- ✅ Seguir contrato mínimo de metadados
+- ✅ Incluir array de dias com estrutura obrigatória
+- ✅ Ser um módulo puro (apenas `export default {...}`)
+
+**Testabilidade Isolada**
+
+- ✅ Funcionar em ambiente de teste sem instânciar sistema
+- ✅ Não ter efeitos colaterais na carga do módulo
+- ✅ Dados ser determinísticos e reproduzíveis
+
+**Documentação Interna**
+
+- ✅ Incluir comentários explicando estrutura
+- ✅ Documentar exceções ou regras peculiares
+- ✅ Deixar claro qual versão do contrato implementa
+
+# ============================================================================
+
+# 5.2 INTERFACE OBRIGATÓRIA (CONTRATO DE ENCAIXE)
+
+# ============================================================================
+
+Todo plano DEVE exportar um objeto com esta estrutura:
+
+```javascript
+{
+  // METADADOS OBRIGATÓRIOS
+  id: string,                    // ID único do plano (ex: "plano_cronologico")
+  nome: string,                  // Nome legível (ex: "Cronológico")
+  descricao: string,             // Descrição do plano
+  totalDias: number,             // Quantidade total de dias (ex: 317)
+
+  // ARRAY DE DIAS (OBRIGATÓRIO)
+  dias: [
+    {
+      numero: number,            // 1 a totalDias
+      dataFormatada: string,     // DD/MM (apenas referência visual)
+      antigoTestamento: Array,   // Leituras do Antigo Testamento
+      novoTestamento: Array,     // Leituras do Novo Testamento
+      livros: Array,             // Nomes dos livros do dia
+      capitulos: Array,          // Números dos capítulos do dia
+      versiculos: Array,         // (Opcional) Versículos específicos
+      observacoes: string,       // (Opcional) Anotações do plano
+      data: string              // Data ISO (YYY-MM-DD) CALCULADA pelo sistema
+    }
+  ]
+}
+```
+
+**Regras de Campos:**
+
+- `id`: Must be unique across all plans
+- `nome`: Used in UI for plan selection
+- `totalDias`: Determines calendar size
+- `dias`: Array must be 1-indexed (dia.numero ≥ 1)
+- `antigoTestamento` / `novoTestamento`: Array of readings with livroNome, capituloInicio, capituloFim
+- `data`: NÃO deve estar no plano cartucho! É CALCULADA pelo sistema!
+
+# ============================================================================
+
+# 5.3 O QUE UM PLANO NÃO PODE FAZER
+
+# ============================================================================
+
+Um plano NÃO PODE:
+
+**Nenhuma Dependência Externa**
+
+- ❌ Importar geradorDatas.js
+- ❌ Importar PlanoManager.js
+- ❌ Importar qualquer módulo do sistema
+- ❌ Fazer fetch/request de dados
+- ❌ Acessar localStorage ou sessionStorage
+- ❌ Usar `import` de fora (exceto modules da linguagem)
+
+**Nenhuma Lógica de Tempo**
+
+- ❌ Calcular data real (usar `new Date()`)
+- ❌ Fazer cálculos de atraso
+- ❌ Assumir ano ou ciclo atual
+- ❌ Modificar datas com base no tempo real
+
+**Nenhuma Lógica de UI/Orquestração**
+
+- ❌ Criar elementos DOM
+- ❌ Chamar `console.log` (ou deve ser removido antes de load)
+- ❌ Ter efeitos colaterais no módulo raiz
+- ❌ Registrar listeners de eventos
+
+**Nenhuma Simbiose com Sistema**
+
+- ❌ Assumir que será usado com geradorDatas específico
+- ❌ Assinar eventos do orquestrador
+- ❌ Modificar estado global
+- ❌ Depender de inicialização específica
+
+# ============================================================================
+
+# 5.4 PROTOCOLO DE CARREGAMENTO
+
+# ============================================================================
+
+Quando um plano é carregado:
+
+1. **Load**: `import planoCronologico from './plano_cronologico.js'`
+   - Plano é módulo puro, sem efeitos colaterais
+   - Retorna objeto com interface obrigatória
+
+2. **Validação**: `contratoDePlano.validar(planoCronologico)`
+   - Sistema valida se interface está conforme
+
+3. **Inicialização**: PlanoManager envolve o plano
+   - PlanoManager injeta comportamento de orquestração
+   - PlanoManager injeta dependências (geradorDatas, etc)
+   - Plano continua puro, PlanoManager não
+
+4. **Uso**: Sistema utiliza via PlanoManager
+   - Nunca acessa plano diretamente
+   - Sempre via interface de PlanoManager
+
+# ============================================================================
+
+# 5.5 EVOLUÇÃO FUTURA
+
+# ============================================================================
+
+Quando novos planos forem criados (plano_canonico, plano_expresso, etc):
+
+**Cada plano**:
+
+- É um novo arquivo independente
+- Segue a mesma interface
+- É testado isoladamente
+- Encaixa no sistema sem modificação
+
+**O sistema**:
+
+- Não precisa mudar
+- Recebe novo plano como parâmetro
+- Valida contra este contrato
+- Funciona identicamente
+
+Exemplo futuro:
+
+```javascript
+// Hoje
+const plano = planoCronologico;
+const manager = new PlanoManager(plano);
+
+// Amanhã (sem mudança no sistema)
+const plano = planoCanonica; // Diferente arquivo
+const manager = new PlanoManager(plano); // Código idêntico!
+```
+
+# ============================================================================
+
+# 6. ESTADOS DO PLANO (CONTRATO DE ESTADO)
 
 # ============================================================================
 
@@ -295,7 +496,7 @@ Estados válidos:
 
 # ============================================================================
 
-# 6. REGRA DE ATRASO (CONTRATO GLOBAL)
+# 7. REGRA DE ATRASO (CONTRATO GLOBAL)
 
 # ============================================================================
 
@@ -316,7 +517,7 @@ altera o sistema inteiro de forma consistente.
 
 # ============================================================================
 
-# 7. DECISÕES DO USUÁRIO (CONTRATO DE INTERAÇÃO)
+# 8. DECISÕES DO USUÁRIO (CONTRATO DE INTERAÇÃO)
 
 # ============================================================================
 
@@ -339,7 +540,7 @@ Decisões implícitas **NÃO existem**.
 
 # ============================================================================
 
-# 8. CONTRATO DA UI
+# 9. CONTRATO DA UI
 
 # ============================================================================
 
@@ -359,7 +560,7 @@ UI é reflexo. Nunca motor.
 
 # ============================================================================
 
-# 9. CONTRATO DE IMPLEMENTAÇÃO
+# 10. CONTRATO DE IMPLEMENTAÇÃO
 
 # ============================================================================
 
@@ -375,7 +576,7 @@ Toda violação exige refatoração imediata.
 
 # ============================================================================
 
-# 10. EVOLUÇÃO DO DOCUMENTO
+# 11. EVOLUÇÃO DO DOCUMENTO
 
 # ============================================================================
 
@@ -392,7 +593,7 @@ Refatorar este documento
 
 # ============================================================================
 
-# 11. DECLARAÇÃO FINAL
+# 12. DECLARAÇÃO FINAL
 
 # ============================================================================
 
@@ -407,7 +608,7 @@ O contrato governa.
 
 # ============================================================================
 
-# 12. CABEÇALHOS E COMENTÁRIOS DE ARQUIVO (CONTRATO DE ARQUITETURA)
+# 13. CABEÇALHOS E COMENTÁRIOS DE ARQUIVO (CONTRATO DE ARQUITETURA)
 
 # ============================================================================
 

@@ -11,7 +11,7 @@
    - NÃO gerencia UI, DOM ou styling
 ============================================================================ */
 
-import { getContextoTemporalAtual } from "../../dominio/geradorDatas.js";
+import { getContextoTemporalAtual } from "../../models/parametroGerador.js";
 
 export class ResetProgressoOrquestrador {
   constructor(progressoLeitura, planoManager) {
