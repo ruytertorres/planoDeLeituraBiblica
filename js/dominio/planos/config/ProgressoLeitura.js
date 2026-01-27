@@ -17,8 +17,25 @@ export class ProgressoLeitura {
   constructor(chaveStorage = "progresso_leitura") {
     this.chaveStorage = chaveStorage;
     this.diasLidos = new Set();
+    this.MIN_DIA = 1;
+    this.MAX_DIA = 366; // Máximo de dias em um ano (bissexto)
 
     this._carregar();
+  }
+
+  /**
+   * Valida se um número de dia está dentro do range permitido
+   * @private
+   * @param {number} numeroDia
+   * @throws Se o dia está fora do range
+   */
+  _validarNumeroDia(numeroDia) {
+    const n = Number(numeroDia);
+    if (n < this.MIN_DIA || n > this.MAX_DIA) {
+      throw new Error(
+        `Dia inválido: ${n}. Deve estar entre ${this.MIN_DIA} e ${this.MAX_DIA}.`,
+      );
+    }
   }
 
   /* --------------------------------------------------------------------------
@@ -26,11 +43,13 @@ export class ProgressoLeitura {
   -------------------------------------------------------------------------- */
 
   marcarComoLido(numeroDia) {
+    this._validarNumeroDia(numeroDia);
     this.diasLidos.add(Number(numeroDia));
     this._salvar();
   }
 
   desmarcarComoLido(numeroDia) {
+    this._validarNumeroDia(numeroDia);
     this.diasLidos.delete(Number(numeroDia));
     this._salvar();
   }
@@ -46,6 +65,7 @@ export class ProgressoLeitura {
   -------------------------------------------------------------------------- */
 
   estaLido(numeroDia) {
+    this._validarNumeroDia(numeroDia);
     return this.diasLidos.has(Number(numeroDia));
   }
 
@@ -64,38 +84,36 @@ export class ProgressoLeitura {
   -------------------------------------------------------------------------- */
 
   resetarCompletamente() {
-    console.log("🔄 Iniciando reset completo do progresso...");
-    
     // Criar backup dos dados atuais antes de resetar
     const backup = {
       diasLidos: [...this.diasLidos],
       total: this.diasLidos.size,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
+
     // Salvar backup no localStorage (útil para recuperação)
     try {
-      localStorage.setItem(`${this.chaveStorage}_backup`, JSON.stringify(backup));
-      console.log(`📦 Backup criado com ${backup.total} dias`);
+      localStorage.setItem(
+        `${this.chaveStorage}_backup`,
+        JSON.stringify(backup),
+      );
     } catch (error) {
       console.warn("Não foi possível criar backup:", error);
     }
-    
+
     // Limpar conjunto de dias lidos
     this.diasLidos.clear();
-    
+
     // Limpar storage principal
     this._salvar();
-    
+
     // Limpar contador de backup
     localStorage.removeItem("backup_counter");
-    
-    console.log(`✅ Reset completo concluído. ${backup.total} dias foram removidos.`);
-    
+
     return {
       diasResetados: backup.total,
       timestamp: new Date().toISOString(),
-      backupDisponivel: true
+      backupDisponivel: true,
     };
   }
 
@@ -111,17 +129,15 @@ export class ProgressoLeitura {
         console.warn("Nenhum backup encontrado para restaurar");
         return null;
       }
-      
+
       const backup = JSON.parse(backupData);
       this.diasLidos = new Set(backup.diasLidos || []);
       this._salvar();
-      
-      console.log(`🔄 Progresso restaurado do backup: ${this.diasLidos.size} dias`);
-      
+
       return {
         sucesso: true,
         diasRestaurados: this.diasLidos.size,
-        timestamp: backup.timestamp
+        timestamp: backup.timestamp,
       };
     } catch (error) {
       console.error("Erro ao restaurar backup:", error);
@@ -139,13 +155,14 @@ export class ProgressoLeitura {
         this.chaveStorage,
         JSON.stringify([...this.diasLidos]),
       );
-      
+
       // Sistema de backup automático
       this._criarBackupAutomatico();
-      
     } catch (error) {
       console.error("Erro ao salvar progresso:", error);
-      throw new Error("Não foi possível salvar o progresso. Verifique o armazenamento local.");
+      throw new Error(
+        "Não foi possível salvar o progresso. Verifique o armazenamento local.",
+      );
     }
   }
 
@@ -155,11 +172,11 @@ export class ProgressoLeitura {
       if (!dados) return;
 
       JSON.parse(dados).forEach((n) => this.diasLidos.add(Number(n)));
-      
-      console.log(`📊 Progresso carregado: ${this.diasLidos.size} dias lidos`);
-      
     } catch (error) {
-      console.error("Erro ao carregar progresso. Iniciando com conjunto vazio:", error);
+      console.error(
+        "Erro ao carregar progresso. Iniciando com conjunto vazio:",
+        error,
+      );
       this.diasLidos.clear();
     }
   }
@@ -174,20 +191,21 @@ export class ProgressoLeitura {
       // Contador para não criar backup toda hora
       const contadorStr = localStorage.getItem("backup_counter") || "0";
       let contador = parseInt(contadorStr);
-      
+
       // Criar backup a cada 20 salvamentos ou se for o primeiro
       if (contador >= 20 || contador === 0) {
         const backup = {
           diasLidos: [...this.diasLidos],
           total: this.diasLidos.size,
           timestamp: new Date().toISOString(),
-          versao: "1.0"
+          versao: "1.0",
         };
-        
-        localStorage.setItem(`${this.chaveStorage}_auto_backup`, JSON.stringify(backup));
+
+        localStorage.setItem(
+          `${this.chaveStorage}_auto_backup`,
+          JSON.stringify(backup),
+        );
         localStorage.setItem("backup_counter", "1");
-        
-        console.log("📦 Backup automático criado");
       } else {
         localStorage.setItem("backup_counter", (contador + 1).toString());
       }
@@ -202,7 +220,6 @@ export class ProgressoLeitura {
 
   resetar() {
     // Método legacy - mantido para compatibilidade
-    console.warn("⚠️ Usando método legacy resetar(). Use resetarCompletamente() para mais recursos.");
     this.diasLidos.clear();
     this._salvar();
     return this.diasLidos.size;
