@@ -355,14 +355,51 @@ export class CertificadoPlugin {
 
   /**
    * Baixar certificado em PDF
-   * (Requer biblioteca como html2pdf ou pdfkit)
+   * Usa biblioteca html2pdf via CDN
    * @private
    */
   async baixarCertificadoPDF(htmlCertificado) {
-    // TODO: Implementar com html2pdf ou similar
-    alert(
-      "📥 Recurso de download em desenvolvimento.\n\nCertificado pode ser impresso usando Ctrl+P",
-    );
+    try {
+      // Verificar se html2pdf está disponível
+      if (typeof html2pdf === "undefined") {
+        console.error("html2pdf não carregado");
+        alert("⚠️ Erro ao carregar biblioteca PDF. Tente novamente.");
+        return;
+      }
+
+      // Criar elemento temporário com o certificado
+      const elemento = document.createElement("div");
+      elemento.innerHTML = htmlCertificado;
+      elemento.style.padding = "20px";
+
+      // Configurar opções do PDF
+      const opcoes = {
+        margin: 10,
+        filename: `certificado-${new Date().getTime()}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: {
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+        },
+      };
+
+      // Gerar PDF
+      console.log("📄 Gerando PDF do certificado...");
+      html2pdf().set(opcoes).from(elemento).save();
+
+      // Emitir evento
+      this.mainOrquestrador.emit("certificado-baixado", {
+        data: new Date(),
+        tipo: "pdf",
+      });
+
+      console.log("✅ PDF gerado com sucesso");
+    } catch (error) {
+      console.error("❌ Erro ao gerar PDF:", error);
+      alert("❌ Erro ao gerar PDF. Tente novamente ou use Ctrl+P para imprimir.");
+    }
   }
 
   /**
