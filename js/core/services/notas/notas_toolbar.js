@@ -16,9 +16,9 @@
 
 import { NotasHistoricoManager } from "./NotasHistoricoManager.js";
 import { NotasSelecaoManager } from "./NotasSelecaoManager.js";
-import { NotasFormatadorUI } from "../../ui/componentes/notas/NotasFormatadorUI.js";
-import { NotasEstruturadorUI } from "../../ui/componentes/notas/NotasEstruturadorUI.js";
-import { NotasToolbarUI } from "../../ui/componentes/notas/NotasToolbarUI.js";
+import { NotasFormatadorUI } from "../../../ui/componentes/notas/NotasFormatadorUI.js";
+import { NotasEstruturadorUI } from "../../../ui/componentes/notas/NotasEstruturadorUI.js";
+import { NotasToolbarUI } from "../../../ui/componentes/notas/NotasToolbarUI.js";
 
 /**
  * Inicializa a toolbar de notas com todos os componentes
