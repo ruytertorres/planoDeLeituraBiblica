@@ -12,8 +12,8 @@
    Camada: UI (Presentación)
 ============================================================================ */
 
-import { initNotasToolbar } from "../../core/services/notas/notas_toolbar.js";
-import { setupEnterHandler } from "./notas/NotasEnterHandler.js";
+import { initNotasToolbar } from "../../../core/services/notas/notas_toolbar.js";
+import { setupEnterHandler } from "./NotasEnterHandler.js";
 
 /**
  * Inicializa UI do overlay de notas

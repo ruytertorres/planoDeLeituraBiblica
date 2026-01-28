@@ -1,0 +1,195 @@
+/* =========================================================================
+   CARDS DO DIA - PRINCIPAL
+   ========================================================================= */
+
+.dia-navegacao {
+  display: flex;
+  gap: 1.5rem;
+  align-items: stretch;
+  margin: 2rem 0 2.5rem 0;
+  scroll-margin-top: 20px;
+}
+
+.current-day-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+  border-left: 6px solid #ffc107;
+}
+
+.current-day-card.lido {
+  border-left-color: #28a745;
+}
+
+.current-day-card.pendente {
+  border-left-color: #ffc107;
+}
+
+#card-dia {
+  padding: 1.75rem;
+}
+
+/* =========================================================================
+   CARD INTERNO - ESTRUTURA
+   ========================================================================= */
+
+.dia-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.dia-card.erro {
+  border-left: 4px solid #dc3545;
+  color: #dc3545;
+}
+
+.dia-card.dia-lido {
+  opacity: 0.85;
+}
+
+/* Foco no card */
+#card-dia:focus {
+  outline: 3px solid #3498db;
+  outline-offset: 3px;
+}
+
+/* =========================================================================
+   HEADER DO CARD
+   ========================================================================= */
+
+.dia-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.75rem;
+}
+
+.dia-card-header h2 {
+  font-size: 1.4rem;
+  color: #2c3e50;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.badge-hoje {
+  background: #28a745;
+  color: white;
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.dia-data {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* =========================================================================
+   CONTEÚDO DO CARD - LEITURA
+   ========================================================================= */
+
+.dia-leitura {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dia-secao h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.dia-secao ul {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dia-secao li {
+  background: rgba(52, 152, 219, 0.1);
+  padding: 0.6rem;
+  border-radius: 6px;
+  border-left: 3px solid #3498db;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* =========================================================================
+   FOOTER DO CARD - OBSERVAÇÕES E BOTÃO
+   ========================================================================= */
+
+.dia-card-footer {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dia-observacoes {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* =========================================================================
+   HIGHLIGHT ANIMATION
+   ========================================================================= */
+
+.card-highlight {
+  animation: highlightCard 1.5s ease-in-out;
+  position: relative;
+}
+
+@keyframes highlightCard {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 108, 247, 0);
+    transform: translateY(0);
+  }
+  30% {
+    box-shadow: 0 0 0 10px rgba(74, 108, 247, 0.3);
+    transform: translateY(-5px);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(74, 108, 247, 0.3);
+    transform: translateY(-5px);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 108, 247, 0);
+    transform: translateY(0);
+  }
+}
+
+/* =========================================================================
+   CONTAINER DO DIA ATUAL
+   ========================================================================= */
+
+.dia-atual-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  min-width: 120px;
+}

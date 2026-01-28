@@ -398,7 +398,9 @@ export class CertificadoPlugin {
       console.log("✅ PDF gerado com sucesso");
     } catch (error) {
       console.error("❌ Erro ao gerar PDF:", error);
-      alert("❌ Erro ao gerar PDF. Tente novamente ou use Ctrl+P para imprimir.");
+      alert(
+        "❌ Erro ao gerar PDF. Tente novamente ou use Ctrl+P para imprimir.",
+      );
     }
   }
 

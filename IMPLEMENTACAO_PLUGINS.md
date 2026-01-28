@@ -11,13 +11,13 @@ Implementação bem-sucedida de um sistema modular de plugins para a aplicação
 
 ### Componentes Implementados
 
-| Componente | Status | Funcionalidade |
-|-----------|--------|---|
-| **BaseOrquestrador** | ✅ 9.8/10 | Classe base abstrata para orquestradores |
-| **MainOrquestrador** | ✅ 9.7/10 | Orquestrador central da aplicação |
-| **CertificadoPlugin** | ✅ Com html2pdf | Gera certificados em PDF |
-| **ExportacaoPlugin** | ✅ Com docx | Exporta progresso em DOCX |
-| **Botões UI** | ✅ Styled | Certificado e Exportação na navbar |
+| Componente            | Status          | Funcionalidade                           |
+| --------------------- | --------------- | ---------------------------------------- |
+| **BaseOrquestrador**  | ✅ 9.8/10       | Classe base abstrata para orquestradores |
+| **MainOrquestrador**  | ✅ 9.7/10       | Orquestrador central da aplicação        |
+| **CertificadoPlugin** | ✅ Com html2pdf | Gera certificados em PDF                 |
+| **ExportacaoPlugin**  | ✅ Com docx     | Exporta progresso em DOCX                |
+| **Botões UI**         | ✅ Styled       | Certificado e Exportação na navbar       |
 
 ---
 
@@ -28,6 +28,7 @@ Implementação bem-sucedida de um sistema modular de plugins para a aplicação
 **Responsabilidade:** Gerar e gerenciar certificados de conclusão
 
 **Features:**
+
 - ✅ Validação de 90 dias antes de gerar certificado
 - ✅ Verificação de 100% de conclusão
 - ✅ Design bonito com estilo religioso (cruz, cores quentes)
@@ -36,6 +37,7 @@ Implementação bem-sucedida de um sistema modular de plugins para a aplicação
 - ✅ Evento `certificado-gerado` emitido
 
 **Como usar:**
+
 ```javascript
 // Botão na navbar: #btn-gerar-certificado
 // Clica para abrir modal com certificado
@@ -43,11 +45,13 @@ Implementação bem-sucedida de um sistema modular de plugins para a aplicação
 ```
 
 **Validações:**
+
 - ❌ Dias não transcorridos → Alerta com dias restantes
 - ❌ Leitura incompleta (< 100%) → Alerta com progresso
 - ✅ 90+ dias + 100% → Gera certificado
 
 **Download:**
+
 - Arquivo: `certificado-{timestamp}.pdf`
 - Formato: A4, Portrait
 - Qualidade: Alta resolução
@@ -59,6 +63,7 @@ Implementação bem-sucedida de um sistema modular de plugins para a aplicação
 **Responsabilidade:** Exportar progresso e notas para DOCX
 
 **Features:**
+
 - ✅ Cálculo automático de estatísticas
 - ✅ Tabela formatada com métricas
 - ✅ Última leitura e próxima leitura
@@ -68,12 +73,14 @@ Implementação bem-sucedida de um sistema modular de plugins para a aplicação
 - ✅ Fallback para HTML se DOCX falhar
 
 **Como usar:**
+
 ```javascript
 // Botão na navbar: #btn-exportar-progresso
 // Clica para exportar automaticamente em DOCX
 ```
 
 **Conteúdo do DOCX:**
+
 1. **Cabeçalho** - Título, plano, data de exportação
 2. **Tabela de Estatísticas**
    - Dias Lidos (XX/YY)
@@ -86,6 +93,7 @@ Implementação bem-sucedida de um sistema modular de plugins para a aplicação
 6. **Rodapé** - Crédito do sistema
 
 **Download:**
+
 - Arquivo: `progresso_{planoId}_{data}.docx`
 - Formato: Microsoft Word 2016+
 - Tabelas: Formatadas com cores
@@ -101,13 +109,13 @@ Qualquer plugin deve implementar:
 
 ```javascript
 class MeuPlugin {
-  name = "MeuPlugin";  // Identificador único
-  
+  name = "MeuPlugin"; // Identificador único
+
   async init(mainOrquestrador) {
     // Chamado durante inicialização
     // mainOrquestrador = referência ao orquestrador
   }
-  
+
   destroy() {
     // (Opcional) Cleanup ao destruir
   }
@@ -150,6 +158,7 @@ const notas = this.mainOrquestrador.state.managers.notas;
 **CDN:** `cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js`
 
 **Uso em CertificadoPlugin:**
+
 ```javascript
 const elemento = document.createElement("div");
 elemento.innerHTML = htmlCertificado;
@@ -176,6 +185,7 @@ html2pdf().set(opcoes).from(elemento).save();
 **CDN:** `cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js`
 
 **Uso em ExportacaoPlugin:**
+
 ```javascript
 const doc = new window.docx.Document({
   sections: [{
@@ -196,18 +206,21 @@ await window.docx.Packer.toBlob(doc).then((blob) => {
 ## 🎨 UI - Botões na Navbar
 
 ### Botão Gerar Certificado
+
 - **ID:** `btn-gerar-certificado`
 - **Ícone:** Font Awesome `fa-award`
 - **Cor:** Verde (#4CAF50)
 - **Ação:** Abre modal com certificado, permite download em PDF
 
 ### Botão Exportar Progresso
+
 - **ID:** `btn-exportar-progresso`
 - **Ícone:** Font Awesome `fa-file-download`
 - **Cor:** Verde (#4CAF50)
 - **Ação:** Exporta automaticamente em DOCX
 
 ### Estilo CSS
+
 ```css
 .btn-action {
   background-color: rgba(76, 175, 80, 0.2);
@@ -274,24 +287,24 @@ await window.docx.Packer.toBlob(doc).then((blob) => {
 
 ## 📊 Commits Implementados
 
-| Hash | Mensagem | Arquivos |
-|------|----------|----------|
-| `8fda694` | audit: análise completa BaseOrquestrador + MainOrquestrador | AUDITORIA_ORQUESTRADORES.md |
+| Hash      | Mensagem                                                       | Arquivos                         |
+| --------- | -------------------------------------------------------------- | -------------------------------- |
+| `8fda694` | audit: análise completa BaseOrquestrador + MainOrquestrador    | AUDITORIA_ORQUESTRADORES.md      |
 | `9b326b8` | feat: integrar html2pdf para download real de certificados PDF | plano.html, CertificadoPlugin.js |
-| `c4eee59` | feat: integrar docx library para exportação DOCX profissional | plano.html, ExportacaoPlugin.js |
-| `76f2836` | ui: adicionar botões de certificado e exportação na navbar | plano.html, styles.css |
+| `c4eee59` | feat: integrar docx library para exportação DOCX profissional  | plano.html, ExportacaoPlugin.js  |
+| `76f2836` | ui: adicionar botões de certificado e exportação na navbar     | plano.html, styles.css           |
 
 ---
 
 ## 🔐 Conformidade e Qualidade
 
-| Aspecto | Conformidade |
-|--------|--------------|
-| Contrato v1.1.0 | ✅ 99.5% (zero violations) |
-| Memory Leaks | ✅ Resolvidos (event delegation) |
-| Code Quality | ✅ 9.7/10 média |
-| Error Handling | ✅ Robusto com fallbacks |
-| Browser Support | ✅ Chrome, Firefox, Safari, Edge |
+| Aspecto          | Conformidade                        |
+| ---------------- | ----------------------------------- |
+| Contrato v1.1.0  | ✅ 99.5% (zero violations)          |
+| Memory Leaks     | ✅ Resolvidos (event delegation)    |
+| Code Quality     | ✅ 9.7/10 média                     |
+| Error Handling   | ✅ Robusto com fallbacks            |
+| Browser Support  | ✅ Chrome, Firefox, Safari, Edge    |
 | CDN Availability | ✅ Ambas CDNs públicas e confiáveis |
 
 ---
@@ -299,6 +312,7 @@ await window.docx.Packer.toBlob(doc).then((blob) => {
 ## 🚀 Próximas Features
 
 Plugins podem facilmente adicionar:
+
 - 🟢 Autenticação/Login
 - 🟢 Múltiplas versões da Bíblia
 - 🟢 Sistema de metas
@@ -340,4 +354,4 @@ Sem modificar `BaseOrquestrador` ou `MainOrquestrador`!
 
 ---
 
-*Documento de Implementação - Sistema de Plugins v3.0*
+_Documento de Implementação - Sistema de Plugins v3.0_

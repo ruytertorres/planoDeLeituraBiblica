@@ -1,278 +1,24 @@
 📘 NOTA DE CONTINUIDADE — APP DE LEITURA BÍBLICA
 
-Data: 21/01/2026
-Estado: Arquitetura saudável, evolução controlada, sem dívida técnica
+Data: 27/01/2026
+Estado: Arquitetura saudável, evolução controlada, sem dívida técnica, arquivos auditados
 
 ######
 🔹 NA ULTIMA ATUALIZAÇÃO
 ######
 
-- IMPLEMENTAÇÃO DO RESET DO PLANO DE LEITURA COM SISTEMA DE SEGURANÇA
-- DARKMODE INSERIDO (TROCAR A COR AMARELA DOS DIAS LIDOS)
-- INSERÇÃO DE BARRA DE PESQUISA
-- ATUALIZAÇÕES DE QUALIDADE DE VIDA
+-auditoria dos arquivos e refatoração da pasta raiz
 
 ######
 🔹 FASE ATUAL
 ######
 
---------------------------------------------------
-
-RESUMO: 
-
-Checklist da Frente 1 arquivo por arquivo (ESTOU NESSA ETAPA)
-(começamos pelo tempo)
-
-Formalizar estados e decisões no contrato agora
-(antes de tocar código)
-
-!!IMOIRTANTE!! Refatoração Completa - separar em 2 classes >> ResetProgresso.js
-#VER NOTA: no fim desse arquivo
-
----------------------------------------------------
-
-🧭 NOVO PLANO MESTRE — ORIENTADO POR CONTRATO
-
-Este plano substitui o plano anterior.
-O plano anterior foi correto para diagnóstico.
-Este é o plano para execução real.
-
-🧱 FRENTE 1 — VALIDAR E CONFORMAR O SISTEMA AO CONTRATO
-
-(robustez, correção, eliminação de fragilidades)
-
-🎯 Objetivo da Frente 1 (ESTOU AQUI)
-
-Garantir que nenhuma parte do sistema viole o CONTRATO_DO_SISTEMA.md.
-
-Aqui não se adiciona funcionalidade nova.
-Aqui você remove ambiguidades, centraliza responsabilidades e fortalece o núcleo.
-
-1.1 Auditoria técnica guiada pelo contrato (obrigatória)
-
-Checklist fixo para cada arquivo tocado:
-
-❓ Este arquivo gera tempo?
-
-Se sim → violação
-
-❓ Este arquivo decide fluxo?
-
-Se não for PlanoManager → violação
-
-❓ Este arquivo interpreta estado?
-
-Se for UI → violação
-
-❓ Esta regra aparece em mais de um lugar?
-
-Se sim → violação
-
-📌 Saída esperada
-Nenhuma função “sem dono conceitual”.
-
-1.2 Tempo: conformidade absoluta com geradorDatas.js
-
-Ações obrigatórias:
-
-Remover todo new Date() fora do gerador
-
-Eliminar:
-
-cálculo duplicado de dia do ano
-
-suposições de ano corrente
-
-Fazer com que:
-
-dia.js
-
-plano_cronologico.js
-
-render_calendario.js
-
-perguntem ao geradorDatas, nunca decidam.
-
-📌 Critério de conclusão
-Se o geradorDatas falhar, o sistema inteiro falha — e isso é correto.
-
-1.3 Regra de atraso (Fase Zero efetiva)
-
-Criar função única, por exemplo:
-
-calcularAtrasoPlano(...)
-
-obterDiasDeAtraso(...)
-
-Ela deve:
-
-viver em módulo de domínio
-
-ser usada por:
-
-PlanoManager
-
-UI (apenas para exibição)
-
-📌 Nenhum número mágico no sistema.
-
-1.4 PlanoManager como autoridade única
-
-PlanoManager deve:
-
-Detectar eventos
-
-Declarar estado
-
-Expor decisões possíveis
-
-Executar decisões explicitamente
-
-Ele não deve:
-
-adaptar silenciosamente
-
-reorganizar sem decisão
-
-“continuar porque sempre continuou”
-
-📌 Saída da Frente 1
-Sistema mais chato, menos mágico, mais confiável.
----------------------------------------------------------------------
-📘 FRENTE 2 — FORTALECER O CONTRATO COMO FONTE ABSOLUTA
-
-Essa frente roda em paralelo com todas as outras.
-
-🎯 Objetivo da Frente 2
-
-Transformar o CONTRATO_DO_SISTEMA.md em:
-
-documentação viva
-
-referência humana
-
-referência para IA
-
-escudo contra regressão conceitual
-
-2.1 Regra de ouro
-
-Se uma decisão existe no código, ela deve existir no contrato.
-Se uma regra existe no contrato, ela deve existir no código.
-
-Nada fora disso.
-
-2.2 O que adicionar ao contrato durante a refatoração
-
-Progressivamente:
-
-Definição formal de:
-
-atraso
-
-lacuna
-
-ciclo
-
-reancoragem
-
-Contrato explícito de:
-
-reset total
-
-reset inteligente
-
-Estados e transições válidas
-
-Eventos reconhecidos pelo sistema
-
-📌 O contrato cresce, mas não muda de direção.
--------------------------------------------------------------------
-🔄 FRENTE 3 — FUNCIONALIDADES DE ADAPTAÇÃO DO PLANO
-
-(onde o valor para o usuário aparece)
-
-Agora sim entramos no que o usuário sente.
-
-3.1 Atraso longo → AGUARDANDO_DECISAO
-
-Cenário alvo (como você descreveu):
-
-Dia 15 → pausa
-
-Retorno no dia 41
-
-Sistema:
-
-detecta lacuna
-
-não decide
-
-entra em AGUARDANDO_DECISAO
-
-Decisões oferecidas:
-
-Continuar adaptando
-
-Reset inteligente
-
-Reset total
-
-📌 Nenhuma adaptação automática.
-
-3.2 Reset inteligente (conceito-chave)
-
-Reset inteligente não volta no tempo.
-
-Ele:
-
-ancora o plano no “hoje”
-
-redefine:
-
-dia 01 do plano
-
-data atual como início
-
-respeita ciclos
-
-respeita o calendário real
-
-Se ultrapassar 31/12:
-
-sistema detecta
-
-entra em FIM_DE_CICLO
-
-aguarda decisão
-
-3.3 Reset total
-
-Volta ao plano original
-
-Dia 01 / 01
-
-Progresso apagado
-
-Confirmação explícita (dupla)
-
-3.4 UI como espelho
-
-Navbar mostra botões somente se:
-
-estado permitir
-
-UI não calcula nada
-
-UI só pergunta:
-
-“o que você deseja fazer?”
 -------------------------------------------------------------------------
 🧩 FRENTE 4 — PREPARAR O SISTEMA PARA O FUTURO (sem implementar agora)
 
 Essa frente não é código, é arquitetura limpa.
 
-4.1 Separação de domínios (desde já)
+1.1 Separação de domínios (desde já)
 
 Garantir que:
 
@@ -292,7 +38,7 @@ login
 
 multiusuário
 
-4.2 Decisões importantes agora (para não quebrar depois)
+1.2 Decisões importantes agora (para não quebrar depois)
 
 Plano não pertence a um usuário diretamente
 → pertence a um contexto
@@ -309,7 +55,7 @@ instanciável
 
 independente da UI
 
-4.3 O que NÃO implementar agora (mas preparar)
+1.3 O que NÃO implementar agora (mas preparar)
 
 Login social
 
@@ -375,87 +121,4 @@ index.html (a index sera responsavel pela seleçao de planos de leitura ou das v
 🔹NOTA:
 #################
 
-💡 RECOMENDAÇÕES PARA EVOLUÇÃO
-CURTO PRAZO (Muito Importante):
-
-🔴 Adicionar testes automatizados (Jest/Vitest)
-
-Testar geradorDatas.js (crítico)
-Testar ProgressoLeitura.js
-Testar PlanoManager.js
-🔴 Auditar o ResetProgresso.js (ainda não auditado)
-
-Verificar se respeita contrato
-Verificar se tem lógica temporal oculta
-MÉDIO PRAZO (Importante):
-3. 🟡 Persistência em backend (não apenas localStorage)
-
-Considerar sincronização com servidor
-Backup automático na nuvem
-🟡 Adicionar JSDoc em todos os módulos
-Para melhor IDE support
-Para documentação automática
-LONGO PRAZO (Desejável):
-5. 🟢 Possível migração para TypeScript
-
-Sistema é grande o suficiente
-Traria mais segurança de tipo
-🟢 Progressive Web App (PWA)
-Service Worker para offline
-Install to home screen
-🎓 O QUE VOCÊ FEZ BEM
-Contrato como Constitução ⭐⭐⭐
-
-Decisão arquitetural excelente
-Força todas as refatorações a serem conscientes
-Separação de Responsabilidades ⭐⭐⭐
-
-Cada módulo faz uma coisa bem
-Fácil de debugar e estender
-Tempo Soberano ⭐⭐⭐
-
-geradorDatas.js é o guardião
-Zero new Date() fora de lugar (após refatoração)
-Refatoração Iterativa ⭐⭐
-
-Calendário: corrigiu navegação de meses
-ProgressoLeitura: validação de range
-Limpeza de console.log
-⚠️ PONTOS DE ATENÇÃO
-Sem Testes Automatizados
-
-Crítico para confiança em refatorações
-Recomendo adicionar antes de versão 1.0.0
-localStorage é efêmero
-
-Se usuário limpar cache, perde progresso
-Considerar sync com backend
-Sem logging estruturado
-
-console.error funciona, mas é básico
-Para produção, considerar Sentry/similar
-Camada de Infraestrutura é Basic
-
-Apenas localStorage
-Sem criptografia, sem validação rigorosa
-🎖️ NOTA FINAL: 8.5/10
-
-┌─────────────────────────────────────────┐│  SISTEMA BÍBLICO - AVALIAÇÃO FINAL      │├─────────────────────────────────────────┤│  Arquitetura:      ✅ EXCELENTE         ││  Segurança:        ✅ BOA               ││  Manutenção:       ✅ EXCELENTE         ││  Documentação:     ✅ BOA               ││  Pronto Produção:  ✅ SIM               ││  Seguro:           ✅ SIM               ││  Maduro:           ✅ SIM (com testes)  ││                                         ││  NOTA: 8.5/10 ⭐⭐⭐⭐⭐               ││  PARECER: APROVADO PARA EVOLUÇÃO       │└─────────────────────────────────────────┘
-O que você quer fazer agora?
-
-🧪 Adicionar testes automatizados?
-📋 Auditar ResetProgresso.js?
-📖 Criar documento de evolução?
-🚀 Começar com novas features?
-🔒 Implementar segurança de backend?
-
-
-render_calendario.js ⭐ CRÍTICO (UI - núcleo visual)
-plano_cronologico.js ⭐ CRÍTICO (Domínio - 5000+ linhas de dados)
-CalendarioViewModel.js 🔴 IMPORTANTE (Orquestração - novo)
-SearchEngine.js 🟡 MÉDIO (Domínio - busca)
-darkmode.js 🟡 MÉDIO (UI - tema)
-render_dia_card.js 🟡 MÉDIO (UI - card)
-notas_overlay.js 🟡 MÉDIO (UI - notas)
-SearchUI.js 🟡 MÉDIO (UI - busca)
-Qual quer que eu audite primeiro? Reco
+*refatorar o CSS*
