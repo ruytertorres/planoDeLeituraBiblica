@@ -10,7 +10,7 @@
    Camada: UI
 ============================================================================ */
 
-import { NotasSelecaoManager } from "../services/notas/NotasSelecaoManager.js";
+import { NotasSelecaoManager } from "../../../core/services/notas/NotasSelecaoManager.js";
 
 /**
  * Aplicar estrutura de conteúdo
