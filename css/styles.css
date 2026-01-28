@@ -358,6 +358,35 @@ body {
 }
 
 /* =========================================================================
+   BOTÕES DE AÇÃO (CERTIFICADO E EXPORTAÇÃO)
+   ========================================================================= */
+.btn-action {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+.btn-action:hover {
+  background-color: rgba(76, 175, 80, 0.4);
+  transform: scale(1.1);
+}
+
+.btn-action i {
+  color: #4caf50;
+}
+
+/* =========================================================================
    CONTEÚDO PRINCIPAL - MARGEM DO NAVBAR
    ========================================================================= */
 .dia-navegacao {
