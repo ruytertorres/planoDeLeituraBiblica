@@ -35,7 +35,7 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: white;
+  color: #2c3e50;
   font-size: 0.9rem;
   padding: 0.25rem 0;
   outline: none;
@@ -43,7 +43,7 @@
 }
 
 .search-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(44, 62, 80, 0.5);
 }
 
 .search-clear {
@@ -87,8 +87,14 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .search-result-item {
@@ -146,10 +152,22 @@
     margin: 0.5rem 0;
     order: 3;
   }
-  
+
   .navbar-container {
     flex-wrap: wrap;
   }
+}
+
+/* =========================================================================
+   DARK MODE - SEARCH INPUT
+   ========================================================================= */
+
+.dark-mode .search-input {
+  color: white;
+}
+
+.dark-mode .search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 @media (max-width: 480px) {
