@@ -227,6 +227,145 @@
   font-size: 0.85rem;
 }
 
+/* Dropdown de Marca texto */
+.highlight-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.highlight-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.highlight-btn::after {
+  content: "▼";
+  margin-left: 5px;
+  font-size: 0.7rem;
+}
+
+.highlight-options {
+  display: none;
+  position: absolute;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 8px;
+  z-index: 10;
+  top: 100%; /* Abaixo do botão principal */
+  left: 0;
+  margin-top: 5px;
+  min-width: 120px;
+  flex-direction: column;
+  gap: 5px;
+  border: 1px solid var(--border-color);
+}
+
+.highlight-options.active {
+  display: flex;
+}
+
+.highlight-options button {
+  width: 100%;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  justify-content: flex-start;
+  padding: 0 10px;
+}
+
+.highlight-options button:hover {
+  transform: scale(1.02);
+}
+
+/* Cores específicas */
+.highlight-options button[data-cor="yellow"] {
+  background-color: yellow;
+}
+.highlight-options button[data-cor="#00FF00"] {
+  background-color: #00ff00;
+}
+.highlight-options button[data-cor="#ADD8E6"] {
+  background-color: #add8e6;
+}
+.highlight-options button[data-cor="#FFC0CB"] {
+  background-color: #ffc0cb;
+}
+
+.highlight-options button[data-cor]::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.highlight-options button[data-cor="yellow"]::before {
+  background-color: yellow;
+}
+.highlight-options button[data-cor="#00FF00"]::before {
+  background-color: #00ff00;
+}
+.highlight-options button[data-cor="#ADD8E6"]::before {
+  background-color: #add8e6;
+}
+.highlight-options button[data-cor="#FFC0CB"]::before {
+  background-color: #ffc0cb;
+}
+
+/* Dark mode adjustments */
+.dark-mode .highlight-options {
+  background-color: #34495e;
+  border-color: #4a657a;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .highlight-options button {
+  color: #fff;
+}
+
+.dark-mode .highlight-options button[data-cor]::before {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark-mode .notas-editor [style*="background-color"] {
+  color: #fff !important;
+}
+
+[data-nota-action="highlight"]::before {
+  content: "🖍️";
+  font-size: 1rem;
+}
+
+[data-nota-action="ul"]::before {
+  content: "• Lista";
+  font-size: 0.9rem;
+}
+
+[data-nota-action="ol"]::before {
+  content: "1. Lista";
+  font-size: 0.9rem;
+}
+
+[data-nota-action="undo"]::before {
+  content: "↶";
+  font-size: 1.1rem;
+}
+
+[data-nota-action="redo"]::before {
+  content: "↷";
+  font-size: 1.1rem;
+}
+
+[data-nota-action="clear"]::before {
+  content: "🧹";
+  font-size: 1rem;
+}
+
 /* Separador */
 .toolbar-separator {
   color: var(--border-color);

@@ -41,7 +41,7 @@ export function initNotasOverlayUI(orquestrador) {
   ----------------------------------------------------------------------- */
   const toolbar = document.querySelector(".notas-toolbar");
   if (toolbar) {
-    initNotasToolbar(editor);
+    initNotasToolbar(editor, toolbar);
   }
 
   /* -----------------------------------------------------------------------

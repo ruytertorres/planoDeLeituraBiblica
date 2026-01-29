@@ -42,7 +42,13 @@ export class NotasEstruturadorUI {
    * @public
    */
   toggleListaNaoOrdenada() {
-    this.toggleBlockFormat("ul");
+    this.editor.focus();
+    document.execCommand("insertUnorderedList", false, null);
+    if (this.historicoManager) {
+      setTimeout(() => {
+        this.historicoManager.salvar(this.editor.innerHTML);
+      }, 10);
+    }
   }
 
   /**
@@ -50,7 +56,13 @@ export class NotasEstruturadorUI {
    * @public
    */
   toggleListaOrdenada() {
-    this.toggleBlockFormat("ol");
+    this.editor.focus();
+    document.execCommand("insertOrderedList", false, null);
+    if (this.historicoManager) {
+      setTimeout(() => {
+        this.historicoManager.salvar(this.editor.innerHTML);
+      }, 10);
+    }
   }
 
   /**
@@ -91,28 +103,12 @@ export class NotasEstruturadorUI {
    * @public
    */
   limparFormatacaoCompleta() {
-    const sel = window.getSelection();
-    if (!sel || sel.rangeCount === 0) return;
+    this.editor.focus();
+    document.execCommand("removeFormat", false, null); // Remove formatações inline
+    document.execCommand("removeFormat", false, null); // Chama duas vezes para garantir
 
-    const range = sel.getRangeAt(0);
-    let conteudo = range.toString(); // Apenas texto puro
-
-    if (!conteudo) return;
-
-    // Remove formatações inline
-    document.execCommand("removeFormat", false, null);
-
-    // Remove estrutura (block elements)
+    // Remove estrutura de blocos (h2, h3, ul, ol)
     this.removerEstrutura();
-
-    // Tenta restaurar seleção básica
-    try {
-      this.editor.focus();
-      const pos = NotasSelecaoManager.posicionarNoInicio(this.editor);
-      if (pos) pos.focus();
-    } catch (e) {
-      console.warn("Falha ao posicionar cursor");
-    }
 
     // Salva histórico
     if (this.historicoManager) {
@@ -175,23 +171,64 @@ export class NotasEstruturadorUI {
    * @private
    */
   removerEstrutura() {
-    const tags = ["H2", "H3", "UL", "OL", "LI"];
+    const tagsDeLista = ["UL", "OL"];
+    const tagsDeCabecalho = ["H1", "H2", "H3", "H4", "H5", "H6"];
 
-    tags.forEach((tag) => {
-      const elementos = this.editor.querySelectorAll(tag);
-      elementos.forEach((el) => {
-        // Substitui por div com conteúdo
-        const div = document.createElement("div");
-        div.innerHTML = el.innerHTML;
+    this.editor.focus();
 
-        // Se é LI, extrai só o texto
-        if (tag === "LI") {
-          el.replaceWith(document.createTextNode(el.textContent + "\n"));
-        } else {
-          el.replaceWith(div);
-        }
+    // 1. Remover todas as listas (UL e OL) e converter LIs em parágrafos
+    tagsDeLista.forEach((listTag) => {
+      const listas = Array.from(this.editor.querySelectorAll(listTag));
+      listas.forEach((lista) => {
+        const itensDeLista = Array.from(lista.querySelectorAll("LI"));
+        itensDeLista.forEach((item) => {
+          const p = document.createElement("p");
+          p.innerHTML = item.innerHTML; // Preserva formatação inline dentro do LI
+          lista.parentNode.insertBefore(p, lista); // Insere o parágrafo antes da lista
+        });
+        lista.remove(); // Remove a lista completa (UL ou OL)
       });
     });
+
+    // 2. Converte todos os blocos restantes para <p>
+    // Isso também pega o conteúdo que estava em Hx ou DIVs genéricas
+    let currentNode = this.editor.firstChild;
+    while (currentNode) {
+      // Pular nós de texto que não são filhos diretos de blocos
+      if (
+        currentNode.nodeType === Node.TEXT_NODE &&
+        currentNode.textContent.trim() === ""
+      ) {
+        currentNode = currentNode.nextSibling;
+        continue;
+      }
+
+      const nextNode = currentNode.nextSibling;
+      if (currentNode.nodeType === Node.ELEMENT_NODE) {
+        const tagName = currentNode.tagName.toUpperCase();
+        // Se for um bloco diferente de P, ou um P com estilos indesejados, converte
+        if (tagName !== "P" || currentNode.style.cssText) {
+          const p = document.createElement("p");
+          p.innerHTML = currentNode.innerHTML;
+          currentNode.replaceWith(p);
+        }
+      }
+      currentNode = nextNode;
+    }
+
+    // 3. Remover tags de cabeçalho residuais (se a conversão acima não pegou tudo)
+    tagsDeCabecalho.forEach((tag) => {
+      const elementos = Array.from(this.editor.querySelectorAll(tag));
+      elementos.forEach((el) => {
+        const p = document.createElement("p");
+        p.innerHTML = el.innerHTML;
+        el.replaceWith(p);
+      });
+    });
+
+    // 4. Limpeza final: remover divs vazias que podem ter sobrado
+    const emptyDivs = Array.from(this.editor.querySelectorAll("div:empty"));
+    emptyDivs.forEach((div) => div.remove());
   }
 
   /**

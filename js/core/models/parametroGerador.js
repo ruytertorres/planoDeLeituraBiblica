@@ -155,3 +155,13 @@ export function getContextoTemporalAtual() {
     totalDias: getTotalDiasDoAno(ano),
   };
 }
+
+/**
+ * Retorna um timestamp ISO 8601 (YYYY-MM-DDTHH:mm:ss.sssZ) do momento atual.
+ * Garante que todos os módulos obtenham timestamps da mesma fonte.
+ *
+ * @returns {string} Timestamp ISO 8601
+ */
+export function getTimestampAtualISO() {
+  return new Date().toISOString();
+}

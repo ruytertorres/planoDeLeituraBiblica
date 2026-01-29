@@ -155,9 +155,37 @@
           </div>
 
           <div class="notas-toolbar">
-            <button data-nota-action="bold"></button>
-            <button data-nota-action="italic"></button>
-            <button data-nota-action="underline"></button>
+            <!-- Formatação básica -->
+            <button data-cmd="bold" data-nota-action="bold" title="Negrito (Ctrl+B)"></button>
+            <button data-cmd="italic" data-nota-action="italic" title="Itálico (Ctrl+I)"></button>
+            <button data-cmd="underline" data-nota-action="underline" title="Sublinhado (Ctrl+U)"></button>
+
+            <!-- Marca texto -->
+            <div class="highlight-dropdown">
+              <button data-cmd="highlight" data-nota-action="highlight" class="highlight-btn"
+                title="Marca texto"></button>
+              <div class="highlight-options">
+                <button data-cmd="highlight-color" data-cor="yellow" title="Amarelo"></button>
+                <button data-cmd="highlight-color" data-cor="#00FF00" title="Verde"></button>
+                <button data-cmd="highlight-color" data-cor="#ADD8E6" title="Azul claro"></button>
+                <button data-cmd="highlight-color" data-cor="#FFC0CB" title="Rosa"></button>
+              </div>
+            </div>
+
+            <!-- Cabeçalhos -->
+            <button data-cmd="h2" data-nota-action="h2" title="Cabeçalho 2 (Ctrl+2)"></button>
+            <button data-cmd="h3" data-nota-action="h3" title="Cabeçalho 3 (Ctrl+3)"></button>
+
+            <!-- Listas -->
+            <button data-cmd="ul" data-nota-action="ul" title="Lista não ordenada (Ctrl+L)"></button>
+            <button data-cmd="ol" data-nota-action="ol" title="Lista ordenada"></button>
+
+            <!-- Histórico -->
+            <button data-cmd="undo" data-nota-action="undo" title="Desfazer (Ctrl+Z)"></button>
+            <button data-cmd="redo" data-nota-action="redo" title="Refazer (Ctrl+Y)"></button>
+
+            <!-- Limpar formatação -->
+            <button data-cmd="limpar-inline" data-nota-action="clear" title="Limpar formatação (Ctrl+Espaço)"></button>
           </div>
 
           <div id="notas-editor" contenteditable="true">
@@ -165,7 +193,7 @@
           </div>
 
           <div class="notas-footer">
-            <button id="btn-limpar" class="danger">🗑️ Limpar Tudo</button>
+            <button id="btn-limpar" class="danger">Limpar Tudo</button>
           </div>
         </div>
       </div>

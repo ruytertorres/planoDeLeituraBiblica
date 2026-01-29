@@ -37,8 +37,13 @@ export class NotasToolbarUI {
     this.botoes.underline = this.toolbar.querySelector(
       "[data-cmd='underline']",
     );
-    this.botoes.highlight = this.toolbar.querySelector(
+    this.botoes.highlightBtn = this.toolbar.querySelector(
       "[data-cmd='highlight']",
+    );
+    this.botoes.highlightDropdown =
+      this.toolbar.querySelector(".highlight-options");
+    this.botoes.highlightColors = this.toolbar.querySelectorAll(
+      "[data-cmd='highlight-color']",
     );
 
     // Estrutura
@@ -90,16 +95,39 @@ export class NotasToolbarUI {
       });
     }
 
-    if (this.botoes.highlight) {
-      this.botoes.highlight.addEventListener("click", (e) => {
+    // Highlight
+    if (this.botoes.highlightBtn) {
+      this.botoes.highlightBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        const cor = prompt("Cor (ex: yellow, #ffff00):", "yellow");
-        if (cor) {
-          this.formatador.highlight(cor);
-        }
+        this.botoes.highlightDropdown.classList.toggle("active");
         this.atualizarEstadoBotoes();
       });
     }
+
+    if (this.botoes.highlightColors) {
+      this.botoes.highlightColors.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const cor = btn.dataset.cor;
+          this.formatador.highlight(cor);
+          this.botoes.highlightDropdown.classList.remove("active"); // Fechar após seleção
+          this.atualizarEstadoBotoes();
+        });
+      });
+    }
+
+    // Fechar dropdown de highlight ao clicar fora
+    document.addEventListener("click", (e) => {
+      const highlightDropdownParent = this.toolbar.querySelector(
+        ".highlight-dropdown",
+      );
+      if (
+        highlightDropdownParent &&
+        !highlightDropdownParent.contains(e.target)
+      ) {
+        this.botoes.highlightDropdown.classList.remove("active");
+      }
+    });
 
     // Estrutura
     if (this.botoes.h2) {

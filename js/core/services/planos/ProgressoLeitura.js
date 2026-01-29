@@ -13,6 +13,8 @@
    - NÃO depender de plano, datas ou renderização
 ============================================================================ */
 
+import * as parametroGerador from "../../models/parametroGerador.js";
+
 export class ProgressoLeitura {
   constructor(chaveStorage = "progresso_leitura") {
     this.chaveStorage = chaveStorage;
@@ -98,7 +100,7 @@ export class ProgressoLeitura {
     const backup = {
       diasLidos: [...this.diasLidos],
       total: this.diasLidos.size,
-      timestamp: new Date().toISOString(),
+      timestamp: parametroGerador.getTimestampAtualISO(),
     };
 
     // Salvar backup no localStorage (útil para recuperação)
@@ -227,7 +229,7 @@ export class ProgressoLeitura {
         const backup = {
           diasLidos: [...this.diasLidos],
           total: this.diasLidos.size,
-          timestamp: new Date().toISOString(),
+          timestamp: parametroGerador.getTimestampAtualISO(),
           versao: "1.0",
         };
 
@@ -279,7 +281,7 @@ export class ProgressoLeitura {
       diaHoje: diaHoje,
       ultimoDiaLido: ultimoDiaLido,
       deslocamento: deslocamento, // ✅ NOVO: deslocamento de datas
-      timestamp: new Date().toISOString(),
+      timestamp: parametroGerador.getTimestampAtualISO(),
       ativo: true,
     };
 
