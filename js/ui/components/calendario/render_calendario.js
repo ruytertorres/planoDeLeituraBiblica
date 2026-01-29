@@ -83,6 +83,15 @@ export function renderCalendario({ containerId, viewModel }) {
       diaEl.addEventListener("click", () => {
         viewModel.onSelecionarDia(dia.numero);
       });
+    } else if (dia.numero && dia.classes?.includes("dia-bloqueado")) {
+      // 🔒 Prevenir qualquer clique em dias bloqueados
+      diaEl.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log(
+          `🔒 Clique bloqueado no dia ${dia.numero} (pulado no reajuste)`,
+        );
+      });
     }
 
     grid.appendChild(diaEl);

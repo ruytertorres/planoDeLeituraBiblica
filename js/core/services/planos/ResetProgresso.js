@@ -31,13 +31,13 @@ export class ResetProgresso {
   inicializar() {
     // 1. Criar botão na navbar (se não existir)
     this.criarBotaoReset();
-    
+
     // 2. Criar modal dinamicamente
     this.criarModalDinamico();
-    
+
     // 3. Configurar eventos
     this.configurarEventos();
-    
+
     console.log("🔄 Sistema de reset inicializado");
   }
 
@@ -57,7 +57,7 @@ export class ResetProgresso {
     btnReset.className = "btn-reset";
     btnReset.title = "Resetar progresso";
     btnReset.innerHTML = '<i class="fas fa-redo"></i>';
-    
+
     // Inserir após o botão de tema
     const themeToggle = document.getElementById("theme-toggle");
     if (themeToggle && themeToggle.parentNode) {
@@ -83,38 +83,94 @@ export class ResetProgresso {
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "reset-modal-overlay";
     modalOverlay.className = "reset-modal-overlay";
-    
+
     // Criar conteúdo do modal
     modalOverlay.innerHTML = `
       <div class="reset-modal">
-        <h3>⚠️ Resetar Progresso</h3>
-        <p>Tem certeza que deseja resetar TODO o seu progresso de leitura?</p>
-        <p><strong>Esta ação não pode ser desfeita!</strong></p>
-        <p>Todos os dias marcados como lidos serão desmarcados.</p>
+        <h3><i class="fas fa-exclamation-triangle"></i> Resetar Progresso</h3>
+        
+        <div class="reset-mensagem-principal">
+          <p><strong>Tem certeza que deseja resetar TODO o seu progresso?</strong></p>
+          <p><small>Esta ação não pode ser desfeita</small></p>
+        </div>
+        
+        <div class="reset-opcoes">
+          <!-- Opção 1: Reset Completo (Dia 01/01) -->
+          <div class="reset-opcao-destaque">
+            <label class="opcao-destaque">
+              <input type="radio" name="reset-type" id="reset-completo" value="padrão" checked>
+              <div class="opcao-conteudo">
+                <h4><i class="fas fa-calendar-day"></i> Reset Completo</h4>
+                <p>Reiniciar do <strong>Dia 01/01</strong> - Voltar ao início do plano</p>
+                <ul class="opcao-detalhes">
+                  <li><i class="fas fa-check"></i> Todos os dias marcados como lidos serão desmarcados</li>
+                  <li><i class="fas fa-check"></i> Calendário retorna às datas originais</li>
+                  <li><i class="fas fa-check"></i> Começa novamente do Dia 1</li>
+                </ul>
+              </div>
+            </label>
+          </div>
+          
+          <!-- Opção 2: Reiniciar do Dia de Hoje -->
+          <div class="reset-opcao-secundaria">
+            <label class="opcao-secundaria">
+              <input type="radio" name="reset-type" id="reset-hoje" value="custom">
+              <div class="opcao-conteudo">
+                <h4><i class="fas fa-calendar-alt"></i> Reiniciar do Dia de Hoje</h4>
+                <p>Manter datas reorganizadas e reiniciar do dia atual</p>
+                <ul class="opcao-detalhes">
+                  <li><i class="fas fa-check"></i> Progresso atual será apagado</li>
+                  <li><i class="fas fa-check"></i> Mantém calendário reorganizado</li>
+                  <li><i class="fas fa-check"></i> Começa do dia correspondente de hoje</li>
+                </ul>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="reset-modal-security">
+          <label>
+            <input type="checkbox" id="reset-confirm-checkbox">
+            Eu entendo que esta ação apagará permanentemente meu progresso
+          </label>
+        </div>
         
         <div class="reset-modal-actions">
           <button id="reset-cancel-btn" class="reset-modal-btn cancel">
             Cancelar
           </button>
           <button id="reset-confirm-btn" class="reset-modal-btn confirm">
-            Sim, Resetar Tudo
+            Confirmar Reset
           </button>
-        </div>
-        
-        <div class="reset-modal-security">
-          <label>
-            <input type="checkbox" id="reset-confirm-checkbox">
-            Eu entendo que esta ação apagará permanentemente todo o meu progresso
-          </label>
         </div>
       </div>
     `;
-    
+
     // Adicionar ao body
     document.body.appendChild(modalOverlay);
     this.modal = modalOverlay;
     this.modalCriado = true;
-    
+
+    // Debug: Log para confirmar que modal foi criado
+    console.log("✅ Modal de reset criado com opções de rádio");
+
+    // Verificar opções no DOM
+    setTimeout(() => {
+      const options = document.querySelectorAll('input[name="reset-type"]');
+      console.log(`📊 Opções de reset no DOM: ${options.length}`);
+      options.forEach((opt, i) => {
+        console.log(
+          `  Opção ${i}: id="${opt.id}", value="${opt.value}", checked=${opt.checked}`,
+        );
+      });
+
+      const labels = document.querySelectorAll(".reset-option-item label");
+      console.log(`📌 Labels encontradas: ${labels.length}`);
+      labels.forEach((label, i) => {
+        console.log(`  Label ${i}: ${label.textContent.substring(0, 50)}...`);
+      });
+    }, 100);
+
     // Aplicar estilos dinamicamente se não existirem
     this.aplicarEstilosDinamicos();
   }
@@ -236,6 +292,235 @@ export class ResetProgresso {
       .reset-modal-btn.confirm:hover:not(:disabled) {
         background: #c82333;
       }
+
+      /* ====== OPCOES DE RESET ====== */
+      .reset-opcoes {
+        margin: 1.5rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .reset-opcao-destaque,
+      .reset-opcao-secundaria {
+        margin: 0;
+      }
+
+      .opcao-destaque,
+      .opcao-secundaria {
+        display: block;
+        cursor: pointer;
+      }
+
+      .opcao-destaque input[type="radio"],
+      .opcao-secundaria input[type="radio"] {
+        display: none;
+      }
+
+      .opcao-conteudo {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+
+      .opcao-destaque input[type="radio"]:checked + .opcao-conteudo {
+        border-color: #dc3545;
+        background: linear-gradient(135deg, #fff5f5, #ffeaea);
+        box-shadow: 0 5px 20px rgba(220, 53, 69, 0.15);
+      }
+
+      .opcao-secundaria input[type="radio"]:checked + .opcao-conteudo {
+        border-color: #007bff;
+        background: linear-gradient(135deg, #f0f8ff, #e3f2fd);
+        box-shadow: 0 5px 20px rgba(0, 123, 255, 0.15);
+      }
+
+      .opcao-conteudo:hover {
+        border-color: #999;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .opcao-conteudo h4 {
+        margin: 0 0 0.75rem 0;
+        color: var(--text-light, #333);
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .opcao-conteudo p {
+        color: #666;
+        margin: 0 0 1rem 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .opcao-detalhes {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .opcao-detalhes li {
+        color: #555;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .opcao-detalhes li:last-child {
+        margin-bottom: 0;
+      }
+
+      .opcao-detalhes li i {
+        color: #28a745;
+        margin-top: 0.1rem;
+        flex-shrink: 0;
+      }
+
+      .reset-mensagem-principal {
+        background: #fff5f5;
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #dc3545;
+      }
+
+      .reset-mensagem-principal p {
+        color: #721c24;
+        margin: 0.75rem 0;
+        line-height: 1.5;
+      }
+
+      .reset-mensagem-principal p:first-child {
+        margin-top: 0;
+      }
+
+      .reset-mensagem-principal p:last-child {
+        margin-bottom: 0;
+      }
+
+      .reset-modal-security {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: var(--hover-bg);
+        border-radius: 8px;
+        border-left: 3px solid #ffc107;
+      }
+
+      /* Dark mode support */
+      .dark-mode .reset-mensagem-principal {
+        background: #442222;
+        border-left-color: #dc3545;
+      }
+
+      .dark-mode .reset-mensagem-principal p {
+        color: #ffb3b3;
+      }
+
+      .dark-mode .opcao-destaque .opcao-conteudo,
+      .dark-mode .opcao-secundaria .opcao-conteudo {
+        border-color: #404040;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .dark-mode .opcao-destaque input[type="radio"]:checked + .opcao-conteudo {
+        background: linear-gradient(135deg, #442222, #552222);
+        border-color: #dc3545;
+      }
+
+      .dark-mode .opcao-secundaria input[type="radio"]:checked + .opcao-conteudo {
+        background: linear-gradient(135deg, #223344, #224455);
+        border-color: #007bff;
+      }
+
+      .dark-mode .opcao-conteudo h4 {
+        color: var(--text-dark, #f8f9fa);
+      }
+
+      .dark-mode .opcao-conteudo p {
+        color: #b0b0b0;
+      }
+
+      .dark-mode .opcao-detalhes li {
+        color: #cccccc;
+      }
+
+      .reset-modal-options {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: var(--bg-secondary, #f8f9fa);
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .reset-option-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+      }
+
+      .reset-option-item:hover {
+        background: rgba(0, 0, 0, 0.05);
+        border-color: #ccc;
+      }
+
+      .reset-option-item input[type="radio"] {
+        margin-top: 0.3rem;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .reset-option-item label {
+        flex: 1;
+        cursor: pointer;
+        margin: 0;
+        padding: 0;
+      }
+
+      .reset-option-item label strong {
+        display: block;
+        color: var(--text-light, #333);
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+      }
+
+      .reset-option-item label small {
+        display: block;
+        color: #666;
+        font-size: 0.8rem;
+        font-style: italic;
+        margin-top: 0.25rem;
+      }
+
+      /* Dark mode support */
+      .dark-mode .reset-modal-options {
+        background: var(--bg-secondary, #2a2a2a);
+        border-color: #444;
+      }
+
+      .dark-mode .reset-option:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .dark-mode .reset-modal-security {
+        border-color: #444;
+      }
       
       @media (max-width: 768px) {
         .reset-modal {
@@ -249,9 +534,17 @@ export class ResetProgresso {
         .reset-modal-btn {
           width: 100%;
         }
+
+        .reset-option {
+          padding: 0.75rem;
+        }
+
+        .reset-option-content small {
+          display: none;
+        }
       }
     `;
-    
+
     document.head.appendChild(styleElement);
   }
 
@@ -301,7 +594,11 @@ export class ResetProgresso {
 
     // Fechar com ESC
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && this.modal && this.modal.classList.contains("active")) {
+      if (
+        e.key === "Escape" &&
+        this.modal &&
+        this.modal.classList.contains("active")
+      ) {
         this.esconderModal();
       }
     });
@@ -316,21 +613,29 @@ export class ResetProgresso {
       console.error("Modal não foi criado corretamente");
       return;
     }
-    
+
+    // Debug
+    console.log("🔍 Abrindo modal de reset...");
+    const radios = document.querySelectorAll('input[name="reset-type"]');
+    console.log(`📡 Inputs de rádio encontrados: ${radios.length}`);
+    radios.forEach((r, i) =>
+      console.log(`  Rádio ${i}: value="${r.value}", checked=${r.checked}`),
+    );
+
     // Resetar checkbox de confirmação
     const checkbox = document.getElementById("reset-confirm-checkbox");
     const btnConfirm = document.getElementById("reset-confirm-btn");
     if (checkbox) checkbox.checked = false;
     if (btnConfirm) btnConfirm.disabled = true;
-    
+
     // Mostrar modal
     this.modal.classList.add("active");
-    
+
     // Focar no checkbox (mais seguro)
     setTimeout(() => {
       if (checkbox) checkbox.focus();
     }, 100);
-    
+
     console.log("🔄 Modal de reset exibido");
   }
 
@@ -345,23 +650,47 @@ export class ResetProgresso {
   ======================================================================== */
 
   confirmarReset() {
-    console.log("🔄 Iniciando reset completo do progresso...");
-    
+    console.log("🔄 Iniciando reset do progresso...");
+
     try {
-      // 1. Resetar progresso
+      // 1. Capturar tipo de reset escolhido (Opção 1: padrão ou Opção 2: custom)
+      const resetTypeRadio = document.querySelector(
+        'input[name="reset-type"]:checked',
+      );
+      const resetType = resetTypeRadio ? resetTypeRadio.value : "padrão";
+
+      // 2. Resetar progresso
       const resultadoReset = this.progresso.resetarCompletamente();
-      
-      // 2. Esconder modal
+
+      // 3. Se tipo for "custom" (Opção 2), resetar para hoje
+      if (resetType === "custom" && this.planoManager) {
+        const hoje = new Date();
+        console.log(
+          `📅 Resetando para hoje: ${hoje.toLocaleDateString("pt-BR")}`,
+        );
+
+        // Usar o novo método resetarAPartirDoDia para resetar a partir de dia 1 com data de hoje
+        const resultadoCustom = this.planoManager.resetarAPartirDoDia(1);
+        if (resultadoCustom.sucesso) {
+          resultadoReset.resetType = "custom";
+          resultadoReset.dataInicio = hoje;
+          console.log("✅ Reset customizado aplicado (Dia 1 → Hoje)");
+        }
+      } else {
+        resultadoReset.resetType = "padrão";
+        resultadoReset.dataInicio = new Date(new Date().getFullYear(), 0, 1); // 01/01
+      }
+
+      // 4. Esconder modal
       this.esconderModal();
-      
-      // 3. Feedback visual
-      this.mostrarFeedbackSucesso(resultadoReset.diasResetados);
-      
-      // 4. Disparar evento para outros módulos
+
+      // 5. Feedback visual
+      this.mostrarFeedbackSucesso(resultadoReset);
+
+      // 6. Disparar evento para outros módulos
       this.dispararEventoReset(resultadoReset);
-      
+
       console.log("✅ Progresso resetado com sucesso!");
-      
     } catch (error) {
       console.error("❌ Erro ao resetar progresso:", error);
       this.mostrarFeedbackErro(error.message);
@@ -377,22 +706,35 @@ export class ResetProgresso {
       detail: {
         ...detalhes,
         timestamp: new Date().toISOString(),
-        totalLidos: this.progresso.getTotalLidos()
-      }
+        totalLidos: this.progresso.getTotalLidos(),
+      },
     });
-    
+
     document.dispatchEvent(evento);
   }
 
-  mostrarFeedbackSucesso(diasResetados) {
+  mostrarFeedbackSucesso(resultado) {
+    // Determinar mensagem baseada no tipo de reset
+    let mensagem = "✅ Progresso resetado!";
+
+    if (resultado.resetType === "custom") {
+      mensagem = "✅ Progresso resetado! Dia 1 → Hoje";
+    } else if (resultado.resetType === "padrão") {
+      mensagem = "✅ Progresso resetado! Dia 1 → 01/01";
+    }
+
+    if (resultado.diasResetados) {
+      mensagem += ` (${resultado.diasResetados} dias desmarcados)`;
+    }
+
     // Criar toast de sucesso dinamicamente
     const toast = document.createElement("div");
     toast.className = "reset-toast success";
     toast.innerHTML = `
       <i class="fas fa-check-circle"></i>
-      <span>✅ Progresso resetado! ${diasResetados} dias foram desmarcados.</span>
+      <span>${mensagem}</span>
     `;
-    
+
     // Estilos inline para o toast
     toast.style.cssText = `
       position: fixed;
@@ -412,14 +754,14 @@ export class ResetProgresso {
       max-width: 350px;
       border-left: 4px solid #28a745;
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     // Animar entrada
     setTimeout(() => {
       toast.style.transform = "translateX(0)";
     }, 10);
-    
+
     // Remover após 3 segundos
     setTimeout(() => {
       toast.style.transform = "translateX(120%)";
@@ -438,7 +780,7 @@ export class ResetProgresso {
       <i class="fas fa-exclamation-circle"></i>
       <span>❌ Erro: ${mensagem}</span>
     `;
-    
+
     toast.style.cssText = `
       position: fixed;
       top: 20px;
@@ -457,13 +799,13 @@ export class ResetProgresso {
       max-width: 350px;
       border-left: 4px solid #dc3545;
     `;
-    
+
     document.body.appendChild(toast);
-    
+
     setTimeout(() => {
       toast.style.transform = "translateX(0)";
     }, 10);
-    
+
     setTimeout(() => {
       toast.style.transform = "translateX(120%)";
       setTimeout(() => {

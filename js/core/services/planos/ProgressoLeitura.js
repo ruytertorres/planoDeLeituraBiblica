@@ -78,6 +78,16 @@ export class ProgressoLeitura {
     return Math.round((this.getTotalLidos() / totalDias) * 100);
   }
 
+  getUltimoDiaLido() {
+    /**
+     * Retorna o número do último dia lido
+     * Usado para detecção de lacuna de atraso
+     * @returns {number|null} Número do dia ou null se nenhum dia lido
+     */
+    if (this.diasLidos.size === 0) return null;
+    return Math.max(...Array.from(this.diasLidos));
+  }
+
   /* --------------------------------------------------------------------------
      RESET COMPLETO DO PROGRESSO
      Método público para resetar todos os dias lidos
@@ -181,6 +191,26 @@ export class ProgressoLeitura {
     }
   }
 
+  /**
+   * Recarregar progresso do localStorage (sincronização)
+   * Essencial quando o estado pode ter sido alterado externamente
+   * @public
+   */
+  sincronizarComStorage() {
+    const diasLidosAntigos = this.diasLidos.size;
+    this.diasLidos.clear();
+    this._carregar();
+    const diasLidosNovos = this.diasLidos.size;
+
+    if (diasLidosAntigos !== diasLidosNovos) {
+      console.log(
+        `🔄 [ProgressoLeitura] Sincronizado: ${diasLidosAntigos} → ${diasLidosNovos} dias`,
+      );
+    }
+
+    return this.diasLidos.size;
+  }
+
   /* --------------------------------------------------------------------------
      SISTEMA DE BACKUP AUTOMÁTICO
      Cria backups periódicos para segurança
@@ -211,6 +241,110 @@ export class ProgressoLeitura {
       }
     } catch (error) {
       console.warn("Não foi possível criar backup automático:", error);
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     REAJUSTE DE LACUNA (PERSISTÊNCIA)
+     Salva informações do reajuste para evitar redetecção
+  -------------------------------------------------------------------------- */
+
+  salvarReajuste(novoNumeroDia, diaHoje) {
+    /**
+     * Salva que um reajuste foi feito
+     * IMPORTANTE: Calcula e persiste o deslocamento de datas
+     *
+     * Exemplo:
+     * - Parou no dia 3 (03/01)
+     * - Hoje é 28/01 (dia 28 do ano)
+     * - Deslocamento = 28 - 3 = 25 dias
+     * - Dia 4 que era 04/01 vai ser renderizado como 29/01
+     */
+    // Calcular deslocamento para alinhar o PRÓXIMO dia de leitura com a data de hoje
+    //
+    // Exemplo desejado:
+    // - Último dia lido: 3  (1–3 lidos)
+    // - Próximo dia a ler (novoNumeroDia): 4
+    // - Hoje (dia do ano): 28  →  28/01 deve mostrar o DIA 4
+    //
+    // Portanto:
+    //   4 + deslocamento = 28  →  deslocamento = 28 - 4 = 24
+    //
+    // Assim, dia 4 vai para 28/01, dia 5 para 29/01, etc.
+    const ultimoDiaLido = novoNumeroDia - 1;
+    const deslocamento = diaHoje - novoNumeroDia;
+
+    const reajuste = {
+      numeroDia: novoNumeroDia,
+      diaHoje: diaHoje,
+      ultimoDiaLido: ultimoDiaLido,
+      deslocamento: deslocamento, // ✅ NOVO: deslocamento de datas
+      timestamp: new Date().toISOString(),
+      ativo: true,
+    };
+
+    try {
+      localStorage.setItem(
+        `${this.chaveStorage}_reajuste`,
+        JSON.stringify(reajuste),
+      );
+      console.log(
+        `💾 Reajuste persistido em localStorage (deslocamento: +${deslocamento} dias):`,
+        reajuste,
+      );
+    } catch (error) {
+      console.warn("Não foi possível salvar reajuste:", error);
+    }
+  }
+
+  obterReajuste() {
+    /**
+     * Retorna info do reajuste se existe e está ativo
+     * ✅ NÃO EXPIRA por data - persiste até ser limpo manualmente
+     * @returns {object|null}
+     */
+    try {
+      const data = localStorage.getItem(`${this.chaveStorage}_reajuste`);
+      if (!data) return null;
+
+      const reajuste = JSON.parse(data);
+
+      // ✅ Verificar apenas se está ativo (sem expiração por data)
+      if (reajuste.ativo) {
+        console.log(`✅ Reajuste encontrado e ativo:`, reajuste);
+        return reajuste;
+      }
+
+      // Reajuste marcado como inativo
+      return null;
+    } catch (error) {
+      console.warn("Erro ao recuperar reajuste:", error);
+      return null;
+    }
+  }
+
+  obterDeslocamentoDatas() {
+    /**
+     * Retorna o deslocamento de datas do reajuste ativo
+     * Exemplo: se parou no dia 3 e hoje é dia 28, retorna 25
+     * @returns {number} Deslocamento em dias (0 se sem reajuste)
+     */
+    const reajuste = this.obterReajuste();
+    if (!reajuste || reajuste.deslocamento === undefined) {
+      return 0;
+    }
+    return reajuste.deslocamento;
+  }
+
+  limparReajuste() {
+    /**
+     * Remove reajuste da memória
+     */
+    try {
+      localStorage.removeItem(`${this.chaveStorage}_reajuste`);
+      console.log(`🗑️ Reajuste limpo da memória`);
+    } catch (error) {
+      console.warn("Erro ao limpar reajuste:", error);
     }
   }
 

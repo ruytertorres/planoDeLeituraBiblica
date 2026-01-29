@@ -9,6 +9,8 @@
    - Totalmente testável sem Date
 ============================================================================ */
 
+import * as parametroGerador from "../../../core/models/parametroGerador.js";
+
 const NOMES_MESES = [
   "Janeiro",
   "Fevereiro",
@@ -25,12 +27,20 @@ const NOMES_MESES = [
 ];
 
 export class CalendarioViewModel {
-  constructor(plano, progresso, getDiaHoje, getDiaAtivo, onSelecionarDia) {
+  constructor(
+    plano,
+    progresso,
+    getDiaHoje,
+    getDiaAtivo,
+    onSelecionarDia,
+    diasBloqueados = [],
+  ) {
     this.plano = plano;
     this.progresso = progresso;
     this.getDiaHoje = getDiaHoje;
     this.getDiaAtivo = getDiaAtivo;
     this.onSelecionarDia = onSelecionarDia;
+    this.diasBloqueados = diasBloqueados; // Dias que não podem ser clicados
     this.mesAtual = 0; // Janeiro (0-11)
     this.anoAtual = 2026;
   }
@@ -95,14 +105,49 @@ export class CalendarioViewModel {
   gerarMesAtual() {
     const diasPlanoPorData = new Map();
 
-    // 1. Mapear dias do plano por data ISO
+    // 1. Calcular deslocamento ativo (se houver reajuste)
+    const deslocamento =
+      typeof this.progresso.obterDeslocamentoDatas === "function"
+        ? this.progresso.obterDeslocamentoDatas()
+        : 0;
+
+    const reajuste =
+      typeof this.progresso.obterReajuste === "function"
+        ? this.progresso.obterReajuste()
+        : null;
+
+    const numeroDiaReajuste = reajuste?.numeroDia ?? null;
+
+    // Dia civil de hoje (dia do ano) convertido em data ISO
+    const diaHojeNumero = this.getDiaHoje();
+    const dataHojeISO = parametroGerador.gerarDataISO(
+      diaHojeNumero,
+      this.anoAtual,
+    );
+
+    // 1. Mapear dias do plano por data ISO, aplicando deslocamento quando houver
     this.plano.dias.forEach((dia) => {
       if (!dia.data) return;
 
-      diasPlanoPorData.set(dia.data, {
+      let dataISO = dia.data;
+
+      // Quando existe um reajuste ativo, todos os dias a partir do
+      // próximo dia de leitura (numeroDiaReajuste) são deslocados no calendário.
+      if (deslocamento !== 0 && numeroDiaReajuste !== null) {
+        if (dia.numero >= numeroDiaReajuste) {
+          const novoDiaAno = dia.numero + deslocamento;
+          dataISO = parametroGerador.gerarDataISO(novoDiaAno, this.anoAtual);
+        } else {
+          // Dias lidos antes da parada mantêm a data original
+          dataISO = dia.data;
+        }
+      }
+
+      diasPlanoPorData.set(dataISO, {
         numero: dia.numero,
-        dataISO: dia.data,
-        isHoje: dia.numero === this.getDiaHoje(),
+        dataISO,
+        // "Hoje" é definido pela data civil, não mais pelo número do dia do plano
+        isHoje: dataISO === dataHojeISO,
         isAtivo: dia.numero === this.getDiaAtivo(),
         isLido: this.progresso.estaLido(dia.numero),
       });
@@ -157,16 +202,24 @@ export class CalendarioViewModel {
           infoDia.isLido ? "✓ Lido" : "○ Não lido",
         ];
 
+        // 🔒 Verificar se dia está bloqueado após reajuste
+        const estaBloqueado = this.diasBloqueados.includes(infoDia.numero);
+
         classes.push("calendario-com-plano");
         if (infoDia.isLido) classes.push("lido");
         if (infoDia.isAtivo) classes.push("ativo");
         if (infoDia.isHoje) classes.push("calendario-hoje-plano");
+        if (estaBloqueado) classes.push("dia-bloqueado");
+
+        if (estaBloqueado) {
+          tooltipParts.push("⛔ Dia pulado (bloqueado)");
+        }
 
         mes.dias.push({
           label: String(dia),
           numero: infoDia.numero,
           dataISO,
-          clicavel: true,
+          clicavel: !estaBloqueado, // Desabilita clique se bloqueado
           classes,
           tooltip: tooltipParts.join("\n"),
         });

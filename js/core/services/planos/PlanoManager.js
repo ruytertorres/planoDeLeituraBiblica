@@ -51,10 +51,22 @@ export class PlanoManager {
 
   irParaDia(numero) {
     const indice = this.dias.findIndex((d) => d.numero === numero);
-    if (indice === -1) return null;
+    console.log(
+      `🔍 irParaDia(${numero}) - indice encontrado=${indice}, total dias=${this.totalDias}`,
+    );
 
+    if (indice === -1) {
+      console.warn(`❌ irParaDia(${numero}) - dia NÃO encontrado!`);
+      return null;
+    }
+
+    console.log(
+      `✅ irParaDia(${numero}) - dia encontrado, atualizando indiceAtual de ${this.indiceAtual} para ${indice}`,
+    );
     this.indiceAtual = indice;
-    return this.getDiaAtual();
+    const diaRetornado = this.getDiaAtual();
+    console.log(`✅ irParaDia retornando dia:`, diaRetornado);
+    return diaRetornado;
   }
 
   proximoDia() {
@@ -86,5 +98,35 @@ export class PlanoManager {
   resetar() {
     this.indiceAtual = 0;
     return this.getDiaAtual();
+  }
+
+  resetarAPartirDoDia(numeroDia) {
+    /**
+     * Reseta o plano para começar a partir de um dia específico
+     * Usado para reset customizado (opção 2 do modal)
+     *
+     * @param {number} numeroDia - Número do dia para começar (ex: 1)
+     * @returns {object} { sucesso, dia, indice }
+     *
+     * @example
+     * // Resetar para que dia 01 do plano = hoje
+     * planoManager.resetarAPartirDoDia(1);
+     * // { sucesso: true, dia: {...}, indice: 0 }
+     */
+    const indice = this.dias.findIndex((d) => d.numero === numeroDia);
+    if (indice === -1) {
+      return {
+        sucesso: false,
+        erro: `Dia ${numeroDia} não encontrado no plano`,
+      };
+    }
+
+    this.indiceAtual = indice;
+    return {
+      sucesso: true,
+      dia: this.getDiaAtual(),
+      indice: this.indiceAtual,
+      descricao: `Plano resetado para começar no dia ${numeroDia}`,
+    };
   }
 }

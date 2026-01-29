@@ -28,6 +28,8 @@ import { CalendarioViewModel } from "../components/calendario/CalendarioViewMode
 import { NotasOverlayOrquestrador } from "../../core/services/notas/NotasOverlayOrquestrador.js";
 import { initNotasOverlayUI } from "../componentes/notas/NotasOverlayUI.js";
 import { initDarkMode } from "../components/darkmode.js";
+import { ReorganizadorPlano } from "../../core/services/planos/ReorganizadorPlano.js";
+import * as parametroGerador from "../../core/models/parametroGerador.js";
 import {
   getDiaDoAnoAtual,
   getAnoAtual,
@@ -72,6 +74,7 @@ export class MainOrquestrador extends BaseOrquestrador {
         calendario: null,
         calendarioVM: null,
       },
+      diasBloqueados: [], // Array de dias que foram pulados no reajuste
     };
   }
 
@@ -142,6 +145,38 @@ export class MainOrquestrador extends BaseOrquestrador {
   setupInitialState() {
     const plano = this.state.managers.plano.getPlano();
 
+    // 🔄 SINCRONIZAÇÃO CRÍTICA: Carregar estado do localStorage PRIMEIRO
+    // Isso garante que temos dados frescos antes de qualquer renderização
+    this.state.managers.progresso.sincronizarComStorage();
+
+    // 🔄 RESTAURAÇÃO: Se há reajuste ativo, restaurar diaAtualNumero ANTES de renderizar
+    const reajuste = this.state.managers.progresso.obterReajuste();
+    if (reajuste && reajuste.ativo) {
+      this.state.diaAtualNumero = reajuste.numeroDia;
+
+      // Calcular diaHoje normalmente (para referência)
+      const diaDoAno = getDiaDoAnoAtual();
+      this.state.diaHojeNumero =
+        diaDoAno < 1
+          ? 1
+          : diaDoAno > plano.dias.length
+            ? plano.dias.length
+            : diaDoAno;
+
+      console.log(
+        `📝 setupInitialState: Restaurado dia ${reajuste.numeroDia} (reajuste ativo)`,
+      );
+
+      // Mostrar total de dias na UI
+      const totalDiasEl = document.getElementById("total-dias");
+      if (totalDiasEl) {
+        totalDiasEl.textContent = plano.dias.length;
+      }
+
+      return; // ✅ Estado restaurado, renderizará com dia correto
+    }
+
+    // Inicialização normal (sem reajuste ativo)
     // Descobrir dia de hoje
     const diaDoAno = getDiaDoAnoAtual();
     this.state.diaHojeNumero =
@@ -201,6 +236,10 @@ export class MainOrquestrador extends BaseOrquestrador {
    */
   renderInitial() {
     const plano = this.state.managers.plano.getPlano();
+
+    // ✅ NOTA: diaAtualNumero foi restaurado em setupInitialState() se havia reajuste
+    // setupInitialState() já sincronizou e restaurou o estado correto
+    // Agora renderizamos com dados FRESCOS
 
     this.renderDia();
     this.renderEstatisticas();
@@ -271,6 +310,10 @@ export class MainOrquestrador extends BaseOrquestrador {
       return false;
     }
 
+    console.log(
+      `🔀 navegarParaDia(${numeroDia}) - stack:`,
+      new Error().stack.split("\n")[2],
+    );
     this.state.diaAtualNumero = numeroDia;
     this.render();
     return true;
@@ -281,6 +324,10 @@ export class MainOrquestrador extends BaseOrquestrador {
    * @private
    */
   render() {
+    console.log(
+      `🎨 render() - diaAtualNumero=${this.state.diaAtualNumero}, stack:`,
+      new Error().stack.split("\n")[2],
+    );
     const plano = this.state.managers.plano.getPlano();
 
     this.renderDia();
@@ -300,19 +347,58 @@ export class MainOrquestrador extends BaseOrquestrador {
     const dia = plano.getDia(this.state.diaAtualNumero);
     const container = document.getElementById("dia-view");
 
-    if (!container || !dia) return;
+    // 🔄 SINCRONIZAÇÃO: Recarregar progresso antes de renderizar o card
+    // Garante que "isLido" reflete o estado mais recente
+    this.state.managers.progresso.sincronizarComStorage();
+
+    console.log(
+      `📄 renderDia() - diaAtualNumero=${this.state.diaAtualNumero}, dia=`,
+      dia,
+      `container=${container ? "OK" : "NULL"}`,
+    );
+
+    if (!container || !dia) {
+      console.warn(
+        `⚠️ renderDia() retornando cedo - container=${!!container}, dia=${!!dia}`,
+      );
+      return;
+    }
+
+    // ✅ NOVO: Aplicar deslocamento de datas se há reajuste ativo
+    let diaParaRenderizar = dia;
+    const deslocamento = this.state.managers.progresso.obterDeslocamentoDatas();
+    if (deslocamento !== 0) {
+      // Criar um Dia com datas ajustadas
+      const novaDataNum = dia.numero + deslocamento;
+      const novaData = parametroGerador.gerarDataISO(novaDataNum, dia.ano);
+      const novaDataFormatada = parametroGerador.gerarDataBR(
+        novaDataNum,
+        dia.ano,
+      );
+
+      // Criar uma cópia do Dia com datas corrigidas
+      diaParaRenderizar = {
+        ...dia,
+        data: novaData,
+        dataFormatada: novaDataFormatada,
+      };
+
+      console.log(
+        `🔄 Renderizando com deslocamento: dia ${dia.numero} (${dia.dataFormatada}) → ${novaDataFormatada}`,
+      );
+    }
 
     // ✅ Renderizar card
-    container.innerHTML = renderDiaCard(dia, {
-      isHoje: dia.numero === this.state.diaHojeNumero,
-      isLido: this.state.managers.progresso.estaLido(dia.numero),
+    container.innerHTML = renderDiaCard(diaParaRenderizar, {
+      isHoje: diaParaRenderizar.numero === this.state.diaHojeNumero,
+      isLido: this.state.managers.progresso.estaLido(diaParaRenderizar.numero),
     });
 
     // ✅ Atualizar estado de notas
-    this.state.managers.notas.setDiaAtual(dia.numero);
+    this.state.managers.notas.setDiaAtual(diaParaRenderizar.numero);
 
     // ✅ Emitir evento
-    this.emit("dia-alterado", { dia: dia.numero });
+    this.emit("dia-alterado", { dia: diaParaRenderizar.numero });
 
     // ✅ Atualizar navegação
     this.updateNavigation(plano.dias.length);
@@ -347,6 +433,10 @@ export class MainOrquestrador extends BaseOrquestrador {
   renderCalendario(plano) {
     const progresso = this.state.managers.progresso;
 
+    // 🔄 SINCRONIZAÇÃO: Recarregar progresso do localStorage antes de renderizar
+    // Garante que temos os dias mais recentes marcados como lidos
+    progresso.sincronizarComStorage();
+
     // Lazy init ViewModel
     if (!this.state.apis.calendarioVM) {
       this.state.apis.calendarioVM = new CalendarioViewModel(
@@ -360,7 +450,11 @@ export class MainOrquestrador extends BaseOrquestrador {
             this.scrollParaCardDoDia();
           }
         },
+        this.state.diasBloqueados, // Passar dias bloqueados
       );
+    } else {
+      // Atualizar diasBloqueados no ViewModel existente
+      this.state.apis.calendarioVM.diasBloqueados = this.state.diasBloqueados;
     }
 
     // Gerar ViewModel
@@ -463,5 +557,146 @@ export class MainOrquestrador extends BaseOrquestrador {
 
     // Chamar super
     super.destroy();
+  }
+
+  /**
+   * NOVO: Verificar e disparar reajuste de lacuna
+   * Chamado pelo sistema quando usuário retoma leitura após atraso
+   *
+   * @returns {object|null} Dados da lacuna se detectada, null caso contrário
+   * @public
+   */
+  verificarAndDispararReajuste() {
+    // 🔄 SINCRONIZAÇÃO: Recarregar progresso do localStorage
+    // Isso garante que temos o estado mais recente
+    this.state.managers.progresso.sincronizarComStorage();
+
+    const ultimoDiaLido = this.state.managers.progresso.getUltimoDiaLido();
+
+    // Se nenhum dia foi lido ainda, não há lacuna
+    if (ultimoDiaLido === null) {
+      console.log("ℹ️ Nenhum dia lido ainda - sem verificação de lacuna");
+      return null;
+    }
+
+    // ✅ Verificar se há reajuste recente (mesma data)
+    // Se houver, não redetecta lacuna
+    const reajusteRecente = this.state.managers.progresso.obterReajuste();
+    if (reajusteRecente) {
+      console.log(
+        `✅ Reajuste recente encontrado - pulando detecção de lacuna`,
+      );
+      return null;
+    }
+
+    // Usar o dia REAL de hoje (soberano temporal)
+    const diaQueDeveSerHoje = parametroGerador.getDiaDoAnoAtual();
+    const totalDias = this.state.managers.plano.getTotalDias();
+
+    console.log(
+      `🔍 Verificando lacuna: ultimoDiaLido=${ultimoDiaLido}, diaQueDeveSerHoje=${diaQueDeveSerHoje}, totalDias=${totalDias}`,
+    );
+
+    // Usar reorganizador para detectar
+    if (!this.reorganizador) {
+      this.reorganizador = new ReorganizadorPlano();
+    }
+
+    const lacuna = this.reorganizador.detectarLacuna(
+      ultimoDiaLido,
+      diaQueDeveSerHoje,
+      totalDias,
+    );
+
+    console.log("📊 Resultado da detecção:", lacuna);
+
+    if (lacuna.temLacuna) {
+      // ✅ Sistema DETECTOU (conforme CONTRATO)
+      console.log("🔔 Lacuna detectada:", lacuna);
+      this.emit("lacuna-detectada", lacuna);
+      return lacuna;
+    }
+
+    console.log("✅ Nenhuma lacuna detectada");
+    return null;
+  }
+
+  /**
+   * NOVO: Aplicar reajuste após usuário confirmar
+   * Fecha a lacuna e mapeia dias
+   *
+   * @returns {object} { sucesso, novoIndice, aviso }
+   * @public
+   */
+  aplicarReajuste() {
+    if (!this.reorganizador) {
+      this.reorganizador = new ReorganizadorPlano();
+    }
+
+    const ultimoDiaLido = this.state.managers.progresso.getUltimoDiaLido();
+    const diaAtualDoPlano = this.state.managers.plano.getIndiceAtual() + 1;
+
+    console.log(
+      `🔧 Calculando reajuste: ultimoDiaLido=${ultimoDiaLido}, diaAtualDoPlano=${diaAtualDoPlano}`,
+    );
+
+    // Calcular novo índice (próximo após parada)
+    const resultadoNovoIndice = this.reorganizador.calcularNovoIndice(
+      ultimoDiaLido,
+      diaAtualDoPlano,
+    );
+
+    const novoNumeroDia = resultadoNovoIndice.numeroDia;
+    const totalDias = this.state.managers.plano.getTotalDias();
+
+    console.log(
+      `📊 Novo dia calculado: ${novoNumeroDia} (total: ${totalDias})`,
+    );
+
+    // Verificar ultrapassagem de ciclo
+    const ultrapassagem = this.reorganizador.verificarUltrapassagemCiclo(
+      novoNumeroDia,
+      totalDias,
+    );
+
+    if (ultrapassagem.ultrapassaCiclo) {
+      // 📢 Notificação ao usuário (não requer ação)
+      console.log("📅 Aviso de ultrapassagem:", ultrapassagem.aviso);
+      this.emit("plano-ultrapassara-ciclo", ultrapassagem);
+    }
+
+    // Aplicar novo índice
+    const diaReajustado = this.state.managers.plano.irParaDia(novoNumeroDia);
+
+    // ⚠️ IMPORTANTE: Atualizar o estado para que render() use o novo dia
+    this.state.diaAtualNumero = novoNumeroDia;
+
+    // 💾 Salvar reajuste em localStorage para evitar redetecção
+    // Agora o deslocamento é calculado para que o PRÓXIMO dia de leitura
+    // (novoNumeroDia) caia exatamente na data de hoje.
+    const diaHoje = this.state.diaHojeNumero; // Exemplo: 28
+    this.state.managers.progresso.salvarReajuste(novoNumeroDia, diaHoje);
+
+    // 🔄 A partir de agora NÃO marcamos mais a lacuna como "lida" artificialmente.
+    // A lacuna é simplesmente desconsiderada: as datas entre a parada e o retorno
+    // ficam sem plano, e o dia seguinte passa a ocupar a data de hoje.
+    this.state.diasBloqueados = [];
+
+    console.log("✅ Reajuste aplicado:", {
+      novoIndice: novoNumeroDia,
+      dia: diaReajustado,
+      estadoAtualizado: this.state.diaAtualNumero,
+    });
+
+    // Renderizar UI atualizada
+    console.log("🎨 Renderizando UI...");
+    this.render();
+
+    return {
+      sucesso: true,
+      novoIndice: novoNumeroDia,
+      aviso: ultrapassagem.aviso,
+      descricao: resultadoNovoIndice.descricao,
+    };
   }
 }

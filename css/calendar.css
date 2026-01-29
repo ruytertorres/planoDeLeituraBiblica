@@ -250,6 +250,30 @@
 }
 
 /* =========================================================================
+   ESTADOS DO DIA - BLOQUEADO (após reajuste)
+   ========================================================================= */
+
+.calendario-dia.dia-bloqueado {
+  background: #f5f5f5 !important;
+  border-color: #999 !important;
+  color: #999 !important;
+  cursor: not-allowed !important;
+  opacity: 0.5;
+  text-decoration: line-through;
+  font-style: italic;
+}
+
+.calendario-dia.dia-bloqueado:hover {
+  background: #f5f5f5;
+  transform: none;
+  box-shadow: none;
+}
+
+.calendario-dia.dia-bloqueado:disabled {
+  cursor: not-allowed;
+}
+
+/* =========================================================================
    ESTADOS COMBINADOS
    ========================================================================= */
 
