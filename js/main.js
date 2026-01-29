@@ -19,6 +19,7 @@ import planoCronologico from "./core/services/planos/plano_cronologico.js";
 import { MainOrquestrador } from "./ui/orquestradores/MainOrquestrador.js";
 import { CertificadoPlugin } from "./ui/plugins/CertificadoPlugin.js";
 import { ExportacaoPlugin } from "./ui/plugins/ExportacaoPlugin.js";
+import { ReajusteModalUI } from "./ui/componentes/modais/ReajusteModalUI.js";
 
 /* ===================== INICIALIZAÇÃO ===================== */
 
@@ -42,6 +43,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Inicializar
     await mainOrquestrador.init();
+
+    // Listener para lacuna detectada - CRIAR ANTES (para não perder evento)
+    document.addEventListener("lacuna-detectada", (evento) => {
+      console.log(
+        "📢 Lacuna detectada, abrindo modal de reajuste",
+        evento.detail,
+      );
+      const reajusteModal = new ReajusteModalUI(mainOrquestrador);
+      reajusteModal.criarEExibir(evento.detail);
+    });
+
+    // Verificar e disparar reajuste de lacuna (se aplicável)
+    // Isso deve acontecer logo após a inicialização para detectar gaps
+    await mainOrquestrador.verificarAndDispararReajuste();
 
     // Cleanup ao sair
     window.addEventListener("beforeunload", () => {
