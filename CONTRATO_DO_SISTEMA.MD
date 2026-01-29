@@ -200,7 +200,7 @@ O sistema:
 - NÃO calcula ciclos sozinho
 
 Todo conceito temporal é fornecido **exclusivamente**
-por `geradorDatas.js`.
+por `parametroGerador.js`.
 
 Se um módulo precisar saber:
 
@@ -209,7 +209,7 @@ Se um módulo precisar saber:
 - o total de dias do ano
 - se o ano é bissexto
 
-➡️ **DEVE consultar o `geradorDatas.js`.**
+➡️ **DEVE consultar o `parametroGerador.js`.**
 
 Se a informação não existir,
 o módulo **DEVE ser estendido**, nunca contornado.
