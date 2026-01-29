@@ -1,164 +1,130 @@
-# Biblia Responsiva License (BRL-1.0)
+# BRCL — Biblia Responsiva Custom License (Non-Commercial & Open Governance)
 
 Copyright (c) 2026  
-Ruyter Torres  
-https://github.com/ruytertorres
+Ruyter Torres
 
 ---
 
 ## 1. Natureza da Licença
 
-Este projeto é **open-source**, **gratuito** e **sem fins lucrativos**.
+Esta é uma **licença customizada**, criada especificamente para o projeto **Biblia Responsiva**.
 
-O código-fonte é disponibilizado publicamente com o objetivo de:
+Ela é:
+- **Open-source**
+- **Sem fins lucrativos**
+- **Governada por princípios explícitos de responsabilidade, autoria e soberania decisória**
 
-- estudo
-- uso pessoal
-- uso educacional
-- contribuição comunitária
-- evolução colaborativa do sistema
-
-Este projeto **NÃO** é destinado a exploração comercial direta ou indireta.
+Esta licença **NÃO é uma licença OSI padrão** (MIT, Apache, GPL, etc.), por escolha consciente do autor.
 
 ---
 
 ## 2. Permissões Concedidas
 
-É concedida permissão, de forma gratuita, a qualquer pessoa que obtenha uma cópia deste software e de seus arquivos associados, para:
+É **permitido**, gratuitamente, a qualquer pessoa:
 
-- usar o software
-- estudar o código-fonte
-- copiar e redistribuir o código
-- criar forks no GitHub
-- modificar o código
-- submeter pull requests
-- manter versões derivadas
+- Usar o software para fins pessoais, educacionais, acadêmicos ou comunitários
+- Estudar o código-fonte
+- Modificar o código-fonte
+- Criar forks no GitHub
+- Distribuir cópias do código original ou modificado
 
-Desde que **todas as condições abaixo sejam respeitadas**.
+Desde que **TODAS** as condições abaixo sejam respeitadas.
 
 ---
 
 ## 3. Condições Obrigatórias
 
-### 3.1 Manutenção da Licença e Créditos
+### 3.1 Atribuição
 
-Qualquer redistribuição, fork ou modificação **DEVE**:
+Toda redistribuição, fork ou derivação **DEVE**:
 
-- manter este arquivo LICENSE.md
-- manter os créditos ao autor original
-- indicar claramente modificações realizadas
-- preservar o caráter open-source e sem fins lucrativos
-
----
-
-### 3.2 Proibição de Uso Comercial
-
-É **expressamente proibido**:
-
-- vender o software
-- cobrar pelo acesso ao software
-- embutir o software em produtos pagos
-- monetizar direta ou indiretamente o código ou suas derivações
-- oferecer o software como serviço pago (SaaS, assinatura, licenciamento)
-
-Qualquer uso comercial **exige autorização expressa e escrita do autor**.
+- Manter este arquivo `LICENSE.md`
+- Manter referência explícita ao projeto original **Biblia Responsiva**
+- Citar o autor original: **Ruyter Torres**
+- Indicar claramente modificações realizadas, quando houver
 
 ---
 
-### 3.3 Distribuição via GitHub
+### 3.2 Distribuição via GitHub
 
-A distribuição oficial ocorre por meio do GitHub.
+A distribuição oficial do projeto ocorre via **GitHub**.
 
 É permitido:
+- Forkar o repositório
+- Criar branches
+- Propor pull requests
+- Manter forks públicos ou privados
 
-- criar forks
-- publicar branches próprias
-- manter repositórios derivados
-
-Desde que:
-
-- a licença seja preservada
-- o projeto não seja apresentado como oficial
-- não haja violação das restrições comerciais
-
-Pull requests são bem-vindos, mas a aceitação é decisão exclusiva do mantenedor.
+Não é permitido:
+- Remover referências ao repositório original
+- Apresentar forks como projeto original
+- Induzir confusão sobre autoria ou governança do projeto
 
 ---
 
-## 4. Textos Bíblicos e Conteúdo Protegido
+## 4. Uso Não Comercial (Cláusula NC)
 
-Este projeto **NÃO inclui textos bíblicos protegidos por copyright**.
+É **estritamente proibido**:
 
-### 4.1 Domínio Público
+- Vender o software
+- Monetizar direta ou indiretamente o software
+- Oferecer o software como serviço pago
+- Integrar o software em produtos ou serviços comerciais
+- Utilizar o software para geração de lucro, direta ou indireta
 
-Textos bíblicos em **domínio público** podem ser usados livremente, incluindo, mas não se limitando a:
-
-- versões históricas
-- traduções cujo copyright expirou
-- textos explicitamente declarados como domínio público
-
----
-
-### 4.2 Textos com Licença Específica
-
-Versões bíblicas protegidas por copyright, tais como (exemplos):
-
-- KJA
-- ARC
-- NVI
-- NVT
-- ou qualquer outra versão licenciada
-
-**NÃO** entram em domínio público e **SÓ PODEM SER USADAS**:
-
-- mediante licença válida
-- respeitando os termos do detentor dos direitos
-- sem redistribuição não autorizada
-
-O software fornece **estrutura, abstrações e integração**, mas não redistribui conteúdo protegido.
+Qualquer uso comercial **EXIGE autorização expressa e escrita do autor**.
 
 ---
 
-## 5. Conteúdo Privado e Dados do Usuário
+## 5. Textos Bíblicos e Conteúdos de Terceiros
 
-Qualquer documento, anotação ou dado inserido pelo usuário:
+### 5.1 Domínio Público
 
-- pertence exclusivamente ao usuário
-- não é reivindicado pelo autor do software
-- não é coletado, monetizado ou redistribuído
-
----
-
-## 6. Ausência de Garantia
-
-O software é fornecido **“no estado em que se encontra”**, sem garantias de qualquer tipo, expressas ou implícitas, incluindo, mas não se limitando a:
-
-- adequação a um propósito específico
-- ausência de erros
-- disponibilidade contínua
-
-O autor não se responsabiliza por danos decorrentes do uso do software.
+Podem ser utilizados livremente:
+- Textos bíblicos em **domínio público**
+- Materiais acadêmicos e documentos públicos compatíveis
 
 ---
 
-## 7. Governança e Autoridade
+### 5.2 Textos Licenciados
 
-A arquitetura, os contratos conceituais e as regras fundamentais do sistema são definidos pelo projeto **Biblia Responsiva**.
+Não entram em domínio público, nem são cobertos por esta licença:
+- Versões bíblicas protegidas por copyright  
+  (ex.: **KJV**, **ARC**, **NVI**, **NAA**, **ACF**, ou equivalentes)
+- APIs, bancos de dados ou documentos de natureza privada ou licenciada
 
-O mantenedor do projeto:
+O uso dessas fontes:
+- Depende de licença própria
+- É responsabilidade exclusiva de quem integrar tais conteúdos
 
-- decide sobre a aceitação de contribuições
-- define a evolução conceitual do sistema
-- preserva a coerência arquitetural
-
----
-
-## 8. Aceitação da Licença
-
-Ao usar, copiar, modificar ou distribuir este software, você concorda com todos os termos desta licença.
-
-Caso não concorde, **não utilize o software**.
+O projeto **Biblia Responsiva NÃO redistribui textos protegidos**.
 
 ---
 
-Fim da Licença.
+## 6. Governança e Decisão Final
+
+- O software é **open-source**
+- A governança do projeto é **humana**
+- Nenhuma decisão estrutural ou conceitual é automatizada
+
+Alterações que violem o espírito deste projeto **NÃO são autorizadas** por esta licença.
+
+---
+
+## 7. Isenção de Garantias
+
+O software é fornecido **“NO ESTADO EM QUE SE ENCONTRA”**, sem garantias de qualquer tipo, expressas ou implícitas.
+
+O autor não se responsabiliza por:
+- Perdas de dados
+- Interrupções
+- Uso indevido
+- Integrações externas
+
+---
+
+## 8. Aceitação
+
+Ao usar, copiar, modificar ou distribuir este software, você **concorda integralmente** com os termos desta licença.
+
+Se você não concorda com estes termos, **não utilize este software**.
