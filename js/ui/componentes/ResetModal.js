@@ -95,28 +95,64 @@ export class ResetModal {
     modalOverlay.id = "reset-modal-overlay";
     modalOverlay.className = "reset-modal-overlay";
 
-    // Criar conteúdo do modal
+    // Criar conteúdo do modal (com DUAS opções de reset)
     modalOverlay.innerHTML = `
       <div class="reset-modal">
         <h3>⚠️ Resetar Progresso</h3>
-        <p>Tem certeza que deseja resetar TODO o seu progresso de leitura?</p>
-        <p><strong>Esta ação não pode ser desfeita!</strong></p>
-        <p>Todos os dias marcados como lidos serão desmarcados.</p>
+
+        <div class="reset-mensagem-principal">
+          <p>Tem certeza que deseja <strong>resetar TODO o seu progresso</strong> de leitura?</p>
+          <p><strong>Esta ação não pode ser desfeita!</strong></p>
+        </div>
+
+        <div class="reset-opcoes">
+          <!-- Opção 1: Reset Completo (Dia 01/01) -->
+          <div class="reset-opcao-destaque">
+            <label class="opcao-destaque">
+              <input type="radio" name="reset-tipo" id="reset-completo" value="completo" checked>
+              <div class="opcao-conteudo">
+                <h4><i class="fas fa-calendar-day"></i> Reset Completo</h4>
+                <p>Reiniciar do <strong>Dia 01 do plano</strong> com as datas originais (01/01, 02/01, ...).</p>
+                <ul class="opcao-detalhes">
+                  <li><i class="fas fa-check"></i> Todos os dias marcados como lidos serão desmarcados</li>
+                  <li><i class="fas fa-check"></i> O calendário volta a usar a linha do tempo original</li>
+                  <li><i class="fas fa-check"></i> Você recomeça do Dia 1 no plano padrão</li>
+                </ul>
+              </div>
+            </label>
+          </div>
+
+          <!-- Opção 2: Dia 01 do plano na data de hoje -->
+          <div class="reset-opcao-secundaria">
+            <label class="opcao-secundaria">
+              <input type="radio" name="reset-tipo" id="reset-hoje" value="hoje">
+              <div class="opcao-conteudo">
+                <h4><i class="fas fa-calendar-alt"></i> Dia 01 do Plano na Data de Hoje</h4>
+                <p>Alinhar o <strong>Dia 1 do plano</strong> com a data civil atual (por exemplo, 05/05).</p>
+                <ul class="opcao-detalhes">
+                  <li><i class="fas fa-check"></i> Progresso atual será apagado</li>
+                  <li><i class="fas fa-check"></i> As leituras serão empurradas para frente a partir de hoje</li>
+                  <li><i class="fas fa-check"></i> O plano poderá ultrapassar 31/12 e continuar no próximo ano</li>
+                </ul>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="reset-modal-security">
+          <label>
+            <input type="checkbox" id="reset-confirm-checkbox">
+            Eu entendo que esta ação <strong>apagará permanentemente</strong> todo o meu progresso e não poderá ser desfeita.
+          </label>
+        </div>
 
         <div class="reset-modal-actions">
           <button id="reset-cancel-btn" class="reset-modal-btn cancel">
             Cancelar
           </button>
           <button id="reset-confirm-btn" class="reset-modal-btn confirm">
-            Sim, Resetar Tudo
+            Confirmar Reset
           </button>
-        </div>
-
-        <div class="reset-modal-security">
-          <label>
-            <input type="checkbox" id="reset-confirm-checkbox">
-            Eu entendo que esta ação apagará permanentemente todo o meu progresso
-          </label>
         </div>
       </div>
     `;
@@ -246,8 +282,14 @@ export class ResetModal {
    */
   aoClicarConfirmar() {
     try {
-      // Chamar orquestrador para fazer o reset
-      const resultado = this.orquestrador.confirmarReset();
+      // Descobrir qual tipo de reset o usuário escolheu
+      const tipoRadio = document.querySelector(
+        'input[name="reset-tipo"]:checked',
+      );
+      const tipoReset = tipoRadio ? tipoRadio.value : "completo";
+
+      // Chamar orquestrador para fazer o reset com o tipo selecionado
+      const resultado = this.orquestrador.confirmarReset(tipoReset);
 
       // Esconder modal
       this.esconderModal();

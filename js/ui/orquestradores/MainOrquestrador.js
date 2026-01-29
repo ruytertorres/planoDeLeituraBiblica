@@ -268,11 +268,24 @@ export class MainOrquestrador extends BaseOrquestrador {
     this.state.orquestradores.resetModal.inicializar();
 
     // Listener para evento de reset
-    this.listen("progresso-resetado", () => {
+    this.listen("progresso-resetado", (evento) => {
+      const detalhes = evento.detail || {};
+
+      // Sempre que resetar, vamos voltar o dia atual para 1
+      // (tanto para reset completo quanto para "Dia 1 → hoje")
+      this.state.diaAtualNumero = 1;
+
+      // Limpar qualquer bloqueio de dias (nova jornada)
+      this.state.diasBloqueados = [];
+
       const plano = this.state.managers.plano.getPlano();
       this.renderCalendario(plano);
       this.renderEstatisticas();
       this.renderDia();
+
+      if (detalhes.avisoUltrapassagem) {
+        console.log(`📅 Aviso reset: ${detalhes.avisoUltrapassagem}`);
+      }
     });
 
     // Notas

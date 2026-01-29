@@ -30,20 +30,67 @@ export class ResetProgressoOrquestrador {
   ======================================================================== */
 
   /**
-   * Executa o reset completo do progresso
+   * Executa o reset do progresso, com estratégia escolhida pelo usuário.
+   *
+   * @param {"completo"|"hoje"} tipoReset
+   *   - "completo": volta o plano para o estado original
+   *                 (Dia 1 em 01/01, sem deslocamento de datas)
+   *   - "hoje": alinha o Dia 1 do plano com a data civil atual
+   *             (pode ultrapassar 31/12 e continuar no próximo ano)
+   *
    * @returns {Object} Resultado do reset
    * @throws {Error} Se houver erro ao resetar
    */
-  confirmarReset() {
+  confirmarReset(tipoReset = "completo") {
     try {
-      // 1. Resetar progresso (domínio)
+      // 0. Snapshot temporal atual (ano, dia do ano, total de dias)
+      const contextoTemporal = getContextoTemporalAtual();
+
+      // 1. Limpar qualquer reajuste anterior (datas voltam para o plano base)
+      this.progresso.limparReajuste();
+
+      // 2. Resetar progresso (domínio)
       const resultadoReset = this.progresso.resetarCompletamente();
 
-      // 2. Disparar evento para UI camada
-      this.dispararEventoReset(resultadoReset);
+      // 3. Decidir estratégia de datas:
+      //    - "completo": não cria novo reajuste → plano volta a 01/01, 02/01, ...
+      //    - "hoje": cria um novo reajuste simulando "Dia 1 → hoje"
+      let avisoUltrapassagem = null;
 
+      if (tipoReset === "hoje") {
+        // Dia 1 deve cair na data civil de hoje
+        const diaHoje = contextoTemporal.diaDoAno;
+
+        // Persistir reajuste com númeroDia = 1
+        this.progresso.salvarReajuste(1, diaHoje);
+
+        // Calcular se o plano ultrapassará 31/12
+        const totalDiasPlano = this.planoManager.getTotalDias();
+        const diaFinalPlano = diaHoje + (totalDiasPlano - 1);
+
+        if (diaFinalPlano > contextoTemporal.totalDias) {
+          const diasAposFimAno = diaFinalPlano - contextoTemporal.totalDias;
+          avisoUltrapassagem = `O plano ultrapassará 31/12 e continuará no próximo ano (aprox. +${diasAposFimAno} dia(s) após 31/12).`;
+        }
+
+        resultadoReset.resetType = "hoje";
+      } else {
+        // Reset clássico: linha do tempo original
+        resultadoReset.resetType = "completo";
+      }
+
+      // 4. Disparar evento para camada de UI
+      this.dispararEventoReset({
+        ...resultadoReset,
+        tipoReset,
+        avisoUltrapassagem,
+      });
+
+      // 5. Retornar resumo para quem chamou
       return {
         sucesso: true,
+        tipoReset,
+        avisoUltrapassagem,
         ...resultadoReset,
       };
     } catch (error) {
@@ -70,7 +117,7 @@ export class ResetProgressoOrquestrador {
   /**
    * Dispara evento customizado para notificar UI e main.js
    * @private
-   * @param {Object} detalhes - Dados do reset
+   * @param {Object} detalhes - Dados do reset (inclui tipoReset/avisoUltrapassagem)
    */
   dispararEventoReset(detalhes) {
     const contextoTemporal = getContextoTemporalAtual();
