@@ -1,363 +1,132 @@
 # 📖 Biblia Responsiva
 
-**Versão atual:** 0.9.x (pré‑login, foco em plano de leitura)
-
-**Autor:** *a preencher*
-
-**GitHub:** *a preencher*
-
-**LinkedIn:** *a preencher*
-
-**Email:** *a preencher*
+**Versão atual:** 1.0.0 (foco em plano de leitura, notas e flexibilidade temporal)
 
 ---
 
-## 1. Apresentação do sistema (estado atual)
+## 1. Visão Geral: Um Ambiente de Leitura, Organização e Estudo Bíblico
 
-O **Biblia Responsiva** é uma aplicação web **gratuita, open‑source e sem fins lucrativos**, concebida como um **ambiente de leitura, organização e estudo bíblico**.
+O **Biblia Responsiva** é uma aplicação web **gratuita, open-source e sem fins lucrativos**, projetada como um ambiente completo para a **leitura, organização e estudo da Bíblia**. Seu desenvolvimento é guiado por princípios arquiteturais sólidos, visando clareza, extensibilidade e uma experiência de usuário focada na verdade temporal e na autonomia.
 
-No estado atual, o sistema está funcional e estável como **plataforma de planos de leitura bíblica**, oferecendo:
+**Regra-Alma do Sistema:**
 
-* Leitura guiada por planos (ex.: cronológico)
-* Geração automática de datas
-* Controle de progresso de leitura
-* Sistema de busca contextual
-* Bloco de notas flutuante persistente
+> "O tempo passa. O sistema reconhece. O usuário decide. O plano continua com verdade."
 
-Embora o plano de leitura seja hoje o fluxo dominante, a arquitetura já está preparada para evolução, com clara separação entre **domínio**, **infraestrutura**, **UI** e **estado do usuário**.
+Essa máxima encapsula a filosofia central do projeto, garantindo que a interação com o plano de leitura seja sempre transparente, controlada e baseada em dados temporais fidedignos.
 
-O projeto **não hospeda textos bíblicos protegidos por copyright** e respeita integralmente as limitações jurídicas. A evolução futura prevê uso de textos em domínio público, APIs licenciadas e materiais originais para estudo acadêmico.
+**Funcionalidades Principais:**
+
+- **Planos de Leitura Adaptáveis**: Leitura guiada por planos (ex.: cronológico), com funcionalidade de **reajuste inteligente** para acomodar lacunas de leitura e um **reset configurável** (voltar ao início do plano ou ancorar no dia atual).
+- **Controle de Progresso**: Acompanhamento detalhado do progresso de leitura, persistente localmente.
+- **Bloco de Notas Flutuante e Persistente**: Um ambiente rico para anotações pessoais, com ferramentas de formatação (marca-texto, listas, negrito, itálico, etc.), associadas ao texto lido.
+- **Busca Contextual**: Sistema de busca eficiente para localizar passagens no plano.
+- **Geração Automática de Datas**: Integração com um sistema temporal soberano que assegura a precisão e a consistência das datas.
+- **Suporte a Dark Mode**: Interface otimizada para diferentes preferências de visualização.
+
+O projeto não hospeda textos bíblicos protegidos por copyright, respeitando integralmente as limitações jurídicas. A evolução futura prevê o uso de textos em domínio público, APIs licenciadas e materiais originais para estudo acadêmico.
 
 ---
 
-## 2. Tecnologias empregadas
+## 2. Arquitetura e Princípios Fundamentais
 
-> **Nota de transparência sobre uso de IA**
+A arquitetura do Biblia Responsiva é baseada em uma clara separação de camadas e na adesão a contratos bem definidos, conforme detalhado no `CONTRATO_DO_SISTEMA.MD`.
+
+### 2.1 Estrutura de Camadas (4-Layer Architecture)
+
+- **Nível Tempo (`js/core/models/parametroGerador.js`)**: A camada mais fundamental. `parametroGerador.js` é a **única fonte de verdade temporal** do sistema. Nenhum outro módulo pode criar, simular ou assumir datas/tempos. Todas as requisições temporais devem passar por ele.
+- **Nível Domínio (`js/core/models/biblia.js`, `js/core/models/parametroDia.js`)**: Contém as entidades e regras de negócio essenciais. Por exemplo, `biblia.js` define a estrutura canônica da Bíblia (livros, capítulos, versículos) de forma independente de idioma ou versão, e `parametroDia.js` representa a entidade de um dia de leitura.
+- **Nível Orquestração (`js/core/services/planos/PlanoManager.js`, `js/ui/orquestradores/MainOrquestrador.js`)**: Gerencia o fluxo da aplicação, o estado e as interações entre as camadas de domínio e UI. `MainOrquestrador` centraliza a coordenação geral, enquanto `PlanoManager` orquestra as operações específicas relacionadas ao plano de leitura. Esta camada é responsável por injetar dependências temporais e de domínio na UI.
+- **Nível UI (`js/ui/components`, `js/ui/componentes`)**: Responsável pela renderização e interação com o usuário. A UI é um **reflexo** do estado e das regras de negócio, **nunca o motor** que as define. Componentes como `render_calendario.js`, `NotasOverlayUI.js` e `ResetModal.js` são exemplos desta camada.
+
+### 2.2 Princípio do Cartucho: Modularidade de Planos
+
+Um plano de leitura é tratado como um **"cartucho"**: uma unidade independente e intercambiável que se encaixa no sistema através de uma interface padronizada (`js/core/services/planos/contrato_plano.js`). Isso significa que novos planos (cronológico, canônico, temático, etc.) podem ser desenvolvidos e integrados sem a necessidade de modificar o núcleo do sistema, garantindo extensibilidade e testabilidade isolada.
+
+### 2.3 Gestão de Decisões e Estados
+
+O sistema detecta condições (atrasos, fim de ciclo) e apresenta opções, mas a **decisão final é sempre explícita e atribuída ao usuário**. Estados do plano (ATIVO, ATRASADO, AGUARDANDO_DECISAO, etc.) são gerenciados de forma controlada, com transições claras e rastreáveis.
+
+---
+
+## 3. Tecnologias Empregadas
+
+> **Nota de Transparência sobre Apoio de Inteligência Artificial**
 >
-> Este projeto faz uso consciente de **ferramentas de apoio baseadas em Inteligência Artificial** (como ChatGPT e DeepSeek) durante etapas de análise, organização conceitual, revisão técnica e documentação.
->
-> As **decisões arquiteturais, conceituais e éticas são humanas**, deliberadas e supervisionadas. As IAs são utilizadas como **instrumentos auxiliares**, de forma semelhante a documentação técnica, revisores automatizados ou pares de brainstorming.
->
-> O projeto assume explicitamente um **modelo moderno de desenvolvimento assistido por IA**, prezando por transparência, responsabilidade e rigor intelectual.
+> Este projeto foi desenvolvido com o auxílio de **ferramentas baseadas em Inteligência Artificial** em diversas etapas, como análise, organização conceitual, revisão técnica e documentação. As **decisões arquiteturais, conceituais e éticas são exclusivamente humanas**, com a IA atuando como um **instrumento auxiliar** para otimizar o processo de desenvolvimento e garantir rigor. Acreditamos em um modelo moderno de desenvolvimento assistido por IA, priorizando transparência, responsabilidade e qualidade intelectual.
 
-O projeto foi desenvolvido com foco em **simplicidade, controle total e longevidade**, evitando dependências pesadas.
+O projeto foi desenvolvido com foco em **simplicidade, controle total e longevidade**, evitando dependências pesadas e frameworks externos sempre que possível.
 
-### Front‑end
+### Front-end
 
-* HTML5
-* CSS3 (com suporte a dark mode)
-* JavaScript Vanilla (ES Modules)
+- HTML5
+- CSS3 (com suporte a dark mode e arquitetura modular)
+- JavaScript Vanilla (ES Modules)
 
-### Arquitetura
+### Ferramentas e Bibliotecas
 
-* Separação clara de camadas:
-
-  * **Domínio** (Bíblia, dia, planos)
-  * **Infraestrutura** (progresso, reset, contratos)
-  * **UI** (renderização e interação)
-* Sem frameworks externos
-* Totalmente executável em ambiente local
+- **html2pdf.js**: Para funcionalidades futuras de exportação.
+- **docx (npm)**: Para funcionalidades futuras de exportação para formato .docx.
 
 ---
 
-## 3. Fluxograma geral e estrutura de arquivos
-
-### 3.1 Fluxo atual da aplicação
+## 4. Estrutura de Diretórios (Simplificada)
 
 ```
-index.html
-   ↓
-Plano de Leitura (plano.html)
-   ↓
-Renderização dos dias
-   ↓
-Controle de progresso
-   ↓
-Busca
-   ↓
-Notas flutuantes
-```
-
-O sistema hoje assume implicitamente que o usuário está em **modo plano de leitura**.
-
----
-
-### 3.2 Estrutura de diretórios
-
-```
-C:.
-│   index.html              # Entrada atual do sistema
-│   limparConsole.js        # Utilitário de desenvolvimento
-│   readme.md               # Documentação do projeto
-│   tarefas.txt             # Registro de tarefas e ideias
+.
+├── ARQUITETURA_SINCRONIZACAO.md
+├── CONTRATO_DO_SISTEMA.MD      # Fonte de verdade conceitual
+├── readme.md                   # Este documento
+├── tarefas.txt                 # Registro de tarefas e ideias
 │
-├───assets                  # Ícones e imagens
+├── assets                      # Ícones e imagens
 │
-├───css                     # Estilos globais e modulares
-│   │ darkmode.css          # Tema escuro
-│   │ notas.css             # Estilo do bloco de notas
-│   │ search_styles.css     # Estilo da busca
-│   │ styles.css            # Estilos gerais
+├── css                         # Estilos globais e modulares
+│   ├── componentes             # Estilos de componentes específicos (ex: modais)
+│   └── (outros .css)           # Estilos globais, navbar, cards, calendar, etc.
 │
-└───js
-    │ main.js               # Bootstrap da aplicação
-    │
-    ├───dominio             # Núcleo conceitual do sistema
-    │   │ biblia.js         # Estrutura canônica da Bíblia (mapa, não texto)
-    │   │ dia.js            # Entidade Dia de Leitura
-    │   │ geradorDatas.js   # Geração automática de datas
-    │   │
-    │   ├───busca
-    │   │   SearchEngine.js # Motor de busca (voltado ao plano)
-    │   │
-    │   ├───notas
-    │   │   NotasLeituraManager.js  # Gestão das notas
-    │   │   notas_overlay.js        # UI flutuante
-    │   │   notas_toolbar.js        # Barra de ferramentas
-    │   │
-    │   └───planos
-    │       │ plano_cronologico.js  # Implementação de plano
-    │       │
-    │       └───config
-    │           contrato_plano.js   # Contrato mínimo de planos
-    │           PlanoManager.js     # Orquestração
-    │           ProgressoLeitura.js # Controle de progresso
-    │           ResetProgresso.js   # Reset do estado
-    │
-    └───ui
-        │ darkmode.js        # Controle de tema
-        │
-        ├───busca
-        │   search_input.html
-        │   search_ui.js
-        │
-        ├───calendario
-        │   render_calendario.js
-        │
-        └───planos
-            render_dia_card.js
+├── js
+│   ├── core                    # Núcleo conceitual e serviços
+│   │   ├── models              # Entidades e modelos de domínio
+│   │   │   ├── parametroBibliaPlano.js
+│   │   │   ├── parametroDia.js
+│   │   │   └── parametroGerador.js # Única fonte de tempo
+│   │   │
+│   │   └── services            # Lógica de negócio e serviços
+│   │       ├── busca           # Motor de busca
+│   │       ├── notas           # Gestão de notas
+│   │       └── planos          # Lógica de planos (PlanoManager, ProgressoLeitura, ReorganizadorPlano, ResetProgresso)
+│   │
+│   ├── ui                      # Camada de Interface do Usuário
+│   │   ├── componentes         # Componentes de UI reutilizáveis (modais, notas, etc.)
+│   │   ├── components          # Outros componentes de UI (busca, calendário, planos)
+│   │   ├── orquestradores      # Orquestradores de UI (MainOrquestrador, BaseOrquestrador)
+│   │   └── plugins             # Plugins de funcionalidade (CertificadoPlugin, ExportacaoPlugin)
+│   │
+│   └── main.js                 # Bootstrap da aplicação
+│
+└── plano.html                  # Página principal do plano de leitura
 ```
 
 ---
 
-## 4. Outros detalhamentos conceituais
+## 5. Conceitos de Domínio Chave
 
-### 4.1 Notas como patrimônio intelectual
+### 5.1 O Bloco de Notas como Patrimônio Intelectual
 
-O bloco de notas:
+O sistema de notas é projetado para ser **independente da página, do plano ou da versão bíblica**. Ele pertence ao conceito abstrato de "leitura", permitindo que as anotações sejam um patrimônio intelectual do usuário, dissociado de contextos específicos, funcionando tanto em leitura guiada quanto em leitura livre.
 
-* Não pertence à página
-* Não pertence ao plano
-* Não pertence à Bíblia
+### 5.2 `biblia.js` como Estrutura Canônica Universal
 
-Ele pertence ao conceito de leitura:
+O arquivo `biblia.js` atua como um **mapa estrutural da Bíblia**, definindo a ordem canônica dos livros, a quantidade de capítulos e versículos. Ele é independente de idioma, versão ou fonte de texto, servindo como uma referência estável para todas as funcionalidades que precisam navegar ou referenciar a estrutura bíblica. Ele **NÃO contém texto bíblico**.
 
-> “este texto, nesta versão, neste ponto”
+### 5.3 `BibliaGateway`: Abstração de Fontes Bíblicas
 
-Isso permite que o mesmo sistema de notas funcione tanto para **leitura guiada** quanto para **leitura livre**, sem acoplamento.
+O conceito de `BibliaGateway` é uma camada de abstração planejada para permitir que o sistema se conecte a **múltiplas fontes de texto bíblico** (APIs licenciadas, textos em domínio público, etc.) sem acoplar o domínio ou a UI a uma fonte específica. Isso garante flexibilidade e extensibilidade para futuras integrações.
 
 ---
 
-### 4.2 O app não é apenas um leitor
+## 6. Evolução Futura e Diretriz Final
 
-Implicitamente, o sistema já é:
+O **Biblia Responsiva** é um projeto de longo prazo, com um roadmap que inclui autenticação de usuário, a introdução de múltiplos modos de leitura (guiada e livre), e a integração de diversas versões bíblicas.
 
-* Leitor bíblico
-* Organizador
-* Ambiente de estudo
-* Repositório de anotações pessoais
-
-Esse entendimento impacta decisões futuras como login, backup, exportação e persistência.
-
----
-
-## 5. Próximos passos (resumo)
-
-* Introduzir autenticação (login.html)
-* Transformar index.html em hub de decisão
-* Separar claramente dois modos de uso:
-
-  * Leitura guiada (plano.html)
-  * Leitura livre (biblia.html)
-* Reaproveitar notas flutuantes como satélite comum
-* Preparar arquitetura para múltiplas fontes bíblicas
-
----
-
-## 6. Detalhamento dos próximos passos
-
-### 6.1 Novo fluxo de navegação
-
-```
-login.html
-   ↓
-index.html
-   ↓
-Escolha do modo
-   ├── plano.html   # leitura guiada
-   └── biblia.html  # leitura livre
-```
-
-### 6.2 biblia.html (novo modo)
-
-* Leitura contínua
-* Busca estrutural:
-
-  * livros
-  * capítulos
-  * versículos
-* Busca textual:
-
-  * palavras
-  * frases
-  * ocorrências
-* Comparação de versões (planejado)
-* Uso de textos em domínio público e APIs
-
-### 6.3 Textos originais
-
-Os textos originais (hebraico e grego):
-
-* São **material de consulta e pesquisa**
-* Não fazem parte de planos de leitura
-* Não incluem traduções internas
-* Exigem maturidade acadêmica do leitor
-
----
-
-## 7. Diretriz final
-
-O **Biblia Responsiva** é um projeto de longo prazo, orientado por:
-
-* Rigor conceitual
-* Respeito jurídico
-* Liberdade intelectual
-* Serviço à comunidade
-
-A arquitetura prioriza clareza, extensibilidade e responsabilidade ética.
-
----
-
-## 8. Modos oficiais do sistema
-
-O sistema passa a reconhecer explicitamente **MODOS DE LEITURA**, e não apenas páginas.
-
-### 8.1 Modo: Leitura Guiada
-
-* **Identificador conceitual:** `MODE_PLANO`
-* **Interface principal:** plano.html
-* **Quem define a referência:** o plano
-* **Objetivo:** condução disciplinada da leitura
-* **Estado relevante:**
-
-  * dia atual
-  * progresso
-  * notas associadas ao texto
-
-### 8.2 Modo: Leitura Livre
-
-* **Identificador conceitual:** `MODE_BIBLIA`
-* **Interface principal:** biblia.html
-* **Quem define a referência:** o leitor
-* **Objetivo:** leitura contínua e estudo
-* **Estado relevante (temporário):**
-
-  * livro
-  * capítulo
-  * versículo
-  * versão selecionada
-
-Notas flutuantes orbitam ambos os modos, sem acoplamento estrutural.
-
----
-
-## 9. Contrato mínimo — LeituraBiblicaController
-
-O **LeituraBiblicaController** é o orquestrador do modo leitura livre. Ele **não contém texto bíblico**, nem regras de plano.
-
-### Responsabilidades mínimas
-
-* Receber uma referência bíblica
-* Solicitar o texto a uma fonte válida
-* Normalizar o retorno
-* Entregar o conteúdo para a UI
-
-### Interface conceitual mínima
-
-* setVersao(versaoId)
-* setReferencia(livro, capitulo, versiculos?)
-* getTexto()
-* buscarEstrutural(query)
-* buscarTextual(query)
-
-Nenhuma persistência permanente é exigida nesta fase.
-
----
-
-## 10. biblia.js como estrutura canônica
-
-O arquivo `biblia.js` passa a ser definido explicitamente como:
-
-> **Mapa estrutural da Bíblia, independente de idioma, versão ou fonte de texto**
-
-### Responsabilidades
-
-* Ordem canônica dos livros
-* Quantidade de capítulos
-* Quantidade de versículos
-* Identificadores estáveis
-
-### O que biblia.js NÃO faz
-
-* Não contém texto bíblico
-* Não conhece versões
-* Não acessa APIs
-
-Ele é utilizado igualmente por planos, leitura livre e mecanismos de busca.
-
----
-
-## 11. BibliaGateway (conceito)
-
-O **BibliaGateway** é a camada de abstração entre o sistema e as fontes bíblicas.
-
-### Objetivo
-
-Permitir que múltiplas fontes coexistam sem impacto no domínio ou na UI.
-
-### Interface conceitual do gateway
-
-* getTexto(referencia, versao)
-* buscarEstrutural(query, versao)
-* buscarTextual(query, versao)
-
-### Providers planejados
-
-* LocalPublicDomainProvider
-
-  * ARC
-  * KJV
-  * Textos originais
-
-* ApiBibleProvider
-
-  * Versões modernas licenciadas
-
-* BibleBrainProvider (futuro)
-
-  * Texto + áudio
-
-O sistema nunca acessa providers diretamente — apenas o gateway.
-
----
-
-## 12. Encerramento conceitual
-
-Com esses elementos, o projeto passa a ter:
-
-* Modos explicitamente nomeados
-* Contratos claros
-* Domínio isolado
-* Infraestrutura extensível
-
-Sem perda do que já existe e sem riscos jurídicos.
+O projeto é orientado por rigor conceitual, respeito jurídico, liberdade intelectual e serviço à comunidade. A arquitetura prioriza clareza, extensibilidade e responsabilidade ética, garantindo que o código mude, mas o contrato governe.
