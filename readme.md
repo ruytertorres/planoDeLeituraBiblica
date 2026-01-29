@@ -276,7 +276,23 @@ o `CONTRATO_DO_SISTEMA.md`.
 
 ---
 
-## 12. Diretriz Final
+## 12. Licença e Uso
+
+O **Biblia Responsiva** é um projeto **open-source**, **gratuito** e **sem fins lucrativos**.
+
+- Forks e contribuições são permitidos
+- Uso educacional e pessoal é incentivado
+- Uso comercial é **proibido**, salvo autorização expressa
+- A distribuição ocorre via GitHub, respeitando a licença
+
+Textos bíblicos em **domínio público** podem ser usados livremente.  
+Versões protegidas por copyright (ex.: KJA, ARC, NVI) **exigem licença própria** e não são redistribuídas pelo projeto.
+
+Consulte o arquivo `LICENSE.md` para os termos completos.
+
+
+
+## 13. Diretriz Final
 
 O **Bíblia Responsiva** é um projeto de longo prazo.
 
