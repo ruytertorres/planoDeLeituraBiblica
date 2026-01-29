@@ -1,65 +1,37 @@
 # ============================================================================
-
 # CONTRATO_DO_SISTEMA.md — Fonte de Verdade Conceitual
-
-# Versão: 1.1.0
-
+# ============================================================================
+# Versão: 1.2.1
 # Aplicação: Bíblia Responsiva — Domínio de Planos, Tempo e Orquestração
-
 #
-
 # Autor: Ruyter Torres
-
 # GitHub: https://github.com/ruytertorres
-
 # LinkedIn: https://www.linkedin.com/in/ruytertorres
-
 # Email: ruytertorres.gmail.com
-
 #
-
 # RESPONSABILIDADE:
-
 # ----------------------------------------------------------------------------
-
 # - Definir regras de domínio e hierarquias de autoridade
-
 # - Estabelecer contratos formais entre módulos
-
 # - Delimitar responsabilidades explícitas
-
 # - Servir como fonte de verdade conceitual do sistema
-
 #
-
 # NÃO É RESPONSABILIDADE DESTE DOCUMENTO:
-
 # ----------------------------------------------------------------------------
-
 # - Implementar código específico
-
 # - Substituir testes automatizados
-
 # - Documentar APIs técnicas em baixo nível
-
 #
-
 # PRINCÍPIOS / CONTRATOS:
-
 # ----------------------------------------------------------------------------
-
 # - O código IMPLEMENTA este contrato
-
 # - O contrato NÃO se adapta ao código
-
 # - Toda refatoração DEVE obedecer este documento
-
 # ============================================================================
 
-# ============================================================================
 
+# ============================================================================
 # 0. NATUREZA DESTE DOCUMENTO (FONTE DE VERDADE)
-
 # ============================================================================
 
 Este documento é a **fonte de verdade conceitual do sistema**.
@@ -80,10 +52,129 @@ Regras fundamentais:
 Alterar este documento **impacta o sistema inteiro**
 e deve ser feito com máxima cautela.
 
+➡️ VIDE: 1.3.2 SOBERANIA DA DECISÃO SOBRE O CONTRATO DO SISTEMA
+
+# ============================================================================
+# 1. CONTRATO DE INTERPRETAÇÃO, ASSISTÊNCIA E SOBERANIA
 # ============================================================================
 
-# 1. REGRA-ALMA DO SISTEMA
+## 1.1 PRINCÍPIO DE LEGIBILIDADE UNIVERSAL
 
+Este contrato **DEVE** ser legível, interpretável e aplicável por:
+
+- pessoas
+- sistemas automatizados de apoio (incluindo IA)
+
+A redação:
+
+- evita ambiguidade intencional
+- prioriza termos normativos claros
+- mantém estrutura previsível e hierárquica
+
+Interpretação correta **NÃO** depende
+de contexto implícito ou inferência subjetiva.
+
+
+## 1.2 PAPEL DOS SISTEMAS ASSISTIVOS (IA)
+
+Sistemas automatizados podem:
+
+- ler este contrato
+- validá-lo contra implementações
+- apontar violações
+- sugerir refatorações
+- auxiliar no raciocínio técnico e conceitual
+
+Sistemas automatizados **NÃO** podem:
+
+- tomar decisões de domínio
+- decidir por reset, continuidade ou encerramento de planos
+- escolher caminhos em estados de conflito
+- substituir decisão explícita do usuário técnico
+
+IA **assiste**.  
+IA **não governa**.
+
+
+## 1.3 SOBERANIA DA DECISÃO
+
+### 1.3.1 SOBERANIA DA DECISÃO DO USUÁRIO TÉCNICO
+
+Toda decisão relevante no sistema:
+
+- pertence a um usuário técnico
+- é explícita
+- é rastreável
+- é registrada como ato consciente
+
+Em qualquer cenário de:
+
+- ambiguidade
+- conflito
+- bifurcação de fluxo
+- múltiplos estados possíveis
+
+➡️ **A decisão final pertence sempre ao usuário técnico.**
+
+Nenhum módulo, algoritmo ou sistema assistivo
+pode automatizar essa decisão,
+nem direta nem indiretamente.
+
+
+### 1.3.2 SOBERANIA DA DECISÃO SOBRE O CONTRATO DO SISTEMA
+
+A autoridade para **alterar, invalidar ou redefinir**
+qualquer regra deste contrato
+pertence **exclusivamente** ao usuário técnico responsável designado
+(líder técnico ou responsável pelo projeto).
+
+Somente essa pessoa pode:
+
+- aprovar alterações neste documento
+- autorizar exceções conscientes às regras aqui definidas
+- validar refatorações que impactem contratos existentes
+- assumir responsabilidade por violações deliberadas do contrato
+
+Não cabe a:
+
+- sistemas automatizados (incluindo IA)
+- membros da equipe sem essa atribuição formal
+- processos implícitos ou decisões distribuídas
+
+auditar, modificar ou reinterpretar este documento.
+
+Qualquer ação que viole este contrato
+**DEVE** ser explícita, consciente
+e autorizada pelo usuário técnico responsável.
+
+A ausência dessa autorização
+configura violação arquitetural e conceitual do sistema.
+
+
+## 1.4 EVOLUÇÃO DO DOCUMENTO
+
+Este documento é vivo,
+porém controlado.
+
+Refatorar este documento
+é refatorar o sistema inteiro.
+
+➡️ VIDE: 1.3.2 SOBERANIA DA DECISÃO SOBRE O CONTRATO DO SISTEMA
+
+## 1.5 REGRA DE NÃO-DELEGAÇÃO
+
+A introdução de inteligência assistiva:
+
+- **NÃO** cria exceções decisórias
+- **NÃO** autoriza delegação implícita
+- **NÃO** reduz a responsabilidade do usuário técnico
+
+Assistência técnica **NÃO É**
+transferência de autoridade.
+
+
+# ============================================================================
+# 2. REGRA-ALMA DO SISTEMA
 # ============================================================================
 
 O tempo passa.  
@@ -94,17 +185,12 @@ O plano continua com verdade.
 Nenhuma decisão estrutural, técnica ou de domínio
 pode violar essa sequência causal.
 
-# ============================================================================
-
-# 2. PRINCÍPIOS FUNDAMENTAIS
 
 # ============================================================================
+# 3. PRINCÍPIOS FUNDAMENTAIS
+# ============================================================================
 
-# ----------------------------------------------------------------------------
-
-# 2.1 TEMPO É SOBERANO
-
-# ----------------------------------------------------------------------------
+## 3.1 TEMPO É SOBERANO
 
 O sistema:
 
@@ -125,14 +211,11 @@ Se um módulo precisar saber:
 
 ➡️ **DEVE consultar o `geradorDatas.js`.**
 
-Se a informação não existir, o módulo
-**DEVE ser estendido**, nunca contornado.
+Se a informação não existir,
+o módulo **DEVE ser estendido**, nunca contornado.
 
-# ----------------------------------------------------------------------------
 
-# 2.2 PROIBIÇÃO ABSOLUTA DE TEMPO FORA DO GERADOR
-
-# ----------------------------------------------------------------------------
+## 3.2 PROIBIÇÃO ABSOLUTA DE TEMPO FORA DO GERADOR
 
 É proibido no sistema:
 
@@ -143,11 +226,8 @@ Se a informação não existir, o módulo
 
 Essa regra é absoluta e não negociável.
 
-# ----------------------------------------------------------------------------
 
-# 2.3 CICLOS SÃO FINITOS, PLANOS SÃO CONTÍNUOS
-
-# ----------------------------------------------------------------------------
+## 3.3 CICLOS SÃO FINITOS, PLANOS SÃO CONTÍNUOS
 
 - Um ciclo representa um **ano civil real**
 - Todo ciclo termina inevitavelmente
@@ -157,11 +237,8 @@ Essa regra é absoluta e não negociável.
 O fim de um ciclo é um **evento detectável**,
 nunca uma decisão.
 
-# ----------------------------------------------------------------------------
 
-# 2.4 O SISTEMA DETECTA, O USUÁRIO DECIDE
-
-# ----------------------------------------------------------------------------
+## 3.4 O SISTEMA DETECTA, O USUÁRIO DECIDE
 
 O sistema pode:
 
@@ -182,10 +259,9 @@ Decisão é sempre:
 - rastreável
 - atribuída ao usuário
 
+
 # ============================================================================
-
-# 3. HIERARQUIA DE AUTORIDADE (QUEM OBEDECE QUEM)
-
+# 4. HIERARQUIA DE AUTORIDADE (QUEM OBEDECE QUEM)
 # ============================================================================
 
 Tempo Real  
@@ -203,11 +279,7 @@ Domínio Auxiliar
 Interface  
 └─ UI
 
-# ----------------------------------------------------------------------------
-
-# REGRAS HIERÁRQUICAS
-
-# ----------------------------------------------------------------------------
+### Regras Hierárquicas
 
 - `geradorDatas.js` NÃO depende de nenhum outro módulo
 - `PlanoManager` NUNCA gera tempo
@@ -216,17 +288,12 @@ Interface
 
 Violação de hierarquia é erro conceitual grave.
 
-# ============================================================================
-
-# 4. CONCEITOS DO DOMÍNIO
 
 # ============================================================================
+# 5. CONCEITOS DO DOMÍNIO
+# ============================================================================
 
-# ----------------------------------------------------------------------------
-
-# 4.1 PLANO
-
-# ----------------------------------------------------------------------------
+## 5.1 PLANO
 
 Um plano representa uma **intenção contínua de leitura**.
 
@@ -239,11 +306,8 @@ Características:
 Um plano NUNCA muda de estado
 sem causa rastreável.
 
-# ----------------------------------------------------------------------------
 
-# 4.2 CICLO
-
-# ----------------------------------------------------------------------------
+## 5.2 CICLO
 
 Um ciclo representa um **ano civil real**.
 
@@ -254,11 +318,8 @@ Um ciclo representa um **ano civil real**.
 
 O sistema apenas **reconhece** o ciclo.
 
-# ----------------------------------------------------------------------------
 
-# 4.3 DIA
-
-# ----------------------------------------------------------------------------
+## 5.3 DIA
 
 Regras absolutas:
 
@@ -267,211 +328,21 @@ Regras absolutas:
 - Não existe dia fora do calendário real
 - Não existe redistribuição retroativa de dias
 
-# ============================================================================
-
-# 5. PRINCÍPIO DO CARTUCHO: MODULARIDADE DE PLANOS
 
 # ============================================================================
+# 6. PRINCÍPIO DO CARTUCHO: MODULARIDADE DE PLANOS
+# ============================================================================
 
-# FUNDAMENTO
-
-Um plano é um **CARTUCHO** — uma unidade independente e intercambiável
+Um plano é um **CARTUCHO** —
+uma unidade independente e intercambiável
 que encaixa no sistema mediante uma interface padronizada.
 
-Analogia: Assim como um cartucho de videogame é independente mas funciona
-em qualquer console que respeita a especificação de encaixe, um plano deve
-ser completamente independente mas funcionar em qualquer sistema que
-respeita o **Contrato de Plano**.
+O sistema é modular com QUALQUER plano
+que respeite o contrato definido.
 
-# PRINCÍPIO
-
-O sistema NÃO é "simbiótico" com plano_cronologico.js.
-O sistema é "modular" com QUALQUER plano que respeita a interface.
-
-Cada plano é um arquivo isolado que pode ser:
-
-- usado em outro projeto sem modificação
-- testado independentemente do sistema
-- trocado por outro plano sem quebrar nada
-- desenvolvido em paralelo por outro desenvolvedor
 
 # ============================================================================
-
-# 5.1 O QUE UM PLANO DEVE SER
-
-# ============================================================================
-
-Um plano DEVE:
-
-**Independência Total**
-
-- ✅ Conter TODOS seus dados internamente
-- ✅ NÃO importar de nenhum módulo do sistema
-- ✅ NÃO depender de geradorDatas.js
-- ✅ NÃO depender de main.js ou orquestrador
-- ✅ NÃO depender de UI ou renderização
-
-**Estrutura Padronizada**
-
-- ✅ Exportar objeto com interface definida (vide 5.2)
-- ✅ Seguir contrato mínimo de metadados
-- ✅ Incluir array de dias com estrutura obrigatória
-- ✅ Ser um módulo puro (apenas `export default {...}`)
-
-**Testabilidade Isolada**
-
-- ✅ Funcionar em ambiente de teste sem instânciar sistema
-- ✅ Não ter efeitos colaterais na carga do módulo
-- ✅ Dados ser determinísticos e reproduzíveis
-
-**Documentação Interna**
-
-- ✅ Incluir comentários explicando estrutura
-- ✅ Documentar exceções ou regras peculiares
-- ✅ Deixar claro qual versão do contrato implementa
-
-# ============================================================================
-
-# 5.2 INTERFACE OBRIGATÓRIA (CONTRATO DE ENCAIXE)
-
-# ============================================================================
-
-Todo plano DEVE exportar um objeto com esta estrutura:
-
-```javascript
-{
-  // METADADOS OBRIGATÓRIOS
-  id: string,                    // ID único do plano (ex: "plano_cronologico")
-  nome: string,                  // Nome legível (ex: "Cronológico")
-  descricao: string,             // Descrição do plano
-  totalDias: number,             // Quantidade total de dias (ex: 317)
-
-  // ARRAY DE DIAS (OBRIGATÓRIO)
-  dias: [
-    {
-      numero: number,            // 1 a totalDias
-      dataFormatada: string,     // DD/MM (apenas referência visual)
-      antigoTestamento: Array,   // Leituras do Antigo Testamento
-      novoTestamento: Array,     // Leituras do Novo Testamento
-      livros: Array,             // Nomes dos livros do dia
-      capitulos: Array,          // Números dos capítulos do dia
-      versiculos: Array,         // (Opcional) Versículos específicos
-      observacoes: string,       // (Opcional) Anotações do plano
-      data: string              // Data ISO (YYY-MM-DD) CALCULADA pelo sistema
-    }
-  ]
-}
-```
-
-**Regras de Campos:**
-
-- `id`: Must be unique across all plans
-- `nome`: Used in UI for plan selection
-- `totalDias`: Determines calendar size
-- `dias`: Array must be 1-indexed (dia.numero ≥ 1)
-- `antigoTestamento` / `novoTestamento`: Array of readings with livroNome, capituloInicio, capituloFim
-- `data`: NÃO deve estar no plano cartucho! É CALCULADA pelo sistema!
-
-# ============================================================================
-
-# 5.3 O QUE UM PLANO NÃO PODE FAZER
-
-# ============================================================================
-
-Um plano NÃO PODE:
-
-**Nenhuma Dependência Externa**
-
-- ❌ Importar geradorDatas.js
-- ❌ Importar PlanoManager.js
-- ❌ Importar qualquer módulo do sistema
-- ❌ Fazer fetch/request de dados
-- ❌ Acessar localStorage ou sessionStorage
-- ❌ Usar `import` de fora (exceto modules da linguagem)
-
-**Nenhuma Lógica de Tempo**
-
-- ❌ Calcular data real (usar `new Date()`)
-- ❌ Fazer cálculos de atraso
-- ❌ Assumir ano ou ciclo atual
-- ❌ Modificar datas com base no tempo real
-
-**Nenhuma Lógica de UI/Orquestração**
-
-- ❌ Criar elementos DOM
-- ❌ Chamar `console.log` (ou deve ser removido antes de load)
-- ❌ Ter efeitos colaterais no módulo raiz
-- ❌ Registrar listeners de eventos
-
-**Nenhuma Simbiose com Sistema**
-
-- ❌ Assumir que será usado com geradorDatas específico
-- ❌ Assinar eventos do orquestrador
-- ❌ Modificar estado global
-- ❌ Depender de inicialização específica
-
-# ============================================================================
-
-# 5.4 PROTOCOLO DE CARREGAMENTO
-
-# ============================================================================
-
-Quando um plano é carregado:
-
-1. **Load**: `import planoCronologico from './plano_cronologico.js'`
-   - Plano é módulo puro, sem efeitos colaterais
-   - Retorna objeto com interface obrigatória
-
-2. **Validação**: `contratoDePlano.validar(planoCronologico)`
-   - Sistema valida se interface está conforme
-
-3. **Inicialização**: PlanoManager envolve o plano
-   - PlanoManager injeta comportamento de orquestração
-   - PlanoManager injeta dependências (geradorDatas, etc)
-   - Plano continua puro, PlanoManager não
-
-4. **Uso**: Sistema utiliza via PlanoManager
-   - Nunca acessa plano diretamente
-   - Sempre via interface de PlanoManager
-
-# ============================================================================
-
-# 5.5 EVOLUÇÃO FUTURA
-
-# ============================================================================
-
-Quando novos planos forem criados (plano_canonico, plano_expresso, etc):
-
-**Cada plano**:
-
-- É um novo arquivo independente
-- Segue a mesma interface
-- É testado isoladamente
-- Encaixa no sistema sem modificação
-
-**O sistema**:
-
-- Não precisa mudar
-- Recebe novo plano como parâmetro
-- Valida contra este contrato
-- Funciona identicamente
-
-Exemplo futuro:
-
-```javascript
-// Hoje
-const plano = planoCronologico;
-const manager = new PlanoManager(plano);
-
-// Amanhã (sem mudança no sistema)
-const plano = planoCanonica; // Diferente arquivo
-const manager = new PlanoManager(plano); // Código idêntico!
-```
-
-# ============================================================================
-
-# 6. ESTADOS DO PLANO (CONTRATO DE ESTADO)
-
+# 7. ESTADOS DO PLANO (CONTRATO DE ESTADO)
 # ============================================================================
 
 Estados válidos:
@@ -483,65 +354,46 @@ Estados válidos:
 - CONCLUIDO
 - ENCERRADO
 
-# ----------------------------------------------------------------------------
-
-# REGRAS DE ESTADO
-
-# ----------------------------------------------------------------------------
+Regras:
 
 - Todo estado tem causa explícita
 - Transições são controladas
 - Nenhum estado muda silenciosamente
 - O estado define comportamento permitido
 
+
 # ============================================================================
-
-# 7. REGRA DE ATRASO (CONTRATO GLOBAL)
-
+# 8. REGRA DE ATRASO (CONTRATO GLOBAL)
 # ============================================================================
 
 A regra de atraso:
 
-- é definida por **função única**
+- é definida por função única
 - vive em módulo dedicado
 - NÃO possui valores hardcoded espalhados
-
-Fluxo conceitual:
-
-- Sistema define: “plano está atrasado após X dias”
-- UI consome: “Seu plano está atrasado há X dias”
-- Nenhum módulo replica essa lógica
 
 Alterar essa regra
 altera o sistema inteiro de forma consistente.
 
+
 # ============================================================================
-
-# 8. DECISÕES DO USUÁRIO (CONTRATO DE INTERAÇÃO)
-
+# 9. DECISÕES DO USUÁRIO (CONTRATO DE INTERAÇÃO)
 # ============================================================================
 
 Decisões reconhecidas:
 
 - Continuar adaptando o plano
-- Reset inteligente (reancoragem)
+- Reset inteligente
 - Reset total
 - Continuar no novo ciclo
 - Encerrar plano
 - Adiar decisão
 
-Toda decisão:
-
-- é explícita
-- é registrada
-- produz efeito rastreável
-
 Decisões implícitas **NÃO existem**.
 
+
 # ============================================================================
-
-# 9. CONTRATO DA UI
-
+# 10. CONTRATO DA UI
 # ============================================================================
 
 A interface pode:
@@ -550,7 +402,7 @@ A interface pode:
 - perguntar
 - exibir estado
 
-A interface NÃO pode:
+A interface **NÃO** pode:
 
 - calcular regras
 - decidir fluxo
@@ -558,10 +410,9 @@ A interface NÃO pode:
 
 UI é reflexo. Nunca motor.
 
+
 # ============================================================================
-
-# 10. CONTRATO DE IMPLEMENTAÇÃO
-
+# 11. CONTRATO DE IMPLEMENTAÇÃO
 # ============================================================================
 
 É obrigatório:
@@ -574,27 +425,95 @@ UI é reflexo. Nunca motor.
 
 Toda violação exige refatoração imediata.
 
-# ============================================================================
-
-# 11. EVOLUÇÃO DO DOCUMENTO
 
 # ============================================================================
-
-Este documento é **vivo**, porém **controlado**.
-
-Ele evolui quando:
-
-- regras são consolidadas
-- contratos são descobertos
-- ambiguidades são eliminadas
-
-Refatorar este documento
-é refatorar o sistema inteiro.
-
+# 12. CABEÇALHOS E COMENTÁRIOS DE ARQUIVO (CONTRATO DE ARQUITETURA)
 # ============================================================================
 
-# 12. DECLARAÇÃO FINAL
+Comentários existem para declarar:
 
+- intenção
+- contrato
+- limite arquitetural
+
+Comentário correto permanece válido
+mesmo quando o código muda.
+
+
+# ============================================================================
+# 13. CONTRATO DE PORTABILIDADE, EXECUÇÃO NATIVA E INTEROPERABILIDADE
+# ============================================================================
+
+## 13.1 PRINCÍPIO DE EXECUÇÃO NATIVA MULTIPLATAFORMA
+
+Este sistema **DEVE** possuir como horizonte de estabilidade
+a execução como aplicativo nativo em:
+
+- Windows
+- Android
+
+A versão web é meio legítimo,
+não destino final.
+
+
+## 13.2 PARIDADE FUNCIONAL ENTRE PLATAFORMAS
+
+Diferenças permitidas:
+
+- interface
+- persistência
+- distribuição
+
+Diferenças proibidas:
+
+- regras de domínio divergentes
+- lógica temporal específica
+- decisões implícitas
+
+
+## 13.3 COMUNICAÇÃO ENTRE INSTÂNCIAS
+
+Instâncias **DEVEM** compartilhar:
+
+- planos
+- progresso
+- decisões explícitas
+
+Sem violar tempo,
+estado ou soberania decisória.
+
+
+## 13.4 ISOLAMENTO DE PLATAFORMA
+
+Lógica específica de plataforma:
+
+- DEVE estar isolada
+- DEVE ser substituível
+- NÃO pode vazar para domínio
+
+
+## 13.5 CONTINUIDADE DE IDENTIDADE
+
+A troca de plataforma:
+
+- NÃO reinicia planos
+- NÃO reseta ciclos
+- NÃO altera decisões
+
+
+## 13.6 REGRA DE EVOLUÇÃO
+
+Execução nativa:
+
+- NÃO autoriza atalhos
+- NÃO flexibiliza contratos
+- NÃO cria exceções temporais
+
+O sistema é conceitualmente único,
+mesmo em múltiplos corpos.
+
+# ============================================================================
+# 14. DECLARAÇÃO FINAL
 # ============================================================================
 
 Este sistema é orientado por:
@@ -605,148 +524,3 @@ Este sistema é orientado por:
 
 O código muda.  
 O contrato governa.
-
-# ============================================================================
-
-# 13. CABEÇALHOS E COMENTÁRIOS DE ARQUIVO (CONTRATO DE ARQUITETURA)
-
-# ============================================================================
-
-# ----------------------------------------------------------------------------
-
-# 12.1 CABEÇALHO OBRIGATÓRIO
-
-# ----------------------------------------------------------------------------
-
-Todo arquivo de domínio, serviço ou orquestração
-DEVE iniciar com o seguinte cabeçalho:
-
-# /\*
-
-nomeDoArquivo.js — Papel claro e inequívoco
-Versão: X.Y.Z
-Aplicação: Nome do sistema ou subdomínio
-
-Autor: Ruyter Torres
-GitHub: https://github.com/ruytertorres
-LinkedIn: https://www.linkedin.com/in/ruytertorres
-Email: ruytertorres.gmail.com
-
-RESPONSABILIDADE:
-
-- O que ESTE arquivo faz
-- O que ELE é dono
-- O que ELE garante
-
-NÃO É RESPONSABILIDADE DESTE ARQUIVO:
-
-- O que explicitamente NÃO pode fazer
-- Onde essa responsabilidade vive
-
-PRINCÍPIOS / CONTRATOS:
-
-- Regras arquiteturais obedecidas
-- Dependências permitidas
-- # Dependências proibidas
-  \*/
-
-Regra implícita:
-se algo não cabe nesse cabeçalho,
-o arquivo provavelmente viola responsabilidade única.
-
-# ----------------------------------------------------------------------------
-
-# 12.2 BLOCOS DE SEÇÃO
-
-# ----------------------------------------------------------------------------
-
-Blocos DEVEM ser usados apenas para organização conceitual:
-
-# /\*
-
-# NOME DA SEÇÃO
-
-\*/
-
-Indicados para:
-
-- Tipos
-- Constantes
-- Classes
-- API pública
-- Regras de negócio
-- Fluxos de controle
-
-Proibido:
-blocos apenas para separação estética.
-
-# ----------------------------------------------------------------------------
-
-# 12.3 SUB-BLOCOS
-
-# ----------------------------------------------------------------------------
-
-Sub-blocos DEVEM contextualizar decisões não triviais:
-
-## /\*
-
-## VALIDAÇÕES ESTRUTURAIS
-
-\*/
-
-Usar quando:
-
-- há regra explícita
-- existe risco de uso incorreto
-- a intenção não é óbvia
-
-Proibido comentar código óbvio.
-
-# ----------------------------------------------------------------------------
-
-# 12.4 COMENTÁRIOS DE FUNÇÃO / MÉTODO
-
-# ----------------------------------------------------------------------------
-
-/\*\*
-
-- Descrição objetiva do que o método garante
--
-- @param {tipo} nome - Regra do parâmetro
-- @returns {tipo} Garantia de retorno
-- @throws Quando falha e por quê
-  \*/
-
-Regra:
-o comentário explica **o quê**, nunca **como**.
-
-# ----------------------------------------------------------------------------
-
-# 12.5 COMENTÁRIOS INTERNOS
-
-# ----------------------------------------------------------------------------
-
-Permitidos apenas para decisões não triviais:
-
-// MÉTODO BULLETPROOF: criar data ao meio-dia para evitar fuso
-
-Proibido:
-narrar sintaxe ou explicar código óbvio.
-
-# ----------------------------------------------------------------------------
-
-# 12.6 REGRA-MÃE DO PADRÃO
-
-# ----------------------------------------------------------------------------
-
-Comentário existe para declarar:
-
-- intenção
-- contrato
-- limite arquitetural
-
-Comentário correto:
-continua válido mesmo se o código mudar.
-
-Comentário incorreto:
-torna-se falso quando o código muda.
