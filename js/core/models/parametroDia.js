@@ -1,6 +1,6 @@
 /* ============================================================================
-   dia.js — Entidade de Domínio: Dia de Leitura
-   Versão: 1.0.0
+   parametroDia.js — Entidade de Domínio: Dia de Leitura
+   Versão: 1.0.0 (JavaScript)
    Aplicação: Leitura Bíblica Cronológica
 
    RESPONSABILIDADE ÚNICA:
@@ -13,19 +13,13 @@
    - NÃO conter lógica de datas
    - NÃO formatar datas
    - NÃO inferir valores ausentes
-
-   PRINCÍPIO ARQUITETURAL:
-   ----------------------------------------------------------------------------
-   - TODA manipulação de datas pertence exclusivamente ao geradorDatas.js
-   - Dia é criado SEMPRE via Dia.criar() (factory de domínio)
-   - Constructor é usado apenas para testes ou reconstituição
-
-   CONTRATO COM GERADORATAS:
-   - Dia não gera tempo, mas conhece seu contexto (numero + ano)
-   - Se precisar recalcular datas, usa geradorDatas
 ============================================================================ */
 
-import { gerarDataISO, gerarDataBR, getAnoAtual } from "./parametroGerador.js";
+import {
+  gerarDataISO,
+  gerarDataBR,
+  getAnoAtual,
+} from "../services/tempo/geradorDatas.js";
 
 /* ============================================================================
    TIPOS SUPORTADOS
@@ -40,206 +34,149 @@ export const TIPOS_LEITURA = Object.freeze({
    CLASSE DIA
 ============================================================================ */
 
-/**
- * Factory estático: cria um Dia de forma pura e garantidamente correto.
- * Responsável por orquestrar a consulta a geradorDatas.
- *
- * @param {number} numero - Número do dia (1-366)
- * @param {number} ano - Ano civil real
- * @param {Array} antigoTestamento - Trechos do Antigo Testamento
- * @param {Array} novoTestamento - Trechos do Novo Testamento
- * @param {Array} livros - Lista de livros
- * @param {Array} capitulos - Lista de capítulos
- * @param {Array} versiculos - Lista de versículos
- * @param {string} observacoes - Observações opcionais
- * @returns {Dia} Nova instância de Dia
- * @throws Se os parâmetros forem inválidos
- */
-export function criarDia(
-  numero,
-  ano,
-  antigoTestamento = [],
-  novoTestamento = [],
-  livros = [],
-  capitulos = [],
-  versiculos = [],
-  observacoes = "",
-) {
-  // Geração de datas delegada a geradorDatas (NÍVEL 2)
-  const data = gerarDataISO(numero, ano);
-  const dataFormatada = gerarDataBR(numero, ano);
-
-  return new Dia({
-    numero,
-    ano,
-    data,
-    dataFormatada,
-    antigoTestamento,
-    novoTestamento,
-    livros,
-    capitulos,
-    versiculos,
-    observacoes,
-  });
-}
-
 export class Dia {
-  /**
-   * Constructor privado para uso interno.
-   * Use criarDia() para criar instâncias normalmente.
-   *
-   * @param {Object} params
-   * @param {number} params.numero - Número do dia (1-366)
-   * @param {number} params.ano - Ano civil real
-   * @param {string} params.data - Data ISO (YYYY-MM-DD)
-   * @param {string} params.dataFormatada - Data formatada (DD/MM/YYYY)
-   * @param {Array} params.antigoTestamento
-   * @param {Array} params.novoTestamento
-   * @param {Array} params.livros
-   * @param {Array} params.capitulos
-   * @param {Array} params.versiculos
-   * @param {string} params.observacoes
-   */
-  constructor({
-    numero,
-    ano,
-    data,
-    dataFormatada,
-    antigoTestamento = [],
-    novoTestamento = [],
-    livros = [],
-    capitulos = [],
-    versiculos = [],
-    observacoes = "",
-  }) {
-    /* ----------------------------------------------------------------------
-       VALIDAÇÕES ESTRUTURAIS
-    ---------------------------------------------------------------------- */
+  /* --------------------------------------------------------------------------
+     ATRIBUTOS
+     -------------------------------------------------------------------------- */
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 366) {
-      throw new Error("Dia inválido: número deve estar entre 1 e 366.");
-    }
-
-    if (!Number.isInteger(ano) || ano < 1900 || ano > 2100) {
-      throw new Error("Ano inválido: deve ser um inteiro entre 1900 e 2100.");
-    }
-
-    if (typeof data !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(data)) {
-      throw new Error("Data inválida: formato esperado YYYY-MM-DD.");
-    }
-
-    if (
-      typeof dataFormatada !== "string" ||
-      !/^\d{2}\/\d{2}\/\d{4}$/.test(dataFormatada)
-    ) {
-      throw new Error(
-        "dataFormatada inválida: formato esperado DD/MM/YYYY. " +
-          "A data deve ser fornecida pelo geradorDatas.js.",
-      );
-    }
-
-    this.#validarTrechos(antigoTestamento, TIPOS_LEITURA.ANTIGO_TESTAMENTO);
-    this.#validarTrechos(novoTestamento, TIPOS_LEITURA.NOVO_TESTAMENTO);
-
-    /* ----------------------------------------------------------------------
-       ATRIBUTOS IMUTÁVEIS
-    ---------------------------------------------------------------------- */
-
+  constructor(numero, ano, trechos, tipo = null, metadadosAdicionais = {}) {
     this.numero = numero;
     this.ano = ano;
-    this.data = data;
-    this.dataFormatada = dataFormatada;
+    this.trechos = trechos || [];
+    this.tipo = tipo;
 
-    this.antigoTestamento = Object.freeze([...antigoTestamento]);
-    this.novoTestamento = Object.freeze([...novoTestamento]);
-    this.livros = Object.freeze([...livros]);
-    this.capitulos = Object.freeze([...capitulos]);
-    this.versiculos = Object.freeze([...versiculos]);
-    this.observacoes = observacoes;
+    // Metadados adicionais do plano
+    this.livros = metadadosAdicionais.livros || [];
+    this.capitulos = metadadosAdicionais.capitulos || [];
+    this.versiculos = metadadosAdicionais.versiculos || [];
+    this.observacoes = metadadosAdicionais.observacoes || "";
 
-    Object.freeze(this);
+    // Datas calculadas uma vez (imutáveis)
+    this.data = gerarDataISO(numero, ano);
+    this.dataFormatada = gerarDataBR(numero, ano);
   }
 
-  /* ========================================================================
-     MÉTODOS PRIVADOS
-  ======================================================================== */
+  /* --------------------------------------------------------------------------
+     FACTORY METHOD
+     -------------------------------------------------------------------------- */
 
-  #validarTrechos(trechos, tipo) {
+  /**
+   * Cria um novo Dia de forma controlada
+   * @param {number} numero - Número do dia (1-based)
+   * @param {number} ano - Ano do plano
+   * @param {Array} trechos - Array de trechos bíblicos
+   * @param {string} tipo - Tipo de leitura (opcional)
+   * @returns {Dia} Nova instância de Dia
+   */
+  static criar(numero, ano, trechos, tipo = null) {
+    if (!numero || numero < 1) {
+      throw new Error("Número do dia deve ser maior que 0");
+    }
+    if (!ano || ano < 0) {
+      throw new Error("Ano deve ser válido");
+    }
     if (!Array.isArray(trechos)) {
-      throw new Error(`Trechos de ${tipo} devem ser um array.`);
+      throw new Error("Trechos deve ser um array");
     }
 
-    trechos.forEach((t, i) => {
-      if (typeof t.livroId !== "string") {
-        throw new Error(`[${tipo}] Trecho ${i}: livroId obrigatório.`);
-      }
-
-      if (!Number.isInteger(t.capituloInicio)) {
-        throw new Error(`[${tipo}] Trecho ${i}: capituloInicio obrigatório.`);
-      }
-
-      if (t.capituloFim !== undefined && t.capituloFim < t.capituloInicio) {
-        throw new Error(`[${tipo}] Trecho ${i}: capituloFim menor que início.`);
-      }
-    });
+    return new Dia(numero, ano, trechos, tipo);
   }
 
-  /* ========================================================================
-     API PÚBLICA DO DOMÍNIO
-  ======================================================================== */
+  /* --------------------------------------------------------------------------
+     MÉTODOS DE CONSULTA
+     -------------------------------------------------------------------------- */
 
-  getAntigoTestamento() {
-    return this.antigoTestamento;
-  }
-
-  getNovoTestamento() {
-    return this.novoTestamento;
-  }
-
+  /**
+   * Verifica se o dia contém trechos do Antigo Testamento
+   */
   temAntigoTestamento() {
-    return this.antigoTestamento.length > 0;
+    return this.trechos.some(
+      (trecho) => trecho.testamento === TIPOS_LEITURA.ANTIGO_TESTAMENTO,
+    );
   }
 
+  /**
+   * Verifica se o dia contém trechos do Novo Testamento
+   */
   temNovoTestamento() {
-    return this.novoTestamento.length > 0;
+    return this.trechos.some(
+      (trecho) => trecho.testamento === TIPOS_LEITURA.NOVO_TESTAMENTO,
+    );
   }
 
-  temLeitura() {
-    return this.temAntigoTestamento() || this.temNovoTestamento();
+  /**
+   * Retorna a quantidade de trechos
+   */
+  getQuantidadeTrechos() {
+    return this.trechos.length;
   }
 
-  totalCapitulos() {
-    return this.capitulos.length;
+  /**
+   * Retorna uma descrição resumida do dia
+   */
+  getDescricaoResumida() {
+    if (this.trechos.length === 0) {
+      return "Dia sem leitura programada";
+    }
+
+    const primeiroTrecho = this.trechos[0];
+    if (this.trechos.length === 1) {
+      return `${primeiroTrecho.livro} ${primeiroTrecho.capitulo}:${primeiroTrecho.versiculoInicio}`;
+    }
+
+    return `${primeiroTrecho.livro} ${primeiroTrecho.capitulo}:${primeiroTrecho.versiculoInicio} ...`;
   }
 
-  getObservacoes() {
-    return this.observacoes || null;
-  }
+  /* --------------------------------------------------------------------------
+     MÉTODOS DE VALIDAÇÃO
+     -------------------------------------------------------------------------- */
 
-  getResumo() {
+  /**
+   * Valida se o dia está em estado consistente
+   */
+  validar() {
+    const erros = [];
+
+    if (!this.numero || this.numero < 1) {
+      erros.push("Número inválido");
+    }
+
+    if (!this.ano || this.ano < 0) {
+      erros.push("Ano inválido");
+    }
+
+    if (!Array.isArray(this.trechos)) {
+      erros.push("Trechos deve ser um array");
+    }
+
     return {
-      numero: this.numero,
-      ano: this.ano,
-      data: this.data,
-      dataFormatada: this.dataFormatada,
-      totalCapitulos: this.totalCapitulos(),
-      temAT: this.temAntigoTestamento(),
-      temNT: this.temNovoTestamento(),
+      valido: erros.length === 0,
+      erros,
     };
   }
 
+  /* --------------------------------------------------------------------------
+     SERIALIZAÇÃO
+     -------------------------------------------------------------------------- */
+
+  /**
+   * Converte para objeto JSON
+   */
   toJSON() {
     return {
       numero: this.numero,
       ano: this.ano,
       data: this.data,
       dataFormatada: this.dataFormatada,
-      antigoTestamento: this.antigoTestamento,
-      novoTestamento: this.novoTestamento,
-      livros: this.livros,
-      capitulos: this.capitulos,
-      versiculos: this.versiculos,
-      observacoes: this.observacoes,
+      trechos: this.trechos,
+      tipo: this.tipo,
     };
+  }
+
+  /**
+   * Cria instância a partir de JSON
+   */
+  static fromJSON(json) {
+    return new Dia(json.numero, json.ano, json.trechos, json.tipo);
   }
 }

@@ -47,7 +47,6 @@ export class ReajusteModalUI {
     // Verificar se modal já existe e está no DOM
     let existente = document.getElementById("reajuste-modal-overlay");
     if (existente && existente.parentNode) {
-      console.log("♻️ Modal já existe, reutilizando...");
       this.modal = existente;
       this.atualizarConteudo();
       return;
@@ -75,8 +74,6 @@ export class ReajusteModalUI {
 
     // Configurar eventos
     this.configurarEventos();
-
-    console.log("✅ Modal de reajuste criado e exibido");
   }
 
   /* ========================================================================
@@ -138,43 +135,26 @@ export class ReajusteModalUI {
     const btnNao = document.getElementById("reajuste-nao-btn");
     const overlay = document.getElementById("reajuste-modal-overlay");
 
-    console.log("🔍 Procurando botões do modal...");
-    console.log("  btnSim:", btnSim ? "✅ encontrado" : "❌ NÃO ENCONTRADO");
-    console.log("  btnNao:", btnNao ? "✅ encontrado" : "❌ NÃO ENCONTRADO");
-    console.log("  overlay:", overlay ? "✅ encontrado" : "❌ NÃO ENCONTRADO");
-
     if (!btnSim || !btnNao || !overlay) {
-      console.warn("❌ ReajusteModalUI: Botões não encontrados");
-      console.log(
-        "📋 IDs disponíveis no DOM:",
-        Array.from(document.querySelectorAll("[id]")).map((el) => el.id),
-      );
       return;
     }
 
-    console.log("✅ Todos os botões encontrados, configurando listeners...");
-
     // Botão SIM
     btnSim.addEventListener("click", () => {
-      console.log("🖱️ Clique detectado no botão SIM");
       this.aoClicarSim();
     });
 
     // Botão NÃO
     btnNao.addEventListener("click", () => {
-      console.log("🖱️ Clique detectado no botão NÃO");
       this.aoClicarNao();
     });
 
     // Clicar fora do modal (overlay)
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) {
-        console.log("🖱️ Clique fora do modal detectado");
         this.aoClicarNao();
       }
     });
-
-    console.log("✅ Listeners configurados com sucesso");
   }
 
   /**
@@ -182,15 +162,8 @@ export class ReajusteModalUI {
    * @private
    */
   aoClicarSim() {
-    console.log("✅ Usuário confirmou reajuste - INICIANDO REAJUSTE");
-
     // Aplicar reajuste no orquestrador
-    console.log("🔧 Chamando aplicarReajuste()...");
     const resultado = this.orq.aplicarReajuste();
-
-    console.log("✅ Reajuste retornou:", resultado);
-
-    // Emitir evento de sucesso
     this.orq.emit("reajuste-aplicado", {
       sucesso: true,
       novoIndice: resultado.novoIndice,
@@ -209,8 +182,6 @@ export class ReajusteModalUI {
    * @private
    */
   aoClicarNao() {
-    console.log("⏳ Usuário aguardando - reajuste mantido ativo");
-
     // Emitir evento
     this.orq.emit("reajuste-cancelado", {
       sucesso: false,
@@ -329,7 +300,6 @@ export class ReajusteModalUI {
         }
         this.modal = null;
         this.modalCriado = false;
-        console.log("🗑️ Modal de reajuste removido do DOM");
       }, 300);
     }
   }

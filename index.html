@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="light-mode">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aplicação de Leitura Bíblica Cronológica e Estruturada">
+    <title>Plano de Leitura Bíblica Cronológica</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/footer-profissional.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/notas.css">
+    <link rel="stylesheet" href="css/darkmode.css">
+    <link rel="stylesheet" href="css/search_styles.css">
+    <link rel="stylesheet" href="css/componentes/reset-modal.css">
+    <link rel="stylesheet" href="css/reajuste-modal.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- =========================================================================
+             NAVBAR
+          ========================================================================= -->
+        <nav id="navbar">
+            <div class="navbar-container">
+                <a href="#" class="navbar-title">
+                    <i class="fas fa-bible"></i>
+                    Leitura Bíblica Cronológica
+                </a>
+
+                <div class="navbar-stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="total-dias">—</span>
+                        <span class="stat-label">Dias</span>
+                    </div>
+
+                    <div class="stat-item">
+                        <span class="stat-value" id="dias-lidos">—</span>
+                        <span class="stat-label">Lidos</span>
+                    </div>
+
+                    <div class="stat-item">
+                        <span class="stat-value" id="progresso">—%</span>
+                        <span class="stat-label">Progresso</span>
+                    </div>
+
+                    <!-- Botão de resetar progresso -->
+                    <button id="btn-resetar-progresso" class="btn-reset" title="Resetar progresso">
+                        <i class="fas fa-redo"></i>
+                    </button>
+
+                    <!-- Botão gerar certificado -->
+                    <button id="btn-gerar-certificado" class="btn-action" title="Gerar certificado de conclusão">
+                        <i class="fas fa-award"></i>
+                    </button>
+
+                    <!-- Botão exportar progresso -->
+                    <button id="btn-exportar-progresso" class="btn-action" title="Exportar progresso em DOCX">
+                        <i class="fas fa-file-download"></i>
+                    </button>
+
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- =========================================================================
+             CONTEÚDO PRINCIPAL
+          ========================================================================= -->
+        <main id="app" class="app-container">
+            <!-- ===============================================================
+                   NAVEGAÇÃO + CARD DO DIA
+              =============================================================== -->
+            <section class="dia-navegacao">
+                <!-- Botão anterior -->
+                <div class="nav-buttons">
+                    <button id="btn-dia-anterior" class="btn btn-secondary btn-nav" aria-label="Dia anterior">
+                        ◀ Anterior
+                    </button>
+                </div>
+
+                <!-- CARD DO DIA -->
+                <div class="dia-atual-container">
+                    <div id="card-dia" aria-live="polite" class="card-dia current-day-card pendente">
+                        <section id="dia-view">
+                            <!-- render_dia_card.js injeta aqui -->
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Botão próximo -->
+                <div class="nav-buttons">
+                    <button id="btn-dia-proximo" class="btn btn-secondary btn-nav" aria-label="Próximo dia">
+                        Próximo ▶
+                    </button>
+                </div>
+            </section>
+
+            <!-- ===============================================================
+                   CALENDÁRIO
+              =============================================================== -->
+            <section id="calendar" class="section-card calendar-section" aria-label="Calendário de leitura">
+                <div class="calendar-header">
+                    <span class="calendar-title"> Calendário de Leitura </span>
+                </div>
+
+                <div class="calendar-wrapper">
+                    <div id="calendario">
+                        <!-- render_calendario.js injeta aqui -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- =========================================================================
+         NOTAS FLUTUANTES
+      ========================================================================= -->
+    <section id="notasFlutuantes">
+        <button id="btn-notas" title="Abrir/Fechar anotações">📝</button>
+
+        <div id="notas-overlay" class="hidden">
+            <div class="notas-container">
+                <div class="notas-header">
+                    <div class="notas-title">
+                        <i class="fas fa-edit"></i>
+                        <span>Minhas Anotações</span>
+                    </div>
+
+                    <div class="notas-acoes">
+                        <button id="btn-exportar" class="notas-btn-icon" title="Exportar"></button>
+                        <button id="btn-fechar" class="notas-btn-icon notas-btn-fechar" title="Fechar"></button>
+                    </div>
+                </div>
+
+                <div class="notas-toolbar">
+                    <!-- Formatação básica -->
+                    <button data-cmd="bold" data-nota-action="bold" title="Negrito (Ctrl+B)"></button>
+                    <button data-cmd="italic" data-nota-action="italic" title="Itálico (Ctrl+I)"></button>
+                    <button data-cmd="underline" data-nota-action="underline" title="Sublinhado (Ctrl+U)"></button>
+
+                    <!-- Marca texto -->
+                    <div class="highlight-dropdown">
+                        <button data-cmd="highlight" data-nota-action="highlight" class="highlight-btn"
+                            title="Marca texto"></button>
+                        <div class="highlight-options">
+                            <button data-cmd="highlight-color" data-cor="yellow" title="Amarelo"></button>
+                            <button data-cmd="highlight-color" data-cor="#00FF00" title="Verde"></button>
+                            <button data-cmd="highlight-color" data-cor="#ADD8E6" title="Azul claro"></button>
+                            <button data-cmd="highlight-color" data-cor="#FFC0CB" title="Rosa"></button>
+                        </div>
+                    </div>
+
+                    <!-- Cabeçalhos -->
+                    <button data-cmd="h2" data-nota-action="h2" title="Cabeçalho 2 (Ctrl+2)"></button>
+                    <button data-cmd="h3" data-nota-action="h3" title="Cabeçalho 3 (Ctrl+3)"></button>
+
+                    <!-- Listas -->
+                    <button data-cmd="ul" data-nota-action="ul" title="Lista não ordenada (Ctrl+L)"></button>
+                    <button data-cmd="ol" data-nota-action="ol" title="Lista ordenada"></button>
+
+                    <!-- Histórico -->
+                    <button data-cmd="undo" data-nota-action="undo" title="Desfazer (Ctrl+Z)"></button>
+                    <button data-cmd="redo" data-nota-action="redo" title="Refazer (Ctrl+Y)"></button>
+
+                    <!-- Limpar formatação -->
+                    <button data-cmd="limpar-inline" data-nota-action="clear"
+                        title="Limpar formatação (Ctrl+Espaço)"></button>
+                </div>
+
+                <div id="notas-editor" contenteditable="true">
+                    <p></p>
+                </div>
+
+                <div class="notas-footer">
+                    <button id="btn-limpar" class="danger">Limpar Tudo</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================================
+         FOOTER PROFISSIONAL
+      ========================================================================= -->
+    <footer id="footer" class="footer">
+        <div class="footer-container">
+
+            <!-- SEÇÃO 1: MARCA E DESCRIÇÃO -->
+            <div class="footer-section footer-brand">
+                <div class="footer-logo">
+                    <i class="fas fa-bible"></i>
+                    <span class="footer-app-name">Leitura Bíblica Cronológica</span>
+                </div>
+
+                <p class="footer-description">
+                    Transforme sua vida através da leitura organizada das Escrituras.
+                    Um capítulo por dia, do Gênesis ao Apocalipse.
+                </p>
+
+                <div class="footer-social">
+                    <a href="#" class="social-icon" title="Compartilhar" aria-label="Compartilhar">
+                        <i class="fas fa-share-alt"></i>
+                    </a>
+                    <a href="#" class="social-icon" title="Feedback" aria-label="Enviar feedback">
+                        <i class="fas fa-comment-alt"></i>
+                    </a>
+                    <a href="#" class="social-icon" title="Ajuda" aria-label="Ajuda">
+                        <i class="fas fa-question-circle"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 2: NAVEGAÇÃO RÁPIDA -->
+            <div class="footer-section footer-nav">
+                <h3 class="footer-title">Navegação</h3>
+                <ul class="footer-links">
+                    <li><a href="#" data-nav="home"><i class="fas fa-home"></i> Início</a></li>
+                    <li><a href="#" data-nav="calendar"><i class="fas fa-calendar-alt"></i> Calendário</a></li>
+                    <li><a href="#" data-nav="stats"><i class="fas fa-chart-line"></i> Estatísticas</a></li>
+                    <li><a href="#" data-nav="notes"><i class="fas fa-edit"></i> Anotações</a></li>
+                    <li><a href="#" data-nav="settings"><i class="fas fa-cog"></i> Configurações</a></li>
+                </ul>
+            </div>
+
+            <!-- SEÇÃO 3: RECURSOS -->
+            <div class="footer-section footer-resources">
+                <h3 class="footer-title">Recursos</h3>
+                <ul class="footer-links">
+                    <li><a href="#" data-action="faq"><i class="fas fa-question"></i> FAQ</a></li>
+                    <li><a href="#" data-action="tips"><i class="fas fa-lightbulb"></i> Dicas de Leitura</a></li>
+                    <li><a href="#" data-action="versions"><i class="fas fa-book"></i> Versões da Bíblia</a></li>
+                    <li><a href="#" data-action="guide"><i class="fas fa-graduation-cap"></i> Guia de Uso</a></li>
+                    <li><a href="#" data-action="contact"><i class="fas fa-envelope"></i> Contato</a></li>
+                </ul>
+            </div>
+
+            <!-- SEÇÃO 4: LEGAL + TÉCNICO -->
+            <div class="footer-section footer-legal">
+                <h3 class="footer-title">Informações</h3>
+
+                <div class="footer-info">
+                    <div class="footer-info-item">
+                        <i class="fas fa-code-branch"></i>
+                        <span>Versão: <strong id="app-version">2.1.0</strong></span>
+                    </div>
+
+                    <div class="footer-info-item">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Última atualização: <strong id="last-update">01/02/2026</strong></span>
+                    </div>
+
+                    <div class="footer-info-item">
+                        <i class="fas fa-database"></i>
+                        <span>Progresso salvo localmente</span>
+                    </div>
+                </div>
+
+                <div class="footer-copyright">
+                    <p>
+                        &copy; <span id="current-year">2026</span>
+                        Leitura Bíblica Cronológica.
+                        <span class="footer-rights">Todos os direitos reservados.</span>
+                    </p>
+
+                    <div class="footer-legal-links">
+                        <a href="#" class="legal-link">Política de Privacidade</a>
+                        <span class="separator">•</span>
+                        <a href="#" class="legal-link">Termos de Uso</a>
+                        <span class="separator">•</span>
+                        <a href="#" class="legal-link">Créditos</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BADGE DE STATUS -->
+        <div class="footer-status">
+            <span class="status-badge status-online">
+                <i class="fas fa-circle"></i>
+                Aplicação funcionando normalmente
+            </span>
+        </div>
+    </footer>
+
+    <!-- Script principal com Vite -->
+    <script type="module" src="./js/main-hibrido.js"></script>
+    <script src="./js/ui/components/footer.js"></script>
+</body>
+
+</html>

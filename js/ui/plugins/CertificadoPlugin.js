@@ -13,6 +13,11 @@
    Registrado em: MainOrquestrador
 ============================================================================ */
 
+import {
+  getTimestampAtual,
+  formatarDataCertificado,
+} from "../../core/services/tempo/timestampUtil.js";
+
 /**
  * Plugin de Certificados
  *
@@ -50,7 +55,7 @@ export class CertificadoPlugin {
       this.mostrarCertificado(e.detail);
     });
 
-    console.log(`✅ ${this.name} inicializado`);
+    this.mainOrquestrador = null;
   }
 
   /**
@@ -99,7 +104,7 @@ export class CertificadoPlugin {
       return true;
     }
 
-    const agora = new Date();
+    const agora = new Date(getTimestampAtual());
     const diasDecorridos = Math.floor(
       (agora - dataInicio) / (1000 * 60 * 60 * 24),
     );
@@ -118,7 +123,7 @@ export class CertificadoPlugin {
 
     if (!dataInicio) return 0;
 
-    const agora = new Date();
+    const agora = new Date(getTimestampAtual());
     const diasDecorridos = Math.floor(
       (agora - dataInicio) / (1000 * 60 * 60 * 24),
     );
@@ -147,8 +152,8 @@ export class CertificadoPlugin {
       const dados = {
         usuario: "Leitor da Bíblia", // Será preenchido com dados de login
         plano: plano.nome,
-        dataInicio: progresso.getDataInicio?.() || new Date(),
-        dataFim: new Date(),
+        dataInicio: progresso.getDataInicio?.() || getTimestampAtual(),
+        dataFim: getTimestampAtual(),
         percentual: this.calcularPercentual(progresso, plano),
       };
 
@@ -171,8 +176,8 @@ export class CertificadoPlugin {
    * @private
    */
   criarHtmlCertificado(dados) {
-    const dataInicioFormatada = this.formatarData(dados.dataInicio);
-    const dataFimFormatada = this.formatarData(dados.dataFim);
+    const dataInicioFormatada = formatarDataCertificado(dados.dataInicio);
+    const dataFimFormatada = formatarDataCertificado(dados.dataFim);
 
     return `
       <div style="
@@ -375,7 +380,7 @@ export class CertificadoPlugin {
       // Configurar opções do PDF
       const opcoes = {
         margin: 10,
-        filename: `certificado-${new Date().getTime()}.pdf`,
+        filename: `certificado-${getTimestampAtual()}.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: {
@@ -386,16 +391,16 @@ export class CertificadoPlugin {
       };
 
       // Gerar PDF
-      console.log("📄 Gerando PDF do certificado...");
+      ("📄 Gerando PDF do certificado...");
       html2pdf().set(opcoes).from(elemento).save();
 
       // Emitir evento
       this.mainOrquestrador.emit("certificado-baixado", {
-        data: new Date(),
+        data: getTimestampAtual(),
         tipo: "pdf",
       });
 
-      console.log("✅ PDF gerado com sucesso");
+      ("✅ PDF gerado com sucesso");
     } catch (error) {
       console.error("❌ Erro ao gerar PDF:", error);
       alert(
@@ -409,7 +414,7 @@ export class CertificadoPlugin {
    * @private
    */
   mostrarCertificado(dados) {
-    console.log("🎓 Leitura completa! Exibindo certificado...", dados);
+    ("🎓 Leitura completa! Exibindo certificado...", dados);
     // Chamar gerarCertificado()
   }
 
@@ -418,11 +423,7 @@ export class CertificadoPlugin {
    * @private
    */
   formatarData(data) {
-    const d = new Date(data);
-    const dia = String(d.getDate()).padStart(2, "0");
-    const mes = String(d.getMonth() + 1).padStart(2, "0");
-    const ano = d.getFullYear();
-    return `${dia}/${mes}/${ano}`;
+    return formatarDataCertificado(data);
   }
 
   /**
@@ -431,6 +432,6 @@ export class CertificadoPlugin {
    */
   destroy() {
     this.mainOrquestrador = null;
-    console.log(`🧹 ${this.name} destruído`);
+    `🧹 ${this.name} destruído`;
   }
 }

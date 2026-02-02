@@ -10,6 +10,11 @@
 ============================================================================ */
 
 import * as parametroGerador from "../../../core/models/parametroGerador.js";
+import {
+  getPrimeiroDiaMes,
+  getDiasNoMes,
+  formatarDataISO,
+} from "./calendarioUtil.js";
 
 const NOMES_MESES = [
   "Janeiro",
@@ -42,7 +47,7 @@ export class CalendarioViewModel {
     this.onSelecionarDia = onSelecionarDia;
     this.diasBloqueados = diasBloqueados; // Dias que não podem ser clicados
     this.mesAtual = 0; // Janeiro (0-11)
-    this.anoAtual = 2026;
+    this.anoAtual = parametroGerador.getAnoAtual();
   }
 
   /**
@@ -162,7 +167,7 @@ export class CalendarioViewModel {
     };
 
     // Primeiro dia do mês (0=Dom, 1=Seg, ...)
-    const primeiroDia = new Date(this.anoAtual, mesIndex, 1).getDay();
+    const primeiroDia = getPrimeiroDiaMes(this.anoAtual, mesIndex);
 
     // Dias vazios iniciais
     for (let i = 0; i < primeiroDia; i++) {
@@ -177,10 +182,10 @@ export class CalendarioViewModel {
     }
 
     // Dias do mês
-    const diasNoMes = new Date(this.anoAtual, mesIndex + 1, 0).getDate();
+    const diasNoMes = getDiasNoMes(this.anoAtual, mesIndex);
 
     for (let dia = 1; dia <= diasNoMes; dia++) {
-      const dataISO = `${this.anoAtual}-${String(mesIndex + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+      const dataISO = formatarDataISO(this.anoAtual, mesIndex, dia);
       const infoDia = diasPlanoPorData.get(dataISO);
 
       if (infoDia && !infoDia.numero) {

@@ -1,0 +1,9 @@
+/* Reset CSS - Arquivo temporário para resolver 404 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Importar o reset global real */
+@import url('./global.css');

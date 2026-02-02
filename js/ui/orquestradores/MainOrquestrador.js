@@ -30,10 +30,6 @@ import { initNotasOverlayUI } from "../componentes/notas/NotasOverlayUI.js";
 import { initDarkMode } from "../components/darkmode.js";
 import { ReorganizadorPlano } from "../../core/services/planos/ReorganizadorPlano.js";
 import * as parametroGerador from "../../core/models/parametroGerador.js";
-import {
-  getDiaDoAnoAtual,
-  getAnoAtual,
-} from "../../core/models/parametroGerador.js";
 
 /**
  * Orquestrador Central da Aplicação
@@ -94,8 +90,6 @@ export class MainOrquestrador extends BaseOrquestrador {
    */
   async init() {
     try {
-      console.log(`🚀 [${this.name}] Iniciando aplicação...`);
-
       // Passo 1: Tema escuro
       initDarkMode();
 
@@ -116,10 +110,7 @@ export class MainOrquestrador extends BaseOrquestrador {
 
       // Passo 7: Plugins
       await this.initPlugins();
-
-      console.log(`✅ [${this.name}] Aplicação inicializada com sucesso`);
     } catch (error) {
-      console.error(`❌ [${this.name}] Erro na inicialização:`, error);
       this.destroy();
       throw error;
     }
@@ -155,17 +146,13 @@ export class MainOrquestrador extends BaseOrquestrador {
       this.state.diaAtualNumero = reajuste.numeroDia;
 
       // Calcular diaHoje normalmente (para referência)
-      const diaDoAno = getDiaDoAnoAtual();
+      const diaDoAno = parametroGerador.getDiaDoAnoAtual();
       this.state.diaHojeNumero =
         diaDoAno < 1
           ? 1
           : diaDoAno > plano.dias.length
             ? plano.dias.length
             : diaDoAno;
-
-      console.log(
-        `📝 setupInitialState: Restaurado dia ${reajuste.numeroDia} (reajuste ativo)`,
-      );
 
       // Mostrar total de dias na UI
       const totalDiasEl = document.getElementById("total-dias");
@@ -178,7 +165,7 @@ export class MainOrquestrador extends BaseOrquestrador {
 
     // Inicialização normal (sem reajuste ativo)
     // Descobrir dia de hoje
-    const diaDoAno = getDiaDoAnoAtual();
+    const diaDoAno = parametroGerador.getDiaDoAnoAtual();
     this.state.diaHojeNumero =
       diaDoAno < 1
         ? 1
@@ -283,8 +270,17 @@ export class MainOrquestrador extends BaseOrquestrador {
       this.renderEstatisticas();
       this.renderDia();
 
-      if (detalhes.avisoUltrapassagem) {
-        console.log(`📅 Aviso reset: ${detalhes.avisoUltrapassagem}`);
+      if (detalhes.aviso) {
+        // Aviso de ultrapassagem de ciclo
+        alert(detalhes.aviso);
+      }
+    });
+
+    // Listener para ultrapassagem de ciclo (reajuste)
+    this.listen("plano-ultrapassara-ciclo", (evento) => {
+      const detalhes = evento.detail || {};
+      if (detalhes.mensagem) {
+        alert(detalhes.mensagem);
       }
     });
 
@@ -323,10 +319,6 @@ export class MainOrquestrador extends BaseOrquestrador {
       return false;
     }
 
-    console.log(
-      `🔀 navegarParaDia(${numeroDia}) - stack:`,
-      new Error().stack.split("\n")[2],
-    );
     this.state.diaAtualNumero = numeroDia;
     this.render();
     return true;
@@ -337,12 +329,7 @@ export class MainOrquestrador extends BaseOrquestrador {
    * @private
    */
   render() {
-    console.log(
-      `🎨 render() - diaAtualNumero=${this.state.diaAtualNumero}, stack:`,
-      new Error().stack.split("\n")[2],
-    );
     const plano = this.state.managers.plano.getPlano();
-
     this.renderDia();
     this.renderEstatisticas();
     this.renderCalendario(plano);
@@ -364,19 +351,6 @@ export class MainOrquestrador extends BaseOrquestrador {
     // Garante que "isLido" reflete o estado mais recente
     this.state.managers.progresso.sincronizarComStorage();
 
-    console.log(
-      `📄 renderDia() - diaAtualNumero=${this.state.diaAtualNumero}, dia=`,
-      dia,
-      `container=${container ? "OK" : "NULL"}`,
-    );
-
-    if (!container || !dia) {
-      console.warn(
-        `⚠️ renderDia() retornando cedo - container=${!!container}, dia=${!!dia}`,
-      );
-      return;
-    }
-
     // ✅ NOVO: Aplicar deslocamento de datas se há reajuste ativo
     let diaParaRenderizar = dia;
     const deslocamento = this.state.managers.progresso.obterDeslocamentoDatas();
@@ -395,10 +369,6 @@ export class MainOrquestrador extends BaseOrquestrador {
         data: novaData,
         dataFormatada: novaDataFormatada,
       };
-
-      console.log(
-        `🔄 Renderizando com deslocamento: dia ${dia.numero} (${dia.dataFormatada}) → ${novaDataFormatada}`,
-      );
     }
 
     // ✅ Renderizar card
@@ -471,7 +441,7 @@ export class MainOrquestrador extends BaseOrquestrador {
     }
 
     // Gerar ViewModel
-    const anoAtual = getAnoAtual();
+    const anoAtual = parametroGerador.getAnoAtual();
     const viewModel = this.state.apis.calendarioVM.gerarViewModel(anoAtual);
 
     // Renderizar
@@ -588,7 +558,6 @@ export class MainOrquestrador extends BaseOrquestrador {
 
     // Se nenhum dia foi lido ainda, não há lacuna
     if (ultimoDiaLido === null) {
-      console.log("ℹ️ Nenhum dia lido ainda - sem verificação de lacuna");
       return null;
     }
 
@@ -596,19 +565,13 @@ export class MainOrquestrador extends BaseOrquestrador {
     // Se houver, não redetecta lacuna
     const reajusteRecente = this.state.managers.progresso.obterReajuste();
     if (reajusteRecente) {
-      console.log(
-        `✅ Reajuste recente encontrado - pulando detecção de lacuna`,
-      );
+      // Reajuste recente encontrado
       return null;
     }
 
     // Usar o dia REAL de hoje (soberano temporal)
     const diaQueDeveSerHoje = parametroGerador.getDiaDoAnoAtual();
     const totalDias = this.state.managers.plano.getTotalDias();
-
-    console.log(
-      `🔍 Verificando lacuna: ultimoDiaLido=${ultimoDiaLido}, diaQueDeveSerHoje=${diaQueDeveSerHoje}, totalDias=${totalDias}`,
-    );
 
     // Usar reorganizador para detectar
     if (!this.reorganizador) {
@@ -621,16 +584,22 @@ export class MainOrquestrador extends BaseOrquestrador {
       totalDias,
     );
 
-    console.log("📊 Resultado da detecção:", lacuna);
-
+    // Resultado da detecção
     if (lacuna.temLacuna) {
-      // ✅ Sistema DETECTOU (conforme CONTRATO)
-      console.log("🔔 Lacuna detectada:", lacuna);
+      // Sistema DETECTOU (conforme CONTRATO)
       this.emit("lacuna-detectada", lacuna);
+
+      // Se houver ultrapassagem de ciclo, emitir aviso também
+      if (
+        lacuna.ultrapassagemCiclo &&
+        lacuna.ultrapassagemCiclo.ultrapassaCiclo
+      ) {
+        this.emit("plano-ultrapassara-ciclo", lacuna.ultrapassagemCiclo);
+      }
+
       return lacuna;
     }
 
-    console.log("✅ Nenhuma lacuna detectada");
     return null;
   }
 
@@ -649,10 +618,6 @@ export class MainOrquestrador extends BaseOrquestrador {
     const ultimoDiaLido = this.state.managers.progresso.getUltimoDiaLido();
     const diaAtualDoPlano = this.state.managers.plano.getIndiceAtual() + 1;
 
-    console.log(
-      `🔧 Calculando reajuste: ultimoDiaLido=${ultimoDiaLido}, diaAtualDoPlano=${diaAtualDoPlano}`,
-    );
-
     // Calcular novo índice (próximo após parada)
     const resultadoNovoIndice = this.reorganizador.calcularNovoIndice(
       ultimoDiaLido,
@@ -662,10 +627,6 @@ export class MainOrquestrador extends BaseOrquestrador {
     const novoNumeroDia = resultadoNovoIndice.numeroDia;
     const totalDias = this.state.managers.plano.getTotalDias();
 
-    console.log(
-      `📊 Novo dia calculado: ${novoNumeroDia} (total: ${totalDias})`,
-    );
-
     // Verificar ultrapassagem de ciclo
     const ultrapassagem = this.reorganizador.verificarUltrapassagemCiclo(
       novoNumeroDia,
@@ -674,7 +635,6 @@ export class MainOrquestrador extends BaseOrquestrador {
 
     if (ultrapassagem.ultrapassaCiclo) {
       // 📢 Notificação ao usuário (não requer ação)
-      console.log("📅 Aviso de ultrapassagem:", ultrapassagem.aviso);
       this.emit("plano-ultrapassara-ciclo", ultrapassagem);
     }
 
@@ -695,14 +655,6 @@ export class MainOrquestrador extends BaseOrquestrador {
     // ficam sem plano, e o dia seguinte passa a ocupar a data de hoje.
     this.state.diasBloqueados = [];
 
-    console.log("✅ Reajuste aplicado:", {
-      novoIndice: novoNumeroDia,
-      dia: diaReajustado,
-      estadoAtualizado: this.state.diaAtualNumero,
-    });
-
-    // Renderizar UI atualizada
-    console.log("🎨 Renderizando UI...");
     this.render();
 
     return {

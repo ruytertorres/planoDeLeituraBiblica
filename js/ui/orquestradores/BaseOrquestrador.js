@@ -141,9 +141,6 @@ export class BaseOrquestrador {
     for (const plugin of this.plugins) {
       try {
         await plugin.init(this);
-        console.log(
-          `✅ [${this.name}] Plugin "${plugin.name}" inicializado com sucesso`,
-        );
       } catch (error) {
         console.error(
           `❌ [${this.name}] Erro ao inicializar plugin "${plugin.name}":`,
@@ -222,8 +219,6 @@ export class BaseOrquestrador {
     this.listeners.clear();
     this.plugins = [];
     this.state = {};
-
-    console.log(`🧹 [${this.name}] Destruído com sucesso`);
   }
 
   /**

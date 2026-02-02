@@ -34,13 +34,22 @@ export function renderDiaCard(dia, estadoUI = {}) {
       </header>
 
       <section class="dia-leitura">
-        ${renderSecao("Antigo Testamento", dia.antigoTestamento)}
-        ${renderSecao("Novo Testamento", dia.novoTestamento)}
+        ${renderSecao("Antigo Testamento", dia.antigoTestamento || [])}
+        ${renderSecao("Novo Testamento", dia.novoTestamento || [])}
       </section>
 
       <footer class="dia-card-footer">
-        <p class="dia-observacoes">${dia.observacoes || ""}</p>
-
+        ${
+          dia.observacoes
+            ? `
+          <div class="dia-secao">
+            <h3>Observações</h3>
+            <p>${dia.observacoes}</p>
+          </div>
+        `
+            : ""
+        }
+        
         <button data-action="toggle-lido">
           ${isLido ? "Desmarcar como lido" : "Marcar como lido"}
         </button>

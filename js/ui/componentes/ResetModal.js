@@ -289,7 +289,20 @@ export class ResetModal {
       const tipoReset = tipoRadio ? tipoRadio.value : "completo";
 
       // Chamar orquestrador para fazer o reset com o tipo selecionado
-      const resultado = this.orquestrador.confirmarReset(tipoReset);
+      let resultado;
+      switch (tipoReset) {
+        case "completo":
+          resultado = this.orquestrador.resetCompleto();
+          break;
+        case "customizado":
+          resultado = this.orquestrador.resetCustomizado(1);
+          break;
+        case "hoje":
+          resultado = this.orquestrador.resetParaHoje();
+          break;
+        default:
+          resultado = this.orquestrador.resetCompleto();
+      }
 
       // Esconder modal
       this.esconderModal();

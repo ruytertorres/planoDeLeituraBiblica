@@ -1,0 +1,30 @@
+{
+  "name": "planodeleiturabiblica",
+  "version": "1.0.0",
+  "description": "**Versão atual:** 1.0.0  \r **Status:** Open Source · Sem fins lucrativos · Em evolução contínua",
+  "main": "plano.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "dev": "vite",
+    "dev:legacy": "npx http-server . -p 8080 -o",
+    "start": "npm run build && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruytertorres/planoDeLeituraBiblica.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ruytertorres/planoDeLeituraBiblica/issues"
+  },
+  "homepage": "https://github.com/ruytertorres/planoDeLeituraBiblica#readme",
+  "devDependencies": {
+    "@types/node": "^25.2.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  }
+}

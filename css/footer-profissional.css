@@ -1,0 +1,284 @@
+/* ===================== FOOTER PROFISSIONAL ===================== */
+.footer {
+  background: linear-gradient(135deg, var(--dm-bg-card) 0%, var(--dm-bg-secondary) 100%);
+  border-top: 1px solid var(--dm-border-color);
+  color: var(--dm-text-secondary);
+  padding: 2.5rem 0 1rem;
+  margin-top: 3rem;
+  font-size: 0.9rem;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2.5rem;
+}
+
+/* SEÇÕES DO FOOTER */
+.footer-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-brand {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .footer-brand {
+    grid-column: span 1;
+  }
+}
+
+/* LOGO E MARCA */
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.footer-logo i {
+  font-size: 1.8rem;
+  color: var(--dm-accent);
+}
+
+.footer-app-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--dm-text-primary);
+}
+
+.footer-description {
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 300px;
+}
+
+/* REDES SOCIAIS */
+.footer-social {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--dm-bg-hover);
+  color: var(--dm-text-secondary);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.social-icon:hover {
+  background-color: var(--dm-accent);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* TÍTULOS DAS SEÇÕES */
+.footer-title {
+  color: var(--dm-text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--dm-accent);
+  display: inline-block;
+}
+
+/* LISTAS DE LINKS */
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.7rem;
+}
+
+.footer-links a {
+  color: var(--dm-text-secondary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--dm-accent);
+}
+
+.footer-links i {
+  width: 20px;
+  font-size: 0.9rem;
+}
+
+/* INFORMAÇÕES TÉCNICAS */
+.footer-info {
+  margin-bottom: 1.5rem;
+}
+
+.footer-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.85rem;
+}
+
+.footer-info-item i {
+  color: var(--dm-accent);
+  font-size: 0.9rem;
+}
+
+.footer-info-item strong {
+  color: var(--dm-text-primary);
+}
+
+/* COPYRIGHT E LINKS LEGAIS */
+.footer-copyright {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--dm-border-light);
+}
+
+.footer-copyright p {
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+.footer-rights {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.footer-legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.legal-link {
+  color: var(--dm-text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.legal-link:hover {
+  color: var(--dm-accent);
+}
+
+.separator {
+  opacity: 0.5;
+  font-size: 0.8rem;
+}
+
+/* STATUS BADGE */
+.footer-status {
+  max-width: 1200px;
+  margin: 1.5rem auto 0;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background-color: rgba(81, 207, 102, 0.1);
+  color: var(--dm-success);
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.status-badge i {
+  font-size: 0.6rem;
+  animation: pulse 2s infinite;
+}
+
+.status-offline {
+  background-color: rgba(255, 107, 107, 0.1);
+  color: var(--dm-danger);
+}
+
+/* DARK MODE ESPECÍFICO */
+body.dark-mode .footer {
+  background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+}
+
+body.dark-mode .footer-links a {
+  color: #b0b0b0;
+}
+
+body.dark-mode .footer-info-item {
+  color: #a0a0a0;
+}
+
+/* ANIMAÇÕES */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* RESPONSIVIDADE - FOOTER */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-social {
+    justify-content: center;
+  }
+
+  .footer-description {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 2rem 0 1rem;
+  }
+
+  .footer-container {
+    padding: 0 0.75rem;
+    gap: 1.5rem;
+  }
+
+  .footer-logo {
+    justify-content: center;
+  }
+
+  .footer-app-name {
+    font-size: 1.1rem;
+  }
+
+  .footer-description {
+    font-size: 0.85rem;
+  }
+}

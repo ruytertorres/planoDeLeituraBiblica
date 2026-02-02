@@ -15,6 +15,12 @@
    TODO: Integrar com biblioteca docx ou docxtemplater
 ============================================================================ */
 
+import {
+  getTimestampAtual,
+  gerarNomeArquivoTimestamp,
+  formatarDataCertificado,
+} from "../../core/services/tempo/timestampUtil.js";
+
 /**
  * Plugin de Exportação
  *
@@ -44,8 +50,6 @@ export class ExportacaoPlugin {
     if (btnExportar) {
       mainOrquestrador.on(btnExportar, "click", () => this.exportarProgresso());
     }
-
-    console.log(`✅ ${this.name} inicializado`);
   }
 
   /**
@@ -64,7 +68,7 @@ export class ExportacaoPlugin {
         ultimoLido: this.getUltimoLido(progresso, plano),
         proximo: this.getProximoDia(progresso, plano),
         notas: notas.getTodasAsNotas?.() || [],
-        dataExportacao: new Date(),
+        dataExportacao: getTimestampAtual(),
       };
 
       // Baixar DOCX com dados reais
@@ -449,7 +453,6 @@ export class ExportacaoPlugin {
       );
 
       // Criar documento
-      console.log("📄 Gerando DOCX...");
       const doc = new window.docx.Document({
         sections: [
           {
@@ -459,7 +462,10 @@ export class ExportacaoPlugin {
       });
 
       // Salvar arquivo
-      const nomeArquivo = `progresso_${plano.id}_${new Date().toISOString().split("T")[0]}.docx`;
+      const nomeArquivo = gerarNomeArquivoTimestamp(
+        `progresso_${plano.id}`,
+        "docx",
+      );
       await window.docx.Packer.toBlob(doc).then((blob) => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -471,9 +477,19 @@ export class ExportacaoPlugin {
         URL.revokeObjectURL(url);
       });
 
-      console.log("✅ DOCX gerado com sucesso");
+      // Fazer download
+      window.docx.Packer.toBlob(doc).then((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = nomeArquivo;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      });
     } catch (error) {
-      console.error("❌ Erro ao gerar DOCX:", error);
+      console.error("Erro ao gerar DOCX:", error);
       // Fallback para HTML
       this.baixarDocxFallback(conteudo, plano);
     }
@@ -696,7 +712,6 @@ export class ExportacaoPlugin {
       );
 
       // Criar documento
-      console.log("📄 Gerando DOCX...");
       const doc = new window.docx.Document({
         sections: [
           {
@@ -706,7 +721,10 @@ export class ExportacaoPlugin {
       });
 
       // Salvar arquivo
-      const nomeArquivo = `progresso_${plano.id}_${new Date().toISOString().split("T")[0]}.docx`;
+      const nomeArquivo = gerarNomeArquivoTimestamp(
+        `progresso_${plano.id}`,
+        "docx",
+      );
       await window.docx.Packer.toBlob(doc).then((blob) => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -717,10 +735,8 @@ export class ExportacaoPlugin {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
       });
-
-      console.log("✅ DOCX gerado com sucesso");
     } catch (error) {
-      console.error("❌ Erro ao gerar DOCX:", error);
+      console.error("Erro ao gerar DOCX:", error);
       // Fallback para HTML
       const conteudo = this.gerarConteudoDocx(dados, plano);
       this.baixarDocxFallback(conteudo, plano);
@@ -732,12 +748,11 @@ export class ExportacaoPlugin {
    * @private
    */
   baixarDocxFallback(conteudo, plano) {
-    console.log("⚠️ Usando fallback HTML");
     const blob = new Blob([conteudo], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `progresso_${plano.id}_${new Date().toISOString().split("T")[0]}.html`;
+    link.download = gerarNomeArquivoTimestamp(`progresso_${plano.id}`, "html");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -762,7 +777,7 @@ export class ExportacaoPlugin {
       ultimoLido: null,
       proximo: null,
       notas: [],
-      dataExportacao: new Date(),
+      dataExportacao: getTimestampAtual(),
     };
   }
 
@@ -771,14 +786,7 @@ export class ExportacaoPlugin {
    * @private
    */
   formatarData(data) {
-    const d = new Date(data);
-    const dia = String(d.getDate()).padStart(2, "0");
-    const mes = String(d.getMonth() + 1).padStart(2, "0");
-    const ano = d.getFullYear();
-    const hora = String(d.getHours()).padStart(2, "0");
-    const minuto = String(d.getMinutes()).padStart(2, "0");
-
-    return `${dia}/${mes}/${ano} às ${hora}:${minuto}`;
+    return formatarDataCertificado(data);
   }
 
   /**
@@ -787,6 +795,5 @@ export class ExportacaoPlugin {
    */
   destroy() {
     this.mainOrquestrador = null;
-    console.log(`🧹 ${this.name} destruído`);
   }
 }

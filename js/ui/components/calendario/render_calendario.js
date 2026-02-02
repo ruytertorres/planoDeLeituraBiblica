@@ -88,9 +88,6 @@ export function renderCalendario({ containerId, viewModel }) {
       diaEl.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log(
-          `🔒 Clique bloqueado no dia ${dia.numero} (pulado no reajuste)`,
-        );
       });
     }
 
