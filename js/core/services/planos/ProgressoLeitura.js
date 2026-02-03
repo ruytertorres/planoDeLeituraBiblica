@@ -192,7 +192,7 @@ export class ProgressoLeitura {
       this.reajusteAtivo = {
         ativo: true,
         numeroDia: 1,
-        diaHoje: this.getDiaDoAnoAtual(),
+        diaHoje: parametroGerador.getDiaDoAnoAtual(),
       };
     }
 
@@ -201,5 +201,12 @@ export class ProgressoLeitura {
 
     // Persistir reajuste
     this.persistirReajuste();
+  }
+
+  persistirReajuste() {
+    localStorage.setItem(
+      this.chaveReajuste,
+      JSON.stringify(this.reajusteAtivo),
+    );
   }
 }

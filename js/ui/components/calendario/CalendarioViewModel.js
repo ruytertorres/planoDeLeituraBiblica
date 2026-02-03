@@ -46,7 +46,10 @@ export class CalendarioViewModel {
     this.getDiaAtivo = getDiaAtivo;
     this.onSelecionarDia = onSelecionarDia;
     this.diasBloqueados = diasBloqueados; // Dias que não podem ser clicados
-    this.mesAtual = 0; // Janeiro (0-11)
+
+    // ✅ CORREÇÃO: Inicializar com o mês atual real
+    const dataAtual = new Date();
+    this.mesAtual = dataAtual.getMonth(); // Mês atual (0-11)
     this.anoAtual = parametroGerador.getAnoAtual();
   }
 
