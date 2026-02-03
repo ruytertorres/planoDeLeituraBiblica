@@ -14,14 +14,15 @@
    não cálculo de tempo de domínio.
 ============================================================================ */
 
-import * as parametroGerador from "../../models/parametroGerador.js";
+import * as geradorDatas from "../tempo/geradorDatas.js";
 
 /**
  * Gera timestamp atual para uso em UI
  * @returns {string} Timestamp ISO formatado
  */
 export function getTimestampAtual() {
-  return new Date().toISOString();
+  // MIGRADO: Usa gerador de tempo autorizado
+  return geradorDatas.getTimestampAtual();
 }
 
 /**
@@ -29,9 +30,8 @@ export function getTimestampAtual() {
  * @returns {string} Timestamp baseado no dia do ano
  */
 export function getTimestampDoDia() {
-  const diaDoAno = parametroGerador.getDiaDoAnoAtual();
-  const ano = parametroGerador.getAnoAtual();
-  return new Date(ano, 0, diaDoAno).toISOString();
+  // MIGRADO: Usa gerador de tempo autorizado
+  return geradorDatas.getTimestampDoDia();
 }
 
 /**
@@ -41,9 +41,8 @@ export function getTimestampDoDia() {
  * @returns {string} Nome de arquivo com timestamp
  */
 export function gerarNomeArquivoTimestamp(prefixo, extensao) {
-  const timestamp = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  const hora = new Date().toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
-  return `${prefixo}_${timestamp}_${hora}.${extao}`;
+  // MIGRADO: Usa gerador de tempo autorizado
+  return geradorDatas.gerarNomeArquivoTimestamp(prefixo, extensao);
 }
 
 /**
@@ -52,9 +51,6 @@ export function gerarNomeArquivoTimestamp(prefixo, extensao) {
  * @returns {string} Data formatada DD/MM/YYYY
  */
 export function formatarDataCertificado(data) {
-  const d = new Date(data);
-  const dia = String(d.getDate()).padStart(2, '0');
-  const mes = String(d.getMonth() + 1).padStart(2, '0');
-  const ano = d.getFullYear();
-  return `${dia}/${mes}/${ano}`;
+  // MIGRADO: Usa gerador de tempo autorizado
+  return geradorDatas.formatarDataCertificado(data);
 }

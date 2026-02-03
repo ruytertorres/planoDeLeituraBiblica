@@ -9,7 +9,7 @@
    - Totalmente testável sem Date
 ============================================================================ */
 
-import * as parametroGerador from "../../../core/models/parametroGerador.js";
+import * as geradorDatas from "../../../core/services/tempo/geradorDatas.js";
 import {
   getPrimeiroDiaMes,
   getDiasNoMes,
@@ -50,7 +50,7 @@ export class CalendarioViewModel {
     // ✅ CORREÇÃO: Inicializar com o mês atual real
     const dataAtual = new Date();
     this.mesAtual = dataAtual.getMonth(); // Mês atual (0-11)
-    this.anoAtual = parametroGerador.getAnoAtual();
+    this.anoAtual = geradorDatas.getAnoAtual();
   }
 
   /**
@@ -128,10 +128,7 @@ export class CalendarioViewModel {
 
     // Dia civil de hoje (dia do ano) convertido em data ISO
     const diaHojeNumero = this.getDiaHoje();
-    const dataHojeISO = parametroGerador.gerarDataISO(
-      diaHojeNumero,
-      this.anoAtual,
-    );
+    const dataHojeISO = geradorDatas.gerarDataISO(diaHojeNumero, this.anoAtual);
 
     // 1. Mapear dias do plano por data ISO, aplicando deslocamento quando houver
     this.plano.dias.forEach((dia) => {
@@ -144,7 +141,7 @@ export class CalendarioViewModel {
       if (deslocamento !== 0 && numeroDiaReajuste !== null) {
         if (dia.numero >= numeroDiaReajuste) {
           const novoDiaAno = dia.numero + deslocamento;
-          dataISO = parametroGerador.gerarDataISO(novoDiaAno, this.anoAtual);
+          dataISO = geradorDatas.gerarDataISO(novoDiaAno, this.anoAtual);
         } else {
           // Dias lidos antes da parada mantêm a data original
           dataISO = dia.data;

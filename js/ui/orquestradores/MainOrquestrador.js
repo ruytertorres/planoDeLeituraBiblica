@@ -29,7 +29,7 @@ import { NotasOverlayOrquestrador } from "../../core/services/notas/NotasOverlay
 import { initNotasOverlayUI } from "../componentes/notas/NotasOverlayUI.js";
 import { initDarkMode } from "../components/darkmode.js";
 import { ReorganizadorPlano } from "../../core/services/planos/ReorganizadorPlano.js";
-import * as parametroGerador from "../../core/models/parametroGerador.js";
+import * as geradorDatas from "../../core/services/tempo/geradorDatas.js";
 
 /**
  * Orquestrador Central da Aplicação
@@ -158,7 +158,7 @@ export class MainOrquestrador extends BaseOrquestrador {
       this.state.diaAtualNumero = reajuste.numeroDia;
 
       // Calcular diaHoje normalmente (para referência)
-      const diaDoAno = parametroGerador.getDiaDoAnoAtual();
+      const diaDoAno = geradorDatas.getDiaDoAnoAtual();
       this.state.diaHojeNumero =
         diaDoAno < 1
           ? 1
@@ -177,7 +177,7 @@ export class MainOrquestrador extends BaseOrquestrador {
 
     // Inicialização normal (sem reajuste ativo)
     // Descobrir dia de hoje
-    const diaDoAno = parametroGerador.getDiaDoAnoAtual();
+    const diaDoAno = geradorDatas.getDiaDoAnoAtual();
     this.state.diaHojeNumero =
       diaDoAno < 1
         ? 1
@@ -452,11 +452,8 @@ export class MainOrquestrador extends BaseOrquestrador {
     if (deslocamento !== 0) {
       // 🚨 CORREÇÃO: Ajustar APENAS as datas, NÃO o conteúdo bíblico
       const novaDataNum = dia.numero + deslocamento;
-      const novaData = parametroGerador.gerarDataISO(novaDataNum, dia.ano);
-      const novaDataFormatada = parametroGerador.gerarDataBR(
-        novaDataNum,
-        dia.ano,
-      );
+      const novaData = geradorDatas.gerarDataISO(novaDataNum, dia.ano);
+      const novaDataFormatada = geradorDatas.gerarDataBR(novaDataNum, dia.ano);
 
       // Sobrescrever APENAS as datas, manter conteúdo bíblico intacto
       diaParaRenderizar = {
@@ -551,7 +548,7 @@ export class MainOrquestrador extends BaseOrquestrador {
     }
 
     // Gerar ViewModel
-    const anoAtual = parametroGerador.getAnoAtual();
+    const anoAtual = geradorDatas.getAnoAtual();
     const viewModel = this.state.apis.calendarioVM.gerarViewModel(anoAtual);
 
     // Renderizar
@@ -736,7 +733,7 @@ export class MainOrquestrador extends BaseOrquestrador {
     }
 
     // Usar o dia REAL de hoje (soberano temporal)
-    const diaQueDeveSerHoje = parametroGerador.getDiaDoAnoAtual();
+    const diaQueDeveSerHoje = geradorDatas.getDiaDoAnoAtual();
     const totalDias = this.state.managers.plano.getTotalDias();
 
     // Usar reorganizador para detectar

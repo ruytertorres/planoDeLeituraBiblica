@@ -9,10 +9,12 @@
    - Separar lógica de calendário da UI
    - Manter conformidade com CONTRATO_DO_SISTEMA.MD Seção 3.2
    
-   NOTA: Este arquivo contém exceção controlada à regra de "new Date()"
-   pois funções de calendário (dias do mês, layout semanal) são consideradas
-   metadados de UI, não tempo de domínio do plano.
+   NOTA: Este arquivo foi migrado para usar geradorDatas.js
+   As funções de calendário são consideradas metadados de UI,
+   não tempo de domínio do plano.
 ============================================================================ */
+
+import * as geradorDatas from "../../../core/services/tempo/geradorDatas.js";
 
 /**
  * Obtém o primeiro dia da semana para um mês/ano
@@ -21,7 +23,8 @@
  * @returns {number} Dia da semana (0=Dom, 1=Seg, ...)
  */
 export function getPrimeiroDiaMes(ano, mes) {
-  return new Date(ano, mes, 1).getDay();
+  // MIGRADO: Usa gerador de tempo autorizado
+  return geradorDatas.getPrimeiroDiaMes(ano, mes);
 }
 
 /**
@@ -31,7 +34,8 @@ export function getPrimeiroDiaMes(ano, mes) {
  * @returns {number} Número de dias no mês
  */
 export function getDiasNoMes(ano, mes) {
-  return new Date(ano, mes + 1, 0).getDate();
+  // MIGRADO: Usa gerador de tempo autorizado
+  return geradorDatas.getDiasNoMes(ano, mes);
 }
 
 /**
@@ -42,7 +46,8 @@ export function getDiasNoMes(ano, mes) {
  * @returns {string} Data formatada YYYY-MM-DD
  */
 export function formatarDataISO(ano, mes, dia) {
-  return `${ano}-${String(mes + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+  // MIGRADO: Usa gerador de tempo autorizado
+  return geradorDatas.formatarDataISO(ano, mes, dia);
 }
 
 /**
@@ -51,9 +56,6 @@ export function formatarDataISO(ano, mes, dia) {
  * @returns {boolean} True se estiver no passado
  */
 export function estaNoPassado(dataISO) {
-  const data = new Date(dataISO);
-  const hoje = new Date();
-  hoje.setHours(0, 0, 0, 0);
-  data.setHours(0, 0, 0, 0);
-  return data < hoje;
+  // MIGRADO: Usa gerador de tempo autorizado
+  return geradorDatas.estaNoPassado(dataISO);
 }

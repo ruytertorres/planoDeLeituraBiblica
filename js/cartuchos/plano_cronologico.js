@@ -32,7 +32,7 @@ import {
   gerarDataISO,
   gerarDataBR,
   getAnoAtual,
-} from "../core/models/parametroGerador.js";
+} from "../core/services/tempo/geradorDatas.js";
 
 /* ---------------------------------------------------------------------------
    FACTORY LOCAL — CRIAÇÃO PADRONIZADA DE DIA

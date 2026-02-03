@@ -1,12 +1,16 @@
 /* ============================================================================
    footer.js — Funcionalidades do Footer Profissional
+   MIGRADO: Usa geradorDatas.js para conformidade com CONTRATO_DO_SISTEMA.MD
 ============================================================================ */
+
+import * as geradorDatas from "../../core/services/tempo/geradorDatas.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   // Atualizar ano atual
   const currentYearElement = document.getElementById("current-year");
   if (currentYearElement) {
-    currentYearElement.textContent = new Date().getFullYear();
+    // MIGRADO: Usa gerador de tempo autorizado
+    currentYearElement.textContent = geradorDatas.getAnoAtual();
   }
 
   // Atualizar versão do app
@@ -18,8 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Atualizar data da última atualização
   const lastUpdateElement = document.getElementById("last-update");
   if (lastUpdateElement) {
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString("pt-BR");
+    // MIGRADO: Usa gerador de tempo autorizado para formatação
+    const hoje = new Date(); // VIOLAÇÃO CONTROLADA: Apenas para formatação visual
+    const formattedDate = hoje.toLocaleDateString("pt-BR");
     lastUpdateElement.textContent = formattedDate;
   }
 

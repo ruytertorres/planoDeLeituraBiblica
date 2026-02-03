@@ -12,7 +12,7 @@
 ============================================================================ */
 
 import { BaseOrquestrador } from "../../../ui/orquestradores/BaseOrquestrador.js";
-import * as parametroGerador from "../../models/parametroGerador.js";
+import * as geradorDatas from "../../services/tempo/geradorDatas.js";
 
 /* ============================================================================
    CLASSE RESETPROGRESSOORQUESTRADOR
@@ -167,7 +167,7 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
    * @returns {number} Dia do ano (1-366)
    */
   getDiaDoAnoAtual() {
-    return parametroGerador.getDiaDoAnoAtual();
+    return geradorDatas.getDiaDoAnoAtual();
   }
 
   /**

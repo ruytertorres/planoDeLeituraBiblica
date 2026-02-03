@@ -11,7 +11,7 @@
    - Gerenciar reajustes de plano
 ============================================================================ */
 
-import * as parametroGerador from "../../models/parametroGerador.js";
+import * as geradorDatas from "../../services/tempo/geradorDatas.js";
 
 /* ============================================================================
    CLASSE PROGRESSOLEITURA
@@ -122,7 +122,7 @@ export class ProgressoLeitura {
       const dados = {
         diasLidos: Array.from(this.diasLidos),
         ultimaAtualizacao: new Date(
-          parametroGerador.getDiaDoAnoAtual(),
+          geradorDatas.getDiaDoAnoAtual(),
         ).toISOString(),
       };
       localStorage.setItem(this.chaveStorage, JSON.stringify(dados));
@@ -155,7 +155,7 @@ export class ProgressoLeitura {
       ativo: true,
       numeroDia,
       diaHoje,
-      dataReajuste: new Date(parametroGerador.getDiaDoAnoAtual()).toISOString(),
+      dataReajuste: new Date(geradorDatas.getDiaDoAnoAtual()).toISOString(),
     };
     localStorage.setItem(
       this.chaveReajuste,
@@ -192,7 +192,7 @@ export class ProgressoLeitura {
       this.reajusteAtivo = {
         ativo: true,
         numeroDia: 1,
-        diaHoje: parametroGerador.getDiaDoAnoAtual(),
+        diaHoje: geradorDatas.getDiaDoAnoAtual(),
       };
     }
 
