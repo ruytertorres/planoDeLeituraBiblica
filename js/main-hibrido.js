@@ -13,7 +13,7 @@
    IMPORTAÇÕES (JavaScript)
 ============================================================================ */
 
-import planoCronologico from "./cartuchos/plano_cronologico.js";
+import planoCronologico from "../dist-vite/cartuchos/plano_cronologico.js";
 import { MainOrquestrador } from "./ui/orquestradores/MainOrquestrador.js";
 import { CertificadoPlugin } from "./ui/plugins/CertificadoPlugin.js";
 import { ExportacaoPlugin } from "./ui/plugins/ExportacaoPlugin.js";

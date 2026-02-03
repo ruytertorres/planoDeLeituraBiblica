@@ -426,10 +426,10 @@ Se em qualquer fase:
 - [x] **2.2** Implementar lazy loading de dias
 - [x] **2.3** Adicionar cache de dias materializados
 - [x] **2.4** Atualizar `MainOrquestrador` para usar lazy loading
-- [ ] **2.5** Testar: Apenas dia atual carregado na memória
-- [ ] **2.6** Remover `js/cartuchos/plano_cronologico.js`
-- [ ] **2.7** Remover `js/cartuchos/plano_cronologico.d.ts`
-- [ ] **2.8** Validar performance: Initial load < 100ms
+- [x] **2.5** Testar: Apenas dia atual carregado na memória
+- [x] **2.6** Remover `js/cartuchos/plano_cronologico.js`
+- [x] **2.7** Remover `js/cartuchos/plano_cronologico.d.ts`
+- [x] **2.8** Validar performance: Initial load < 100ms
 
 ### FASE 3: UI TypeScript
 
@@ -476,7 +476,7 @@ Se em qualquer fase:
 
 ---
 
-**Progresso:** 8 / 32 itens concluídos
+**Progresso:** 11 / 32 itens concluídos
 
 **Autor:** Cascade AI  
 **Data:** 2025-02-03  
