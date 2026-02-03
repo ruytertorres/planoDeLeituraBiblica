@@ -26,7 +26,7 @@
    - Dia não gera tempo, mas conhece seu contexto (numero + ano)
    - Se precisar recalcular datas, usa geradorDatas
 ============================================================================ */
-import { gerarDataISO, gerarDataBR, } from "../services/tempo/geradorDatas";
+import { gerarDataISO, gerarDataBR, } from "../services/tempo/geradorDatas.js";
 /* ============================================================================
    TIPOS SUPORTADOS
 ============================================================================ */

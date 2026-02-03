@@ -250,32 +250,168 @@
 }
 
 /* =========================================================================
-   ESTADOS DO DIA - BLOQUEADO (após reajuste)
+   ESTADOS DO DIA - BLOQUEADO (após reajuste) - PRIORIDADE MÁXIMA
    ========================================================================= */
 
-.calendario-dia.dia-bloqueado {
-  background: #f5f5f5 !important;
-  border-color: #999 !important;
-  color: #999 !important;
+/* FUNÇÃO GLOBAL: Se o dia for BLOQUEADO, fica diferente na UI */
+body:not(.dark-mode) .calendario-dia.dia-bloqueado,
+body:not(.dark-mode) .calendario-grid .calendario-dia.dia-bloqueado,
+body:not(.dark-mode) .calendar-wrapper .calendario-dia.dia-bloqueado,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.lido,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.hoje,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.ativo,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.lido.hoje,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.lido.ativo,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.hoje.ativo,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.lido.hoje.ativo {
+  background: #d0d0d0 !important;
+  border: 2px dashed #999 !important;
+  color: #555 !important;
   cursor: not-allowed !important;
-  opacity: 0.5;
-  text-decoration: line-through;
-  font-style: italic;
+  opacity: 0.7 !important;
+  text-decoration: line-through !important;
+  font-style: italic !important;
+  position: relative !important;
+  pointer-events: none !important;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1) !important;
 }
 
-.calendario-dia.dia-bloqueado:hover {
-  background: #f5f5f5;
-  transform: none;
-  box-shadow: none;
+body:not(.dark-mode) .calendario-dia.dia-bloqueado::after,
+body:not(.dark-mode) .calendario-grid .calendario-dia.dia-bloqueado::after,
+body:not(.dark-mode) .calendar-wrapper .calendario-dia.dia-bloqueado::after,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.lido::after,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.hoje::after,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.ativo::after,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.lido.hoje::after,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.lido.ativo::after,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.hoje.ativo::after,
+body:not(.dark-mode) .calendario-dia.dia-bloqueado.lido.hoje.ativo::after {
+  content: "🔒" !important;
+  position: absolute !important;
+  top: 2px !important;
+  right: 2px !important;
+  font-size: 10px !important;
+  opacity: 0.8 !important;
+  z-index: 10 !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 50% !important;
+  width: 14px !important;
+  height: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-.calendario-dia.dia-bloqueado:disabled {
-  cursor: not-allowed;
+/* Marcador adicional para dias desabilitados no modo light */
+body:not(.dark-mode) .calendario-dia.dia-bloqueado::before,
+body:not(.dark-mode) .calendario-grid .calendario-dia.dia-bloqueado::before,
+body:not(.dark-mode) .calendar-wrapper .calendario-dia.dia-bloqueado::before {
+  content: "❌" !important;
+  position: absolute !important;
+  top: -8px !important;
+  left: -8px !important;
+  font-size: 12px !important;
+  opacity: 0.9 !important;
+  z-index: 15 !important;
+  background: #ff4444 !important;
+  color: white !important;
+  border-radius: 50% !important;
+  width: 18px !important;
+  height: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid white !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+body:not(.dark-mode) .calendario-dia.dia-bloqueado:hover,
+body:not(.dark-mode) .calendario-grid .calendario-dia.dia-bloqueado:hover,
+body:not(.dark-mode) .calendar-wrapper .calendario-dia.dia-bloqueado:hover {
+  background: #c8c8c8 !important;
+  transform: none !important;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.15) !important;
+  border-color: #777 !important;
+}
+
+/* Forçar aparência de dias bloqueados com máxima especificidade (fallback dark mode) */
+.calendario-grid .calendario-dia.dia-bloqueado,
+.calendar-wrapper .calendario-dia.dia-bloqueado,
+body .calendario-dia.dia-bloqueado {
+  background: #e8e8e8 !important;
+  border: 2px dashed #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  text-decoration: line-through !important;
+  font-style: italic !important;
+  position: relative !important;
+  pointer-events: none !important;
+}
+
+.calendario-grid .calendario-dia.dia-bloqueado::after,
+.calendar-wrapper .calendario-dia.dia-bloqueado::after,
+body .calendario-dia.dia-bloqueado::after {
+  content: "🔒" !important;
+  position: absolute !important;
+  top: 2px !important;
+  right: 2px !important;
+  font-size: 10px !important;
+  opacity: 0.7 !important;
+  z-index: 10 !important;
+}
+
+.calendario-grid .calendario-dia.dia-bloqueado:hover,
+.calendar-wrapper .calendario-dia.dia-bloqueado:hover,
+body .calendario-dia.dia-bloqueado:hover {
+  background: #e8e8e8 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: #999 !important;
+}
+
+.calendario-grid .calendario-dia.dia-bloqueado:disabled,
+.calendar-wrapper .calendario-dia.dia-bloqueado:disabled,
+body .calendario-dia.dia-bloqueado:disabled {
+  cursor: not-allowed !important;
 }
 
 /* =========================================================================
    ESTADOS COMBINADOS
    ========================================================================= */
+
+/* Dias bloqueados têm prioridade máxima sobre outros estados */
+.calendario-dia.dia-bloqueado.lido,
+.calendario-dia.dia-bloqueado.hoje,
+.calendario-dia.dia-bloqueado.ativo,
+.calendario-dia.dia-bloqueado.lido.hoje,
+.calendario-dia.dia-bloqueado.lido.ativo,
+.calendario-dia.dia-bloqueado.hoje.ativo,
+.calendario-dia.dia-bloqueado.lido.hoje.ativo {
+  background: #e8e8e8 !important;
+  border: 2px dashed #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  text-decoration: line-through !important;
+  font-style: italic !important;
+  position: relative !important;
+}
+
+.calendario-dia.dia-bloqueado.lido::after,
+.calendario-dia.dia-bloqueado.hoje::after,
+.calendario-dia.dia-bloqueado.ativo::after,
+.calendario-dia.dia-bloqueado.lido.hoje::after,
+.calendario-dia.dia-bloqueado.lido.ativo::after,
+.calendario-dia.dia-bloqueado.hoje.ativo::after,
+.calendario-dia.dia-bloqueado.lido.hoje.ativo::after {
+  content: "🔒" !important;
+  position: absolute !important;
+  top: 2px !important;
+  right: 2px !important;
+  font-size: 10px !important;
+  opacity: 0.7 !important;
+}
 
 .calendario-dia.lido.hoje {
   background: linear-gradient(135deg, #17a2b8, #20c997);

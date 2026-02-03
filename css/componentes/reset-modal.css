@@ -244,9 +244,35 @@
   color: #721c24;
   margin: 0.75rem 0;
   line-height: 1.5;
+  font-size: 0.95rem;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem;
+}
+
+.reset-mensagem-principal p strong {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+body:not(.dark-mode)
+  .opcao-destaque
+  input[type="radio"]:checked
+  + .opcao-conteudo
+  .reset-mensagem-principal
+  p
+  strong {
+  color: #ffffff !important;
+}
+
+body:not(.dark-mode)
+  .opcao-secundaria
+  input[type="radio"]:checked
+  + .opcao-conteudo
+  .reset-mensagem-principal
+  p
+  strong {
+  color: #ffffff !important;
 }
 
 .reset-mensagem-principal p:first-child {
@@ -307,11 +333,54 @@
 
 .opcao-conteudo h4 {
   margin: 0 0 0.75rem 0;
-  color: var(--text-color);
+  color: var(--text-color, #333); /* Cor padrão para modo light */
   font-size: 1.1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* Garantir legibilidade no modo light */
+body:not(.dark-mode) .opcao-conteudo h4 {
+  color: #333 !important;
+}
+
+/* Texto branco quando selecionado no modo light */
+body:not(.dark-mode)
+  .opcao-destaque
+  input[type="radio"]:checked
+  + .opcao-conteudo
+  h4 {
+  color: #ffffff !important;
+}
+
+body:not(.dark-mode)
+  .opcao-secundaria
+  input[type="radio"]:checked
+  + .opcao-conteudo
+  h4 {
+  color: #ffffff !important;
+}
+
+body:not(.dark-mode)
+  .opcao-destaque
+  input[type="radio"]:checked
+  + .opcao-conteudo
+  strong {
+  color: #ffffff !important;
+}
+
+body:not(.dark-mode)
+  .opcao-secundaria
+  input[type="radio"]:checked
+  + .opcao-conteudo
+  strong {
+  color: #ffffff !important;
+}
+
+/* Garantir legibilidade no modo dark */
+body.dark-mode .opcao-conteudo h4 {
+  color: #f8f9fa !important;
 }
 
 .opcao-conteudo p {
@@ -435,13 +504,29 @@
     border-color: #8b0000;
   }
 
+  .opcao-destaque input[type="radio"]:checked + .opcao-conteudo h4 {
+    color: #ffffff !important; /* Texto branco no fundo escuro selecionado */
+  }
+
+  .opcao-destaque input[type="radio"]:checked + .opcao-conteudo p {
+    color: #e0e0e0 !important; /* Texto claro no fundo escuro selecionado */
+  }
+
   .opcao-secundaria input[type="radio"]:checked + .opcao-conteudo {
     background: linear-gradient(135deg, #223344, #224455);
     border-color: #007bff;
   }
 
+  .opcao-secundaria input[type="radio"]:checked + .opcao-conteudo h4 {
+    color: #ffffff !important; /* Texto branco no fundo escuro selecionado */
+  }
+
+  .opcao-secundaria input[type="radio"]:checked + .opcao-conteudo p {
+    color: #e0e0e0 !important; /* Texto claro no fundo escuro selecionado */
+  }
+
   .opcao-conteudo h4 {
-    color: var(--text-color);
+    color: #f8f9fa !important; /* Forçar cor clara no modo dark */
   }
 
   .opcao-conteudo p {

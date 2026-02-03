@@ -16,34 +16,34 @@
 /* ============================================================================
    NÚCLEO TEMPORAL (Prioridade 1)
 ============================================================================ */
-export * from "./core/services/tempo/geradorDatas";
+export * from "./core/services/tempo/geradorDatas.js";
 /* ============================================================================
    MODELOS DE DOMÍNIO (Prioridade 1)
 ============================================================================ */
-export * from "./core/models/Dia";
+export * from "./core/models/Dia.js";
 /* ============================================================================
    TIPOS E CONTRATOS (Prioridade 2)
 ============================================================================ */
-export * from "./core/types/contratos.types";
+export * from "./core/types/contratos.types.js";
 /* ============================================================================
    SERVIÇOS DE ORQUESTRAÇÃO (Prioridade 1)
 ============================================================================ */
-export * from "./core/services/planos/PlanoManager";
-export * from "./core/services/planos/validadorPlano";
+export * from "./core/services/planos/PlanoManager.js";
+export * from "./core/services/planos/validadorPlano.js";
 /* ============================================================================
    COMPATIBILIDADE E INTEGRAÇÃO
 ============================================================================ */
-export * from "./compatibilidade/ui-adapter";
-export * from "./main";
+export * from "./compatibilidade/ui-adapter.js";
+export * from "./main.js";
 /* ============================================================================
    UI MIGRADA (Prioridade 4 - Parcial)
 ============================================================================ */
-export * from "./ui/orquestradores/MainOrquestrador";
-export * from "./ui/components/DiaCard";
+export * from "./ui/orquestradores/MainOrquestrador.js";
+export * from "./ui/components/DiaCard.js";
 /* ============================================================================
    PLANOS-CARTUCHO (Prioridade 3)
 ============================================================================ */
-export { default as planoCronologico } from "./cartuchos/plano_cronologico";
+export { default as planoCronologico } from "./cartuchos/plano_cronologico.js";
 /* ============================================================================
    DECLARAÇÃO DE COMPATIBILIDADE
 ============================================================================ */

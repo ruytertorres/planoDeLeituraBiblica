@@ -140,6 +140,18 @@ export class MainOrquestrador extends BaseOrquestrador {
     // Isso garante que temos dados frescos antes de qualquer renderização
     this.state.managers.progresso.sincronizarComStorage();
 
+    // 🔄 CARREGAR DIAS BLOQUEADOS do localStorage
+    try {
+      const diasBloqueadosSalvos = localStorage.getItem("dias-bloqueados");
+      if (diasBloqueadosSalvos) {
+        this.state.diasBloqueados = JSON.parse(diasBloqueadosSalvos);
+        console.log("Dias bloqueados carregados:", this.state.diasBloqueados);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar dias bloqueados:", error);
+      this.state.diasBloqueados = [];
+    }
+
     // 🔄 RESTAURAÇÃO: Se há reajuste ativo, restaurar diaAtualNumero ANTES de renderizar
     const reajuste = this.state.managers.progresso.obterReajuste();
     if (reajuste && reajuste.ativo) {
@@ -262,13 +274,32 @@ export class MainOrquestrador extends BaseOrquestrador {
       // (tanto para reset completo quanto para "Dia 1 → hoje")
       this.state.diaAtualNumero = 1;
 
-      // Limpar qualquer bloqueio de dias (nova jornada)
-      this.state.diasBloqueados = [];
+      // Aplicar dias bloqueados para reset completo e reset "hoje"
+      if (
+        (detalhes.tipo === "completo" || detalhes.tipo === "hoje") &&
+        detalhes.diasBloqueados
+      ) {
+        this.state.diasBloqueados = detalhes.diasBloqueados;
+        // Persistir dias bloqueados em localStorage
+        localStorage.setItem(
+          "dias-bloqueados",
+          JSON.stringify(this.state.diasBloqueados),
+        );
+      } else {
+        // Limpar qualquer bloqueio de dias (nova jornada)
+        this.state.diasBloqueados = [];
+        localStorage.removeItem("dias-bloqueados");
+      }
 
       const plano = this.state.managers.plano.getPlano();
       this.renderCalendario(plano);
       this.renderEstatisticas();
       this.renderDia();
+
+      // 🔄 APLICAR ESTILOS DE DIAS BLOQUEADOS APÓS RESET
+      setTimeout(() => {
+        this.aplicarEstilosDiasBloqueados();
+      }, 200);
 
       if (detalhes.aviso) {
         // Aviso de ultrapassagem de ciclo
@@ -319,6 +350,14 @@ export class MainOrquestrador extends BaseOrquestrador {
       return false;
     }
 
+    // 🚨 BLOQUEIO: Não permitir navegar para dias bloqueados após reset
+    if (this.state.diasBloqueados.includes(numeroDia)) {
+      console.log(
+        `Dia ${numeroDia} está bloqueado pelo reset. Navegação não permitida.`,
+      );
+      return false;
+    }
+
     this.state.diaAtualNumero = numeroDia;
     this.render();
     return true;
@@ -329,10 +368,28 @@ export class MainOrquestrador extends BaseOrquestrador {
    * @private
    */
   render() {
+    // 🔄 PROTEGER diasBloqueados durante renderização
+    const diasBloqueadosAntes = [...this.state.diasBloqueados];
+
     const plano = this.state.managers.plano.getPlano();
     this.renderDia();
     this.renderEstatisticas();
     this.renderCalendario(plano);
+
+    // 🔄 RESTAURAR diasBloqueados se foram alterados indevidamente
+    if (
+      JSON.stringify(this.state.diasBloqueados) !==
+      JSON.stringify(diasBloqueadosAntes)
+    ) {
+      console.warn(
+        "diasBloqueados foi alterado durante renderização. Restaurando...",
+      );
+      this.state.diasBloqueados = diasBloqueadosAntes;
+      localStorage.setItem(
+        "dias-bloqueados",
+        JSON.stringify(this.state.diasBloqueados),
+      );
+    }
 
     // Scroll para card
     this.scrollParaCardDoDia();
@@ -449,6 +506,62 @@ export class MainOrquestrador extends BaseOrquestrador {
       containerId: "calendario",
       viewModel,
     });
+
+    // 🔄 FUNÇÃO GLOBAL: Aplicar estilos de dias bloqueados após renderização
+    this.aplicarEstilosDiasBloqueados();
+  }
+
+  /**
+   * FUNÇÃO GLOBAL: Aplicar estilos visuais para dias bloqueados
+   * Garante que todos os dias bloqueados tenham aparência distinta na UI
+   * @private
+   */
+  aplicarEstilosDiasBloqueados() {
+    if (!this.state.diasBloqueados || this.state.diasBloqueados.length === 0) {
+      return;
+    }
+
+    // Aguardar um tick para garantir que o DOM foi atualizado
+    setTimeout(() => {
+      const diasCalendario = document.querySelectorAll(".calendario-dia");
+
+      diasCalendario.forEach((diaEl) => {
+        const diaNumero = parseInt(diaEl.dataset.diaNumero);
+
+        // Se o dia está bloqueado, aplicar classe e estilos
+        if (this.state.diasBloqueados.includes(diaNumero)) {
+          diaEl.classList.add("dia-bloqueado");
+          diaEl.setAttribute("data-bloqueado", "true");
+          diaEl.setAttribute(
+            "title",
+            `Dia ${diaNumero} bloqueado pelo reset - Não clicável`,
+          );
+          diaEl.setAttribute("aria-disabled", "true");
+          diaEl.setAttribute("role", "button");
+          diaEl.setAttribute("aria-label", `Dia ${diaNumero} bloqueado`);
+
+          // Forçar estilos inline como backup
+          if (!document.body.classList.contains("dark-mode")) {
+            diaEl.style.setProperty("background", "#d0d0d0", "important");
+            diaEl.style.setProperty("border", "2px dashed #999", "important");
+            diaEl.style.setProperty("color", "#555", "important");
+            diaEl.style.setProperty("opacity", "0.7", "important");
+            diaEl.style.setProperty(
+              "text-decoration",
+              "line-through",
+              "important",
+            );
+            diaEl.style.setProperty("font-style", "italic", "important");
+            diaEl.style.setProperty("position", "relative", "important");
+            diaEl.style.setProperty("pointer-events", "none", "important");
+          }
+        }
+      });
+
+      console.log(
+        `✅ Estilos aplicados para ${this.state.diasBloqueados.length} dias bloqueados`,
+      );
+    }, 100);
   }
 
   /**
@@ -582,6 +695,7 @@ export class MainOrquestrador extends BaseOrquestrador {
       ultimoDiaLido,
       diaQueDeveSerHoje,
       totalDias,
+      this.state.managers.progresso.diasLidos, // 🔄 Passar dias lidos para detectar aleatoriedade
     );
 
     // Resultado da detecção
@@ -653,7 +767,13 @@ export class MainOrquestrador extends BaseOrquestrador {
     // 🔄 A partir de agora NÃO marcamos mais a lacuna como "lida" artificialmente.
     // A lacuna é simplesmente desconsiderada: as datas entre a parada e o retorno
     // ficam sem plano, e o dia seguinte passa a ocupar a data de hoje.
-    this.state.diasBloqueados = [];
+
+    // 🚨 NÃO limpar diasBloqueados se eles vierem de um reset
+    // diasBloqueados só devem ser limpos em resets customizados ou quando não houver reset ativo
+    if (!this.state.diasBloqueados || this.state.diasBloqueados.length === 0) {
+      this.state.diasBloqueados = [];
+      localStorage.removeItem("dias-bloqueados");
+    }
 
     this.render();
 

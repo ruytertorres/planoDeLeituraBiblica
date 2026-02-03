@@ -1,13 +1,13 @@
-export * from "./core/services/tempo/geradorDatas";
-export * from "./core/models/Dia";
-export * from "./core/types/contratos.types";
-export * from "./core/services/planos/PlanoManager";
-export * from "./core/services/planos/validadorPlano";
-export * from "./compatibilidade/ui-adapter";
-export * from "./main";
-export * from "./ui/orquestradores/MainOrquestrador";
-export * from "./ui/components/DiaCard";
-export { default as planoCronologico } from "./cartuchos/plano_cronologico";
+export * from "./core/services/tempo/geradorDatas.js";
+export * from "./core/models/Dia.js";
+export * from "./core/types/contratos.types.js";
+export * from "./core/services/planos/PlanoManager.js";
+export * from "./core/services/planos/validadorPlano.js";
+export * from "./compatibilidade/ui-adapter.js";
+export * from "./main.js";
+export * from "./ui/orquestradores/MainOrquestrador.js";
+export * from "./ui/components/DiaCard.js";
+export { default as planoCronologico } from "./cartuchos/plano_cronologico.js";
 /**
  * Este arquivo serve como ponto de entrada para o sistema tipado.
  *

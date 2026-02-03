@@ -38,7 +38,7 @@ async function carregarNucleoTypeScript() {
       MainOrquestrador: MainOrquestradorTS,
       inicializarSistemaTypeScript,
       getAdapter,
-    } = await import("../dist/index.js");
+    } = await import("../dist-vite/index.js");
 
     // Inicializar sistema TypeScript
     inicializarSistemaTypeScript();
@@ -71,17 +71,20 @@ async function inicializarSistemaHibrido() {
     if (nucleoTS) {
       // Sistema TypeScript disponível
       // Criar orquestrador TypeScript
-      mainOrquestrador = new nucleoTS.Orquestrador(nucleoTS.plano);
+      const orquestradorTS = new nucleoTS.Orquestrador(nucleoTS.plano);
       nucloTypeScriptCarregado = true;
+
+      // Criar orquestrador JavaScript para compatibilidade com plugins
+      mainOrquestrador = new MainOrquestrador(nucleoTS.plano);
 
       // Adaptar plugins JavaScript para TypeScript
       const pluginCertificado = criarPluginAdapter(
         CertificadoPlugin,
-        nucleoTS.adapter,
+        mainOrquestrador, // Passar o orquestrador JavaScript que tem o método 'on'
       );
       const pluginExportacao = criarPluginAdapter(
         ExportacaoPlugin,
-        nucleoTS.adapter,
+        mainOrquestrador, // Passar o orquestrador JavaScript que tem o método 'on'
       );
 
       mainOrquestrador.registerPlugin(pluginCertificado);
@@ -115,7 +118,7 @@ async function inicializarSistemaHibrido() {
    ADAPTERS PARA PLUGINS
 ============================================================================ */
 
-function criarPluginAdapter(PluginClass, adapter) {
+function criarPluginAdapter(PluginClass, mainOrquestrador) {
   return {
     nome: PluginClass.name || "Plugin",
     versao: "1.0.0",
@@ -136,6 +139,13 @@ function criarPluginAdapter(PluginClass, adapter) {
           resetar: () => adapterTS.resetar(),
           getTotalDias: () => adapterTS.getTotalDias(),
           getIndiceAtual: () => adapterTS.getIndiceAtual(),
+          // Adicionar método on para compatibilidade com plugins
+          on: (target, event, handler, options) =>
+            mainOrquestrador.on(target, event, handler, options),
+          // Adicionar método listen para compatibilidade com plugins
+          listen: (event, handler) => mainOrquestrador.listen(event, handler),
+          // Adicionar método emit para compatibilidade com plugins
+          emit: (event, data) => mainOrquestrador.emit(event, data),
         };
 
         if (typeof plugin.init === "function") {

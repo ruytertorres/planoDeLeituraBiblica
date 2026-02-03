@@ -37,22 +37,33 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
    * Reset completo - volta tudo ao início
    */
   resetCompleto() {
+    // Obter dia atual ANTES de resetar o progresso
+    const diaAtualAntesDoReset = this.progressoManager.getUltimoDiaLido() || 0;
+
     // Resetar progresso
     this.progressoManager.resetar();
 
     // Resetar plano para o primeiro dia
     this.planoManager.resetar();
 
-    // Emitir evento
+    // Criar lista de dias bloqueados (todos os dias anteriores ao reset)
+    const diasBloqueados = [];
+    for (let i = 1; i <= diaAtualAntesDoReset; i++) {
+      diasBloqueados.push(i);
+    }
+
+    // Emitir evento com dias bloqueados
     this.emit("progresso-resetado", {
       tipo: "completo",
       descricao: "Progresso resetado completamente",
+      diasBloqueados, // Enviar dias que devem ser bloqueados
     });
 
     return {
       sucesso: true,
       tipo: "completo",
       mensagem: "Progresso resetado com sucesso",
+      diasBloqueados,
     };
   }
 
@@ -94,6 +105,9 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
    * Reset para hoje - ajusta o plano para que o dia atual corresponda à data de hoje
    */
   resetParaHoje() {
+    // Obter dia atual ANTES de resetar o progresso
+    const diaAtualAntesDoReset = this.progressoManager.getUltimoDiaLido() || 0;
+
     // Resetar progresso
     this.progressoManager.resetar();
 
@@ -108,6 +122,12 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
       };
     }
 
+    // Criar lista de dias bloqueados (todos os dias anteriores ao reset)
+    const diasBloqueados = [];
+    for (let i = 1; i <= diaAtualAntesDoReset; i++) {
+      diasBloqueados.push(i);
+    }
+
     // Verificar se o plano ultrapassará 31/12 (365 dias)
     const totalDias = this.planoManager.getTotalDias();
     const diaAtualDoAno = this.getDiaDoAnoAtual();
@@ -118,10 +138,11 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
       avisoUltrapassagem = `Atenção: Este plano ultrapassará 31/12 e continuará no próximo ano civil.`;
     }
 
-    // Emitir evento
+    // Emitir evento com dias bloqueados
     this.emit("progresso-resetado", {
       tipo: "hoje",
       mensagem: "Progresso resetado para começar hoje",
+      diasBloqueados, // Enviar dias que devem ser bloqueados
       aviso: avisoUltrapassagem,
     });
 
@@ -129,6 +150,7 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
       sucesso: true,
       tipo: "hoje",
       mensagem: "Progresso resetado para começar hoje",
+      diasBloqueados,
       aviso: avisoUltrapassagem,
     };
   }

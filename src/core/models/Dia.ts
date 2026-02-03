@@ -31,7 +31,7 @@ import {
   gerarDataISO,
   gerarDataBR,
   getAnoAtual,
-} from "../services/tempo/geradorDatas";
+} from "../services/tempo/geradorDatas.js";
 import type { TrechoBiblico } from "../types/contratos.types";
 
 /* ============================================================================

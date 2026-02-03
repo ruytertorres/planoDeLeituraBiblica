@@ -37,8 +37,10 @@ body {
   --dark-bg: #2c3e50;
   --text-light: #333;
   --text-dark: #f8f9fa;
+  --text-color: #333; /* Cor padrão para modo light */
   --card-bg: #ffffff;
   --border-color: #e0e0e0;
+  --hover-bg: #f0f0f0; /* Cor para hover */
   --success-color: #27ae60;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   --border-radius: 8px;
@@ -50,7 +52,9 @@ body {
   --card-bg: #2c3e50;
   --text-light: #f8f9fa;
   --text-dark: #f8f9fa;
+  --text-color: #f8f9fa; /* Cor para modo dark */
   --border-color: #404040;
+  --hover-bg: #333; /* Cor para hover no modo dark */
 }
 
 /* =========================================================================

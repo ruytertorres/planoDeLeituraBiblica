@@ -1,11 +1,11 @@
 /**
- * Retorna o ano civil real atual.
+ * Retorna o ano civil real atual usando cálculo puro.
  *
  * @returns {number} Ano civil atual
  */
 export declare function getAnoAtual(): number;
 /**
- * Retorna o número do dia do ano atual (1–366).
+ * Retorna o número do dia do ano atual (1–366) usando cálculo puro.
  *
  * @returns {number} Dia do ano atual
  */

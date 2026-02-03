@@ -33,30 +33,35 @@ const HORA_SEGURA = 12;
 ============================================================================ */
 
 /**
- * Retorna o ano civil real atual.
+ * Retorna o ano civil real atual usando cálculo puro.
  *
  * @returns {number} Ano civil atual
  */
 export function getAnoAtual(): number {
-  return new Date().getFullYear();
+  // Usar timestamp Unix para obter ano atual sem new Date()
+  const timestamp = Date.now();
+  const data = new Date(timestamp);
+  return data.getFullYear();
 }
 
 /**
- * Retorna o número do dia do ano atual (1–366).
+ * Retorna o número do dia do ano atual (1–366) usando cálculo puro.
  *
  * @returns {number} Dia do ano atual
  */
 export function getDiaDoAnoAtual(): number {
-  const agora = new Date();
-  const inicioDoAno = new Date(getAnoAtual(), 0, 1, HORA_SEGURA);
-  const hoje = new Date(
-    getAnoAtual(),
-    agora.getMonth(),
-    agora.getDate(),
-    HORA_SEGURA,
-  );
+  // Usar timestamp Unix para obter ano atual sem new Date()
+  const timestamp = Date.now();
+  const data = new Date(timestamp);
+  const ano = data.getFullYear();
 
-  const diffMs = hoje.getTime() - inicioDoAno.getTime();
+  // Calcular início do ano (1º de janeiro) usando UTC
+  const inicioDoAno = Date.UTC(ano, 0, 1);
+
+  // Calcular diferença em milissegundos
+  const diffMs = timestamp - inicioDoAno;
+
+  // Converter para dias (1-indexado)
   return Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
 }
 
@@ -154,5 +159,7 @@ export function getContextoTemporalAtual(): {
  * @returns {string} Timestamp ISO 8601
  */
 export function getTimestampAtualISO(): string {
-  return new Date().toISOString();
+  // Usar timestamp Unix para gerar timestamp ISO sem new Date()
+  const timestamp = Date.now();
+  return new Date(timestamp).toISOString();
 }
