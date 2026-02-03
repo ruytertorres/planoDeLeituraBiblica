@@ -111,20 +111,24 @@ export class DiaCard {
           ${this.renderSecao("Novo Testamento", novoTestamentoData)}
         </section>
 
-        <footer class="dia-card-footer">
+        <footer class="mt-6 flex flex-col gap-4 border-t border-gray-200 pt-6 dark:border-slate-700">
           ${
             dia.observacoes
               ? `
-            <div class="dia-secao">
-              <h3>Observações</h3>
+            <div class="rounded-lg bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+              <h3 class="mb-1 font-semibold">Observações</h3>
               <p>${dia.observacoes}</p>
             </div>
           `
               : ""
           }
           
-          <button data-action="toggle-lido">
-            ${isLido ? "Desmarcar como lido" : "Marcar como lido"}
+          <button 
+            data-action="toggle-lido"
+            class="inline-flex items-center justify-center gap-2 self-end rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:-translate-y-0.5 hover:from-blue-700 hover:to-blue-800 hover:shadow-blue-500/40 disabled:opacity-50 disabled:hover:translate-y-0 dark:from-blue-500 dark:to-blue-600 dark:shadow-blue-900/30 dark:hover:from-blue-400 dark:hover:to-blue-500"
+          >
+            <span>${isLido ? "✅" : "📖"}</span>
+            <span>${isLido ? "Desmarcar como lido" : "Marcar como lido"}</span>
           </button>
         </footer>
       </article>
@@ -134,7 +138,10 @@ export class DiaCard {
   /**
    * Renderiza uma seção de leitura (AT ou NT)
    */
-  private static renderSecao(titulo: string, leituras: TrechoLeitura[]): string {
+  private static renderSecao(
+    titulo: string,
+    leituras: TrechoLeitura[],
+  ): string {
     if (!leituras || leituras.length === 0) return "";
 
     return `

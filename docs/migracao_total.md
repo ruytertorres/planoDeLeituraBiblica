@@ -447,13 +447,13 @@ Se em qualquer fase:
 
 ### 🔵 FASE 4: CSS Cleanup
 
-- [ ] **4.1** Identificar classes CSS legadas ainda usadas
-- [ ] **4.2** Migrar `footer.css` → Tailwind classes
-- [ ] **4.3** Migrar `buttons.css` → Tailwind + componentes
-- [ ] **4.4** Avaliar `navbar.css` (busca dinâmica)
-- [ ] **4.5** Avaliar `calendar.css` (grid dinâmico)
-- [ ] **4.6** Remover CSS files obsoletos
-- [ ] **4.7** Validar visual consistente
+- [x] **4.1** Identificar classes CSS legadas ainda usadas
+- [x] **4.2** Migrar `footer.css` → Tailwind classes
+- [x] **4.3** Migrar `buttons.css` → Tailwind + componentes
+- [x] **4.4** Avaliar `navbar.css` (busca dinâmica)
+- [x] **4.5** Avaliar `calendar.css` (grid dinâmico - mantido)
+- [x] **4.6** Remover CSS files obsoletos
+- [x] **4.7** Validar visual consistente
 
 ### 🟣 FASE 5: Build Final
 
