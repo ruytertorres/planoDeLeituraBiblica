@@ -420,16 +420,18 @@ Se em qualquer fase:
 - [x] **1.4** Testar build: `npm run build`
 - [x] **1.5** Validar que `dist/` é gerado corretamente
 
-### 🟡 FASE 2: Cartucho Puro
+### FASE 2: Cartucho Puro
 
-- [ ] **2.1** Criar `src/core/services/planos/carregadorDias.ts`
-- [ ] **2.2** Implementar lazy loading de dias
+- [x] **2.1** Criar `src/core/services/planos/carregadorDias.ts`
+- [x] **2.2** Implementar lazy loading de dias
 - [ ] **2.3** Adicionar cache de dias materializados
 - [ ] **2.4** Atualizar `MainOrquestrador` para usar lazy loading
 - [ ] **2.5** Testar: Apenas dia atual carregado na memória
 - [ ] **2.6** Remover `js/cartuchos/plano_cronologico.js`
 - [ ] **2.7** Remover `js/cartuchos/plano_cronologico.d.ts`
 - [ ] **2.8** Validar performance: Initial load < 100ms
+
+### FASE 3: UI TypeScript
 
 ### 🟢 FASE 3: UI TypeScript
 
