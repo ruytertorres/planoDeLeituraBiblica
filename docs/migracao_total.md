@@ -435,13 +435,13 @@ Se em qualquer fase:
 
 ### 🟢 FASE 3: UI TypeScript
 
-- [ ] **3.1** Criar `src/ui/components/Calendario/CalendarioComponent.ts`
-- [ ] **3.2** Criar `src/ui/components/Busca/SearchUI.ts`
-- [ ] **3.3** Criar `src/ui/components/Notas/NotasUI.ts`
-- [ ] **3.4** Criar `src/ui/orquestradores/UIManager.ts`
-- [ ] **3.5** Migrar `render_dia_card.js` → `DiaCard.ts`
-- [ ] **3.6** Migrar `darkmode.js` → `DarkModeManager.ts`
-- [ ] **3.7** Migrar `footer.js` → `FooterComponent.ts`
+- [x] **3.1** Criar `src/ui/components/Calendario/CalendarioComponent.ts`
+- [x] **3.2** Criar `src/ui/components/Busca/SearchUI.ts`
+- [x] **3.3** Criar `src/ui/components/Notas/NotasUI.ts`
+- [x] **3.4** Criar `src/ui/orquestradores/UIManager.ts`
+- [x] **3.5** Migrar `render_dia_card.js` → `DiaCard.ts`
+- [x] **3.6** Migrar `darkmode.js` → `DarkModeManager.ts`
+- [x] **3.7** Migrar `footer.js` → `FooterComponent.ts`
 - [ ] **3.8** Testar todas as funcionalidades UI
 - [ ] **3.9** Remover `js/ui/components/` (após migração)
 
@@ -476,7 +476,7 @@ Se em qualquer fase:
 
 ---
 
-**Progresso:** 11 / 32 itens concluídos
+**Progresso:** 14 / 32 itens concluídos
 
 **Autor:** Cascade AI  
 **Data:** 2025-02-03  
