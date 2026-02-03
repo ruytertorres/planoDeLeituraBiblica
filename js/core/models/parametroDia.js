@@ -105,6 +105,34 @@ export class Dia {
   }
 
   /**
+   * Retorna trechos do Antigo Testamento no formato esperado pela UI
+   */
+  get antigoTestamento() {
+    return this.trechos
+      .filter((trecho) => trecho.testamento === TIPOS_LEITURA.ANTIGO_TESTAMENTO)
+      .map((trecho) => ({
+        livroId: trecho.livroId,
+        livroNome: trecho.livroNome,
+        capituloInicio: trecho.capituloInicio,
+        capituloFim: trecho.capituloFim,
+      }));
+  }
+
+  /**
+   * Retorna trechos do Novo Testamento no formato esperado pela UI
+   */
+  get novoTestamento() {
+    return this.trechos
+      .filter((trecho) => trecho.testamento === TIPOS_LEITURA.NOVO_TESTAMENTO)
+      .map((trecho) => ({
+        livroId: trecho.livroId,
+        livroNome: trecho.livroNome,
+        capituloInicio: trecho.capituloInicio,
+        capituloFim: trecho.capituloFim,
+      }));
+  }
+
+  /**
    * Retorna a quantidade de trechos
    */
   getQuantidadeTrechos() {

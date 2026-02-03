@@ -109,11 +109,19 @@
   gap: 1rem;
 }
 
+.dia-secao {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 .dia-secao h3 {
   font-size: 1rem;
   margin-bottom: 0.5rem;
   color: #2c3e50;
   font-weight: 600;
+  display: block !important;
+  visibility: visible !important;
 }
 
 .dia-secao ul {
@@ -122,6 +130,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  visibility: visible !important;
 }
 
 .dia-secao li {
@@ -131,6 +140,8 @@
   border-left: 3px solid #3498db;
   font-weight: 600;
   font-size: 0.9rem;
+  display: block !important;
+  visibility: visible !important;
 }
 
 /* =========================================================================

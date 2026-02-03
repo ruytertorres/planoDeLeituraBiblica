@@ -270,11 +270,12 @@ export class MainOrquestrador extends BaseOrquestrador {
     this.listen("progresso-resetado", (evento) => {
       const detalhes = evento.detail || {};
 
+      // ✅ CORREÇÃO: Atualizar estado PRIMEIRO
       // Sempre que resetar, vamos voltar o dia atual para 1
       // (tanto para reset completo quanto para "Dia 1 → hoje")
       this.state.diaAtualNumero = 1;
 
-      // Aplicar dias bloqueados para reset completo e reset "hoje"
+      // ✅ CORREÇÃO: Aplicar dias bloqueados ANTES de renderizar
       if (
         (detalhes.tipo === "completo" || detalhes.tipo === "hoje") &&
         detalhes.diasBloqueados
@@ -291,12 +292,26 @@ export class MainOrquestrador extends BaseOrquestrador {
         localStorage.removeItem("dias-bloqueados");
       }
 
+      // ✅ CORREÇÃO: Agora renderizar COM estado atualizado
       const plano = this.state.managers.plano.getPlano();
       this.renderCalendario(plano);
       this.renderEstatisticas();
-      this.renderDia();
+      this.renderDia(); // Agora renderDia() usará this.state.diaAtualNumero = 1
 
-      // 🔄 APLICAR ESTILOS DE DIAS BLOQUEADOS APÓS RESET
+      // ✅ CORREÇÃO CRÍTICA: Forçar renderização dos textos bíblicos após reset
+      // Garantir que o usuário veja o que precisa ler
+      setTimeout(() => {
+        const container = document.getElementById("dia-view");
+        const dia = plano.getDia(this.state.diaAtualNumero);
+        if (container && dia) {
+          container.innerHTML = renderDiaCard(dia, {
+            isHoje: dia.numero === this.state.diaHojeNumero,
+            isLido: this.state.managers.progresso.estaLido(dia.numero),
+          });
+        }
+      }, 100);
+
+      // 🔄 APLICAR ESTILOS DE DIAS BLOQUEADOS APÓS RENDERIZAÇÃO
       setTimeout(() => {
         this.aplicarEstilosDiasBloqueados();
       }, 200);
@@ -404,15 +419,38 @@ export class MainOrquestrador extends BaseOrquestrador {
     const dia = plano.getDia(this.state.diaAtualNumero);
     const container = document.getElementById("dia-view");
 
-    // 🔄 SINCRONIZAÇÃO: Recarregar progresso antes de renderizar o card
+    // 🚨 VERIFICAÇÃO CRÍTICA: Garantir que o dia existe
+    if (!dia) {
+      console.error("❌ DIA INEXISTENTE:", {
+        diaAtualNumero: this.state.diaAtualNumero,
+        plano: plano,
+        totalDias: plano?.dias?.length,
+      });
+      container.innerHTML = `
+        <article class="dia-card erro">
+          <h2>❌ Erro Crítico</h2>
+          <p>Dia ${this.state.diaAtualNumero} não encontrado no plano!</p>
+          <p>Total de dias no plano: ${plano?.dias?.length || 0}</p>
+        </article>
+      `;
+      return;
+    }
+
+    //  SINCRONIZAÇÃO: Recarregar progresso antes de renderizar o card
     // Garante que "isLido" reflete o estado mais recente
     this.state.managers.progresso.sincronizarComStorage();
 
-    // ✅ NOVO: Aplicar deslocamento de datas se há reajuste ativo
-    let diaParaRenderizar = dia;
+    // ✅ CORREÇÃO CRÍTICA: Card dia IMUTÁVEL
+    // NÃO aplicar deslocamento nos dados do dia - apenas na data
+    // O conteúdo bíblico (capítulos, livros) deve ser sempre o mesmo
+    let diaParaRenderizar = {
+      ...dia, // Mantém todos os dados originais intactos
+      // Apenas ajusta as datas visuais, se necessário
+    };
+
     const deslocamento = this.state.managers.progresso.obterDeslocamentoDatas();
     if (deslocamento !== 0) {
-      // Criar um Dia com datas ajustadas
+      // 🚨 CORREÇÃO: Ajustar APENAS as datas, NÃO o conteúdo bíblico
       const novaDataNum = dia.numero + deslocamento;
       const novaData = parametroGerador.gerarDataISO(novaDataNum, dia.ano);
       const novaDataFormatada = parametroGerador.gerarDataBR(
@@ -420,19 +458,34 @@ export class MainOrquestrador extends BaseOrquestrador {
         dia.ano,
       );
 
-      // Criar uma cópia do Dia com datas corrigidas
+      // Sobrescrever APENAS as datas, manter conteúdo bíblico intacto
       diaParaRenderizar = {
-        ...dia,
+        ...dia, // Mantém antigoTestamento, novoTestamento, observacoes intactos
         data: novaData,
         dataFormatada: novaDataFormatada,
       };
     }
 
-    // ✅ Renderizar card
+    // ✅ Renderizar card com conteúdo bíblico IMUTÁVEL
     container.innerHTML = renderDiaCard(diaParaRenderizar, {
       isHoje: diaParaRenderizar.numero === this.state.diaHojeNumero,
       isLido: this.state.managers.progresso.estaLido(diaParaRenderizar.numero),
     });
+
+    // 🚨 CORREÇÃO CRÍTICA: Garantir que os textos bíblicos estejam visíveis
+    // Verificar se o conteúdo foi renderizado corretamente
+    setTimeout(() => {
+      const secoesLeitura = container.querySelectorAll(".dia-secao");
+      if (secoesLeitura.length === 0) {
+        // Forçar re-renderização mantendo conteúdo bíblico intacto
+        container.innerHTML = renderDiaCard(diaParaRenderizar, {
+          isHoje: diaParaRenderizar.numero === this.state.diaHojeNumero,
+          isLido: this.state.managers.progresso.estaLido(
+            diaParaRenderizar.numero,
+          ),
+        });
+      }
+    }, 50);
 
     // ✅ Atualizar estado de notas
     this.state.managers.notas.setDiaAtual(diaParaRenderizar.numero);

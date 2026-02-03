@@ -20,6 +20,35 @@ export function renderDiaCard(dia, estadoUI = {}) {
 
   const { isHoje = false, isLido = false } = estadoUI;
 
+  // CORREÇÃO CRÍTICA: Processar trechos diretamente se getters falharem
+  let antigoTestamentoData = dia.antigoTestamento || [];
+  let novoTestamentoData = dia.novoTestamento || [];
+
+  // Se getters retornarem vazio, processar trechos diretamente
+  if (
+    (!antigoTestamentoData || antigoTestamentoData.length === 0) &&
+    dia.trechos &&
+    dia.trechos.length > 0
+  ) {
+    antigoTestamentoData = dia.trechos
+      .filter((trecho) => trecho.testamento === "antigoTestamento")
+      .map((trecho) => ({
+        livroId: trecho.livroId,
+        livroNome: trecho.livroNome,
+        capituloInicio: trecho.capituloInicio,
+        capituloFim: trecho.capituloFim,
+      }));
+
+    novoTestamentoData = dia.trechos
+      .filter((trecho) => trecho.testamento === "novoTestamento")
+      .map((trecho) => ({
+        livroId: trecho.livroId,
+        livroNome: trecho.livroNome,
+        capituloInicio: trecho.capituloInicio,
+        capituloFim: trecho.capituloFim,
+      }));
+  }
+
   return `
     <article 
       class="dia-card ${isHoje ? "dia-hoje" : ""} ${isLido ? "dia-lido" : ""}"
@@ -34,8 +63,8 @@ export function renderDiaCard(dia, estadoUI = {}) {
       </header>
 
       <section class="dia-leitura">
-        ${renderSecao("Antigo Testamento", dia.antigoTestamento || [])}
-        ${renderSecao("Novo Testamento", dia.novoTestamento || [])}
+        ${renderSecao("Antigo Testamento", antigoTestamentoData)}
+        ${renderSecao("Novo Testamento", novoTestamentoData)}
       </section>
 
       <footer class="dia-card-footer">

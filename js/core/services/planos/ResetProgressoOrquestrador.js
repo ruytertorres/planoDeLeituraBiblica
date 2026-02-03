@@ -123,21 +123,28 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
       diasBloqueados.push(i);
     }
 
+    // ✅ CORREÇÃO: Calcular deslocamento para alinhar Dia 1 com hoje
+    const diaDoAnoHoje = this.getDiaDoAnoAtual();
+    const deslocamentoDatas = diaDoAnoHoje - 1; // Dia 1 deve virar hoje
+
     // Verificar se o plano ultrapassará 31/12 (365 dias)
     const totalDias = this.planoManager.getTotalDias();
-    const diaAtualDoAno = this.getDiaDoAnoAtual();
     const diaFinalDoAno = 365; // 31/12
 
     let avisoUltrapassagem = null;
-    if (totalDias > diaFinalDoAno - diaAtualDoAno + 1) {
+    if (totalDias > diaFinalDoAno - diaDoAnoHoje + 1) {
       avisoUltrapassagem = `Atenção: Este plano ultrapassará 31/12 e continuará no próximo ano civil.`;
     }
 
-    // Emitir evento com dias bloqueados
+    // ✅ CORREÇÃO: Aplicar deslocamento de datas no progresso
+    this.progressoManager.definirDeslocamentoDatas(deslocamentoDatas);
+
+    // Emitir evento com dias bloqueados e deslocamento
     this.emit("progresso-resetado", {
       tipo: "hoje",
       mensagem: "Progresso resetado para começar hoje",
       diasBloqueados, // Enviar dias que devem ser bloqueados
+      deslocamentoDatas, // Enviar deslocamento para alinhamento
       aviso: avisoUltrapassagem,
     });
 
@@ -146,6 +153,7 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
       tipo: "hoje",
       mensagem: "Progresso resetado para começar hoje",
       diasBloqueados,
+      deslocamentoDatas,
       aviso: avisoUltrapassagem,
     };
   }

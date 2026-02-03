@@ -181,4 +181,25 @@ export class ProgressoLeitura {
     }
     return this.reajusteAtivo.diaHoje - this.reajusteAtivo.numeroDia;
   }
+
+  /**
+   * Define deslocamento de datas para alinhamento
+   * @param {number} deslocamento - Deslocamento em dias
+   */
+  definirDeslocamentoDatas(deslocamento) {
+    // Criar reajuste ativo se não existir
+    if (!this.reajusteAtivo) {
+      this.reajusteAtivo = {
+        ativo: true,
+        numeroDia: 1,
+        diaHoje: this.getDiaDoAnoAtual(),
+      };
+    }
+
+    // Atualizar deslocamento
+    this.reajusteAtivo.diaHoje = this.reajusteAtivo.numeroDia + deslocamento;
+
+    // Persistir reajuste
+    this.persistirReajuste();
+  }
 }
