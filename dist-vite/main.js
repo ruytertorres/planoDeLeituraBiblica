@@ -16,6 +16,7 @@
 ============================================================================ */
 import planoCronologico from "./cartuchos/plano_cronologico";
 import { inicializarAdapter, getUIAdapter } from "./compatibilidade/ui-adapter";
+import { materializarPlanoCartucho } from "./core/services/planos/materializarPlanoCartucho";
 /* ============================================================================
    INICIALIZAÇÃO DO SISTEMA
 ============================================================================ */
@@ -31,8 +32,9 @@ export function inicializarSistemaTypeScript() {
         if (!planoCronologico || !planoCronologico.id) {
             throw new Error("Plano cronológico inválido");
         }
+        const planoMaterializado = materializarPlanoCartucho(planoCronologico);
         // Inicializar adaptador global para UI JavaScript
-        inicializarAdapter(planoCronologico);
+        inicializarAdapter(planoMaterializado);
         // Expor adaptador globalmente para compatibilidade
         if (typeof window !== "undefined") {
             window.uiAdapter = getUIAdapter();

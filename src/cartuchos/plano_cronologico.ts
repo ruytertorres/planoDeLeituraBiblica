@@ -26,13 +26,6 @@
    - gerarDataISO / gerarDataBR: relógio universal do sistema
 --------------------------------------------------------------------------- */
 
-import { Dia } from "../core/models/Dia.js";
-import {
-  gerarDataISO,
-  gerarDataBR,
-  getAnoAtual,
-} from "../core/services/tempo/geradorDatas.js";
-
 // Tipos para o plano
 interface TrechoLeitura {
   livroId: string;
@@ -58,6 +51,16 @@ interface MetadadosAdicionais {
   observacoes: string;
 }
 
+interface DiaPlanoRaw {
+  numero: number;
+  antigoTestamento: TrechoLeitura[];
+  novoTestamento: TrechoLeitura[];
+  livros: string[];
+  capitulos: number[];
+  versiculos: string[];
+  observacoes: string;
+}
+
 /* ---------------------------------------------------------------------------
    FACTORY LOCAL — CRIAÇÃO PADRONIZADA DE DIA
    ---------------------------------------------------------------------------
@@ -74,24 +77,9 @@ interface MetadadosAdicionais {
  * Cria um Dia de leitura de forma padronizada
  * @param {number} numero - Número do dia (1–317)
  * @param {DadosDia} dados - Conteúdo do dia (leituras, observações, etc.)
- * @returns {Dia}
+ * @returns {DiaPlanoRaw}
  */
-function criarDia(numero: number, dados: DadosDia): Dia {
-  // Consulta soberana ao tempo real (CONTRATO §2.1)
-  const ano = getAnoAtual();
-
-  // Combinar trechos do antigo e novo testamento com marcação
-  const trechos = [
-    ...(dados.antigoTestamento || []).map((trecho: TrechoLeitura) => ({
-      ...trecho,
-      testamento: "antigoTestamento",
-    })),
-    ...(dados.novoTestamento || []).map((trecho: TrechoLeitura) => ({
-      ...trecho,
-      testamento: "novoTestamento",
-    })),
-  ];
-
+function criarDia(numero: number, dados: DadosDia): DiaPlanoRaw {
   // Metadados adicionais para o Dia
   const metadadosAdicionais: MetadadosAdicionais = {
     livros: dados.livros || [],
@@ -100,21 +88,16 @@ function criarDia(numero: number, dados: DadosDia): Dia {
     observacoes: dados.observacoes || "",
   };
 
-  // Usar o construtor do Dia TypeScript
-  return new Dia({
+  // Usar o construtor do DiaPlanoRaw
+  return {
     numero,
-    ano,
-    data: gerarDataISO(numero, ano),
-    dataFormatada: gerarDataBR(numero, ano),
-    antigoTestamento: trechos.filter(
-      (t) => t.testamento === "antigoTestamento",
-    ),
-    novoTestamento: trechos.filter((t) => t.testamento === "novoTestamento"),
+    antigoTestamento: dados.antigoTestamento || [],
+    novoTestamento: dados.novoTestamento || [],
     livros: metadadosAdicionais.livros,
     capitulos: metadadosAdicionais.capitulos,
     versiculos: metadadosAdicionais.versiculos,
     observacoes: metadadosAdicionais.observacoes,
-  });
+  };
 }
 
 /* ---------------------------------------------------------------------------
@@ -145,7 +128,6 @@ const planoCronologico = {
        DIA 1
     ====================================================================== */
     criarDia(1, {
-      //apaga
       antigoTestamento: [
         {
           livroId: "genesis",
@@ -5452,36 +5434,7 @@ const planoCronologico = {
   /* -------------------------------------------------------------------------
      MÉTODOS DE ACESSO (CONTRATO FUNCIONAL)
   ------------------------------------------------------------------------- */
-
-  /**
-   * Retorna um dia específico pelo número (O(1))
-   * @param {number} numero
-   * @returns {Dia | undefined}
-   */
-  getDia(numero: number): Dia | undefined {
-    return this.dias[numero - 1];
-  },
-
-  /**
-   * Retorna todos os dias do plano
-   * @returns {Dia[]}
-   */
-  getDias() {
-    return this.dias;
-  },
 };
-
-/* ---------------------------------------------------------------------------
-   VALIDAÇÃO DO CONTRATO
-   ---------------------------------------------------------------------------
-   Garante em runtime que:
-   - Todos os dias são instâncias válidas de Dia
-   - A sequência está correta
-   - O plano é estruturalmente íntegro
---------------------------------------------------------------------------- */
-
-// Validação removida - validadorPlano não está disponível no TypeScript
-// O plano é validado em tempo de compilação pelos tipos
 
 /* ---------------------------------------------------------------------------
    EXPORTAÇÃO
