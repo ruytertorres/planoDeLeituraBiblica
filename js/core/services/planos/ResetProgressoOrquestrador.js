@@ -34,36 +34,31 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
      -------------------------------------------------------------------------- */
 
   /**
-   * Reset completo - volta tudo ao início
+   * Reset completo - volta tudo ao início SEM BLOQUEAR DIAS
    */
   resetCompleto() {
-    // Obter dia atual ANTES de resetar o progresso
-    const diaAtualAntesDoReset = this.progressoManager.getUltimoDiaLido() || 0;
-
     // Resetar progresso
     this.progressoManager.resetar();
 
     // Resetar plano para o primeiro dia
     this.planoManager.resetar();
 
-    // Criar lista de dias bloqueados (todos os dias anteriores ao reset)
-    const diasBloqueados = [];
-    for (let i = 1; i <= diaAtualAntesDoReset; i++) {
-      diasBloqueados.push(i);
-    }
+    // ✅ CORREÇÃO: Reset completo NÃO bloqueia dias
+    // Sistema volta ao estado original: tudo clicável, dia 1 disponível
+    const diasBloqueados = []; // Array vazio = nenhum dia bloqueado
 
-    // Emitir evento com dias bloqueados
+    // Emitir evento SEM dias bloqueados
     this.emit("progresso-resetado", {
       tipo: "completo",
       descricao: "Progresso resetado completamente",
-      diasBloqueados, // Enviar dias que devem ser bloqueados
+      diasBloqueados, // Array vazio para reset completo
     });
 
     return {
       sucesso: true,
       tipo: "completo",
-      mensagem: "Progresso resetado com sucesso",
-      diasBloqueados,
+      mensagem: "Progresso resetado com sucesso - Sistema reiniciado do Dia 1",
+      diasBloqueados, // Array vazio
     };
   }
 

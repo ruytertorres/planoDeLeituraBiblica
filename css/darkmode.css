@@ -10,29 +10,29 @@
   --dm-bg-secondary: #1e1e1e;
   --dm-bg-card: #252525;
   --dm-bg-hover: #2d2d2d;
-  
+
   /* CORES DE TEXTO */
   --dm-text-primary: #e0e0e0;
   --dm-text-secondary: #a0a0a0;
   --dm-text-muted: #808080;
-  
+
   /* CORES DE BORDA */
   --dm-border-color: #3a3a3a;
   --dm-border-light: #444;
-  
+
   /* CORES DE DESTAQUE */
   --dm-accent: #4dabf7;
   --dm-accent-hover: #339af0;
-  --dm-success: #51cf66;          /* Verde para modo claro */
+  --dm-success: #51cf66; /* Verde para modo claro */
   --dm-warning: #ff922b;
   --dm-danger: #ff6b6b;
   --dm-info: #22b8cf;
-  
+
   /* CORES ESPECÍFICAS PARA DIAS LIDOS NO DARK MODE */
-   --dm-dia-lido: #d0681d;        // marrom
-   --dm-dia-lido-hover: #a55218;  // marrom mais claro
-   --dm-dia-lido-texto: white;    // Texto branco (melhor contraste com laranja)
-  
+  --dm-dia-lido: #d0681d; /* marrom */
+  --dm-dia-lido-hover: #a55218; /* marrom mais claro */
+  --dm-dia-lido-texto: white; /* Texto branco (melhor contraste com laranja) */
+
   /* SOMBRAS NO TEMA ESCURO */
   --dm-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4);
   --dm-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -123,6 +123,25 @@ body.dark-mode .calendario-dia-vazio {
   background-color: transparent !important;
 }
 
+/* Dias vazios bloqueados no dark mode */
+body.dark-mode .calendario-dia-vazio:disabled {
+  background: #2d2d2d !important;
+  border: 2px dashed #444 !important;
+  color: #808080 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7 !important;
+  position: relative !important;
+}
+
+body.dark-mode .calendario-dia-vazio:disabled::after {
+  content: "🔒" !important;
+  position: absolute !important;
+  top: 2px !important;
+  right: 2px !important;
+  font-size: 10px !important;
+  opacity: 0.6 !important;
+}
+
 /* CÉLULAS DOS DIAS - CORREÇÃO PRINCIPAL */
 body.dark-mode .calendario-dia {
   background-color: var(--dm-bg-card) !important;
@@ -162,8 +181,13 @@ body.dark-mode .calendario-dia.calendario-hoje-plano {
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 /* Dia ativo (selecionado) */
@@ -179,22 +203,25 @@ body.dark-mode .calendario-dia.ativo {
 
 /* Dia lido NO MODO ESCURO (amarelo/laranja) */
 body.dark-mode .calendario-dia.lido {
-  background-color: var(--dm-dia-lido) !important;          /* Amarelo */
-  color: var(--dm-dia-lido-texto) !important;              /* Texto escuro para contraste */
+  background-color: var(--dm-dia-lido) !important; /* Amarelo */
+  color: var(--dm-dia-lido-texto) !important; /* Texto escuro para contraste */
   font-weight: bold;
 }
 
 /* Hover para dia lido no dark mode */
 body.dark-mode .calendario-dia.lido:hover {
-  background-color: var(--dm-dia-lido-hover) !important;   /* Amarelo mais claro */
+  background-color: var(
+    --dm-dia-lido-hover
+  ) !important; /* Amarelo mais claro */
 }
 
 /* CORREÇÃO CRÍTICA: Garantir que dias lidos no fim de semana mantenham a marcação */
 /* Remove qualquer estilização especial de fim de semana para dias lidos */
 body.dark-mode .calendario-dia.lido:nth-child(7n),    /* Sábados */
-body.dark-mode .calendario-dia.lido:nth-child(7n+1) { /* Domingos */
-  background-color: var(--dm-dia-lido) !important;    /* Mantém amarelo */
-  color: var(--dm-dia-lido-texto) !important;         /* Mantém texto escuro */
+body.dark-mode .calendario-dia.lido:nth-child(7n+1) {
+  /* Domingos */
+  background-color: var(--dm-dia-lido) !important; /* Mantém amarelo */
+  color: var(--dm-dia-lido-texto) !important; /* Mantém texto escuro */
 }
 
 /* Dia sem plano */
@@ -388,7 +415,8 @@ body.dark-mode .card-highlight {
 }
 
 @keyframes dark-highlight {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(77, 171, 247, 0) !important;
   }
   50% {
@@ -410,10 +438,11 @@ body.dark-mode .calendar-section {
 
 /* ===================== CORREÇÃO DE VISIBILIDADE ===================== */
 body.dark-mode * {
-  transition: background-color 0.3s ease, 
-              color 0.3s ease, 
-              border-color 0.3s ease,
-              box-shadow 0.3s ease !important;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease !important;
 }
 
 /* Garantir que os números dos dias sejam visíveis */
