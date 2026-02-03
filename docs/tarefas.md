@@ -78,13 +78,9 @@ Estado: Arquitetura saudável, evolução controlada, sem dívida técnica, 18/1
    Status: ❌ NÃO INICIADO
    Depende: Implementação biblia.html + SearchEngine extensão
 
-8. definir uma pasta onde vão ficar "os cartuchos" como plano_cronologico.js; plano_canonico.js; etc.
+8. plano futuro: fazer da api uma experiencial individual mas tambem comunitária, permitindo que os usuarios compartilhem planos e progresso entre si, alem notas (em uma função especifica para notas compartilhadas)
 
-9. plano futuro: fazer da api uma experiencial individual mas tambem comunitária, permitindo que os usuarios compartilhem planos e progresso entre si, alem notas (em uma função especifica para notas compartilhadas)
-
-10. quando vc pular um dia, e não marcar ele como lido, ele tem que ser marcado com um "não lido" no calendario
-
-11. adicionar um botão de bug que o usuario reporta um bug eventual.
+9. adicionar um botão de bug que o usuario reporta um bug eventual.
 
 # ============================================================================
 
