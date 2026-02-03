@@ -19,15 +19,15 @@ import { PlanoManager } from "../../core/services/planos/PlanoManager.js";
 import { ProgressoLeitura } from "../../core/services/planos/ProgressoLeitura.js";
 import { NotasLeituraManager } from "../../core/services/notas/NotasLeituraManager.js";
 import { SearchEngine } from "../../core/services/busca/SearchEngine.js";
-import { SearchUI } from "../components/busca/search_ui.js";
+import { SearchUI } from "../../../dist-vite/ui/components/Busca/SearchUI.js";
 import { ResetProgressoOrquestrador } from "../../core/services/planos/ResetProgressoOrquestrador.js";
 import { ResetModal } from "../componentes/ResetModal.js";
-import { renderDiaCard } from "../components/planos/render_dia_card.js";
-import { renderCalendario } from "../components/calendario/render_calendario.js";
-import { CalendarioViewModel } from "../components/calendario/CalendarioViewModel.js";
+import { renderDiaCard } from "../../../dist-vite/ui/components/DiaCard/DiaCard.js";
+import { renderCalendario } from "../../../dist-vite/ui/components/Calendario/CalendarioComponent.js";
+import { CalendarioViewModel } from "../../../dist-vite/ui/components/Calendario/CalendarioViewModel.js";
 import { NotasOverlayOrquestrador } from "../../core/services/notas/NotasOverlayOrquestrador.js";
 import { initNotasOverlayUI } from "../componentes/notas/NotasOverlayUI.js";
-import { initDarkMode } from "../components/darkmode.js";
+import { initDarkMode } from "../../../dist-vite/ui/components/DarkMode/DarkModeManager.js";
 import { ReorganizadorPlano } from "../../core/services/planos/ReorganizadorPlano.js";
 import * as geradorDatas from "../../core/services/tempo/geradorDatas.js";
 import {
@@ -422,6 +422,12 @@ export class MainOrquestrador extends BaseOrquestrador {
    * @private
    */
   async renderDia() {
+    // 🚨 SAFETY CHECK: Ensure managers are initialized
+    if (!this.state.managers || !this.state.managers.progresso) {
+      console.error("❌ Managers não inicializados em renderDia");
+      return;
+    }
+
     // 🆕 NOVO: Usar carregador lazy para obter o dia
     const dia = await carregarDia(this.state.diaAtualNumero);
     const container = document.getElementById("dia-view");
@@ -555,14 +561,10 @@ export class MainOrquestrador extends BaseOrquestrador {
       this.state.apis.calendarioVM.diasBloqueados = this.state.diasBloqueados;
     }
 
-    // Gerar ViewModel
-    const anoAtual = geradorDatas.getAnoAtual();
-    const viewModel = this.state.apis.calendarioVM.gerarViewModel(anoAtual);
-
-    // Renderizar
+    // Renderizar - passar o ViewModel diretamente (não o resultado de gerarViewModel)
     this.state.apis.calendario = renderCalendario({
       containerId: "calendario",
-      viewModel,
+      viewModel: this.state.apis.calendarioVM,
     });
 
     // 🔄 FUNÇÃO GLOBAL: Aplicar estilos de dias bloqueados após renderização

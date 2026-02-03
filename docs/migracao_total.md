@@ -442,8 +442,8 @@ Se em qualquer fase:
 - [x] **3.5** Migrar `render_dia_card.js` → `DiaCard.ts`
 - [x] **3.6** Migrar `darkmode.js` → `DarkModeManager.ts`
 - [x] **3.7** Migrar `footer.js` → `FooterComponent.ts`
-- [ ] **3.8** Testar todas as funcionalidades UI
-- [ ] **3.9** Remover `js/ui/components/` (após migração)
+- [x] **3.8** Testar todas as funcionalidades UI
+- [x] **3.9** Remover `js/ui/components/` (após migração)
 
 ### 🔵 FASE 4: CSS Cleanup
 
@@ -476,7 +476,7 @@ Se em qualquer fase:
 
 ---
 
-**Progresso:** 14 / 32 itens concluídos
+**Progresso:** 16 / 32 itens concluídos
 
 **Autor:** Cascade AI  
 **Data:** 2025-02-03  
