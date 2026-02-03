@@ -15,7 +15,11 @@
    - §4: Hierarquia de autoridade respeitada
    ============================================================================ */
 
-import type { DiaDoPlano, PlanoCartucho } from "../../types/contratos.types";
+import type {
+  DiaDoPlano,
+  PlanoCartucho,
+  TrechoBiblico,
+} from "../../types/contratos.types";
 import { getAnoAtual } from "../tempo/geradorDatas.js";
 import { materializarDia } from "./materializarDia.js";
 
@@ -39,8 +43,8 @@ type PlanoCartuchoRaw = {
 
 type DiaPlanoRaw = {
   numero: number;
-  antigoTestamento: unknown[];
-  novoTestamento: unknown[];
+  antigoTestamento: TrechoBiblico[];
+  novoTestamento: TrechoBiblico[];
   livros: string[];
   capitulos: number[];
   versiculos: string[];
@@ -73,11 +77,13 @@ export function inicializarCarregador(cartucho: PlanoCartuchoRaw): void {
 /**
  * Carrega um dia específico (lazy + cache)
  * Complexidade: O(1) para cache hit, O(1) para materialização
- * 
+ *
  * @param numero - Número do dia (1-317)
  * @returns Dia materializado ou undefined se inválido
  */
-export async function carregarDia(numero: number): Promise<DiaDoPlano | undefined> {
+export async function carregarDia(
+  numero: number,
+): Promise<DiaDoPlano | undefined> {
   // Validação de entrada
   if (!planoRaw || numero < 1 || numero > planoRaw.totalDias) {
     return undefined;
@@ -125,7 +131,7 @@ export async function carregarDias(numeros: number[]): Promise<DiaDoPlano[]> {
  */
 export async function carregarDiasRange(
   inicio: number,
-  fim: number
+  fim: number,
 ): Promise<DiaDoPlano[]> {
   const numeros: number[] = [];
   for (let i = inicio; i <= fim && i <= (planoRaw?.totalDias || 0); i++) {
@@ -137,7 +143,7 @@ export async function carregarDiasRange(
 /**
  * Pré-carrega dias próximos ao atual (para UX fluida)
  * Carrega em background sem bloquear a thread principal
- * 
+ *
  * @param atual - Dia atual
  * @param margem - Quantos dias antes/depois carregar (default: 3)
  */
