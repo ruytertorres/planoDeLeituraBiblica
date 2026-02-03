@@ -1,2 +1,0 @@
-// Redirecionamento para o arquivo .js real
-export * from './Dia.js';

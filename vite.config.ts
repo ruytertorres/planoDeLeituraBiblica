@@ -20,4 +20,26 @@ export default defineConfig({
   resolve: {
     extensions: [".ts", ".js", ".json"],
   },
+
+  // Configuração de build com code-splitting
+  build: {
+    outDir: "dist",
+    sourcemap: true,
+    minify: "esbuild",
+    target: "es2022",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Chunk para dados do plano (lazy loaded)
+          "plano-data": ["./src/cartuchos/plano_cronologico.ts"],
+          // Chunk para serviços core
+          core: ["./src/core/services/tempo/geradorDatas.ts"],
+        },
+        // Nomenclatura clara dos chunks
+        entryFileNames: "assets/[name]-[hash].js",
+        chunkFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash][extname]",
+      },
+    },
+  },
 });

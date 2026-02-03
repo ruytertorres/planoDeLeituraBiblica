@@ -5,13 +5,16 @@
   "main": "plano.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "tsc && vite build",
+    "build:ts": "tsc",
+    "build:vite": "vite build",
     "dev": "vite",
     "dev:legacy": "npx http-server . -p 8000 -o",
     "start": "npm run build && npm run dev:legacy",
-    "build:simple": "echo 'Compilando TypeScript...' && npm run build && echo '✅ Build concluído!'",
+    "build:simple": "echo 'Compilando TypeScript...' && npm run build && echo '✅ Build concluíd o!'",
     "serve": "npx http-server . -p 8000 -o",
-    "clean": "rm -rf dist-vite",
+    "preview": "vite preview",
+    "clean": "rm -rf dist dist-vite",
     "rebuild": "npm run clean && npm run build"
   },
   "repository": {
