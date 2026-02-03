@@ -12,8 +12,8 @@ Documentar a estrutura real do sistema após migração TypeScript completa, map
 
 ```
 src/
-├── cartuchos/                    # 📦 Planos-Cartucho (modulares)
-│   └── plano_cronologico.ts     # 📋 Plano cronológico principal
+├── cartuchos/                    # 📦 Planos-Cartucho (DADOS PUROS)
+│   └── plano_cronologico.ts     # 📋 Plano cronológico (sem lógica, sem imports)
 ├── compatibilidade/              # 🔄 Ponte TS ↔ JS
 │   └── ui-adapter.ts            # Adaptador de compatibilidade
 ├── core/                        # 💎 Núcleo do sistema
@@ -24,6 +24,7 @@ src/
 │   │   │   └── geradorDatas.ts # ⏰ Gerador de datas (SOBERANO)
 │   │   └── planos/              # 📋 Serviços de planos
 │   │       ├── PlanoManager.ts # 🎛️ Orquestrador de planos
+│   │       ├── materializarPlanoCartucho.ts # 🔄 Materializa cartucho puro → PlanoCartucho completo
 │   │       ├── validadorPlano.ts # ✅ Validador de contratos
 │   │       └── ValidadorPlanoTipado.ts # 🔍 Validação estrutural
 │   └── types/                   # 📝 Tipos formais (FASE 2)
@@ -38,6 +39,7 @@ src/
 │   │   └── DiaCard.ts           # 📄 Card de dia tipado
 │   └── orquestradores/          # 🎭 Orquestradores UI
 │       └── MainOrquestrador.ts  # 🎯 Orquestrador principal
+├── tailwind.css                 # 🎨 Tailwind CSS (base/components/utilities)
 ├── index.ts                     # 🚪 Ponto de entrada TS
 └── main.ts                      # 🎯 Inicialização do sistema
 ```
@@ -203,7 +205,8 @@ dist-vite/
 
 ### **📦 Separação de Responsabilidades**
 
-- **src/cartuchos/** - Planos intercambiáveis (modulares)
+- **src/cartuchos/** - Planos intercambiáveis (DADOS PUROS, sem lógica, sem imports)
+- **src/core/services/planos/materializarPlanoCartucho.ts** - Materialização (injeta datas/métodos)
 - **src/core/** - Lógica de negócio pura (TypeScript)
 - **src/types/** - Contratos formais (FASE 2)
 - **src/ui/** - Interface migrada (FASE 4)
@@ -220,8 +223,37 @@ Tempo Real (geradorDatas.ts) → Orquestração → Domínio → UI
 
 - ✅ **FASE 1:** Conversão estrutural (importações .js)
 - ✅ **FASE 2:** Contratos como tipos (5 arquivos)
-- ✅ **FASE 3:** Planos sob contrato (validação)
+- ✅ **FASE 3:** Planos sob contrato (validação + cartuchos puros)
 - ✅ **FASE 4:** UI migrada (componentes tipados)
+- ✅ **FASE 5:** Tailwind CSS adotado (estilização centralizada)
+
+---
+
+## 🎨 **TAILWIND CSS (Adotado)**
+
+### **Configuração**
+
+- **tailwind.config.js** - Configuração com darkMode: ["class", ".dark-mode"]
+- **postcss.config.js** - PostCSS com tailwindcss e autoprefixer
+- **src/tailwind.css** - Entrada com @tailwind directives
+
+### **Estratégia de Migração**
+
+- ✅ **HTML Refatorado:** Navbar, Card do Dia, Calendário, Footer em Tailwind
+- ✅ **Dark Mode:** Classes dark: aplicadas em todos os componentes
+- ✅ **Responsividade:** Breakpoints md:, lg: funcionando
+- ⚠️ **CSS Legado:** Mantido para elementos dinâmicos (calendário grid, busca, notas)
+- ✅ **Nova Seção:** #descricao dropdown com Tailwind puro
+
+### **Arquivos CSS Legados (mantidos)**
+
+- `navbar.css` - Estilos da busca dinâmica
+- `cards.css` - Conteúdo interno do card (dinâmico)
+- `calendar.css` - Grid do calendário (dinâmico)
+- `darkmode.css` - Variáveis CSS do tema
+- `search_styles.css` - Resultados da busca
+- `notas.css` - Notas flutuantes
+- `components/reset-modal.css` - Modal de reset (completo)
 
 ---
 
@@ -229,7 +261,7 @@ Tempo Real (geradorDatas.ts) → Orquestração → Domínio → UI
 
 ### **📈 Distribuição de Arquivos**
 
-- **TypeScript (src/):** 13 arquivos (núcleo crítico)
+- **TypeScript (src/):** 14 arquivos (núcleo crítico + Tailwind)
 - **JavaScript (js/):** 38 arquivos (interface funcional)
 - **Compilado (dist-vite/):** 25 arquivos (build)
 - **Total:** 76 arquivos (sistema completo)
@@ -280,9 +312,12 @@ Tempo Real (geradorDatas.ts) → Orquestração → Domínio → UI
 
 ### **✅ Migração Concluída**
 
-- **FASE 1-4 completas** - 100% conforme CONTRATO_DE_REMODULACAO_TS.MD
+- **FASE 1-5 completas** - 100% conforme CONTRATO_DE_REMODULACAO_TS.MD
 - **Tipagem forte** - Núcleo totalmente tipado
 - **Contratos formais** - 5 arquivos de tipos criados
+- **Plano-cartucho puro** - Sem lógica, sem imports do sistema
+- **Materialização no core** - Datas e métodos injetados via materializarPlanoCartucho.ts
+- **Tailwind CSS** - Adotado como centro organizacional da UI
 - **Validação estrutural** - Ativa e funcional
 
 ### **✅ Arquitetura Robusta**
@@ -303,11 +338,13 @@ Tempo Real (geradorDatas.ts) → Orquestração → Domínio → UI
 - **Modularidade** - Sistema pronto para crescimento
 - **Profissionalismo** - Código organizado e documentado
 
-### **🎯 Migração TypeScript Concluída**
+### **🎯 Migração TypeScript + Tailwind Concluída**
 
 - **Build funcionando** - TypeScript compilando corretamente
 - **Importações ajustadas** - Todos os caminhos com extensão .js
 - **Tipagem forte** - Núcleo totalmente tipado
 - **Contratos formais** - Validação estrutural ativa
+- **Plano-cartucho puro** - Dados sem lógica, conforme CONTRATO_DE_REMODULACAO_TS.MD
+- **Tailwind CSS adotado** - Centro organizacional da UI
 
-**A estrutura está profissional, organizada, 100% funcional e a migração TypeScript está completamente concluída!** 🚀✨
+**A estrutura está profissional, organizada, 100% funcional, com Tailwind CSS adotado e a migração TypeScript completamente concluída!** 🚀✨

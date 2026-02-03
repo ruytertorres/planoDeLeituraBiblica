@@ -14,12 +14,12 @@
     <link rel="stylesheet" href="css/buttons.css">
     <link rel="stylesheet" href="css/cards.css">
     <link rel="stylesheet" href="css/calendar.css">
-    <link rel="stylesheet" href="css/footer-profissional.css">
+    <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link rel="stylesheet" href="css/notas.css">
     <link rel="stylesheet" href="css/darkmode.css">
     <link rel="stylesheet" href="css/search_styles.css">
-    <link rel="stylesheet" href="css/componentes/reset-modal.css">
+    <link rel="stylesheet" href="css/components/reset-modal.css">
     <link rel="stylesheet" href="css/reajuste-modal.css">
 
     <!-- Font Awesome -->
@@ -32,48 +32,56 @@
 <body>
     <div class="app-container">
         <!-- =========================================================================
-             NAVBAR
+             NAVBAR - Tailwind CSS
           ========================================================================= -->
-        <nav id="navbar">
-            <div class="navbar-container">
-                <a href="#" class="navbar-title">
-                    <i class="fas fa-bible"></i>
+        <nav id="navbar"
+            class="navbar-container sticky top-0 z-50 w-screen bg-gradient-to-r from-blue-800 to-blue-600 text-white shadow-lg dark:from-slate-900 dark:to-slate-800">
+            <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
+                <a href="#" class="flex shrink-0 items-center gap-2.5 text-2xl font-bold text-white no-underline">
+                    <i class="fas fa-bible text-xl"></i>
                     Leitura Bíblica Cronológica
                 </a>
 
-                <div class="navbar-stats">
-                    <div class="stat-item">
-                        <span class="stat-value" id="total-dias">—</span>
-                        <span class="stat-label">Dias</span>
+                <div class="flex shrink-0 items-center gap-6">
+                    <div class="flex flex-col items-center min-w-[60px]">
+                        <span id="total-dias" class="text-xl font-bold">—</span>
+                        <span class="text-sm opacity-80">Dias</span>
                     </div>
 
-                    <div class="stat-item">
-                        <span class="stat-value" id="dias-lidos">—</span>
-                        <span class="stat-label">Lidos</span>
+                    <div class="flex flex-col items-center min-w-[60px]">
+                        <span id="dias-lidos" class="text-xl font-bold">—</span>
+                        <span class="text-sm opacity-80">Lidos</span>
                     </div>
 
-                    <div class="stat-item">
-                        <span class="stat-value" id="progresso">—%</span>
-                        <span class="stat-label">Progresso</span>
+                    <div class="flex flex-col items-center min-w-[60px]">
+                        <span id="progresso" class="text-xl font-bold">—%</span>
+                        <span class="text-sm opacity-80">Progresso</span>
                     </div>
 
                     <!-- Botão de resetar progresso -->
-                    <button id="btn-resetar-progresso" class="btn-reset" title="Resetar progresso">
-                        <i class="fas fa-redo"></i>
+                    <button id="btn-resetar-progresso"
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20 text-white transition hover:scale-110 hover:bg-red-500/40"
+                        title="Resetar progresso">
+                        <i class="fas fa-redo text-red-400"></i>
                     </button>
 
                     <!-- Botão gerar certificado -->
-                    <button id="btn-gerar-certificado" class="btn-action" title="Gerar certificado de conclusão">
-                        <i class="fas fa-award"></i>
+                    <button id="btn-gerar-certificado"
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/20 text-white transition hover:scale-110 hover:bg-green-500/40"
+                        title="Gerar certificado de conclusão">
+                        <i class="fas fa-award text-green-400"></i>
                     </button>
 
                     <!-- Botão exportar progresso -->
-                    <button id="btn-exportar-progresso" class="btn-action" title="Exportar progresso em DOCX">
-                        <i class="fas fa-file-download"></i>
+                    <button id="btn-exportar-progresso"
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/20 text-white transition hover:scale-110 hover:bg-green-500/40"
+                        title="Exportar progresso em DOCX">
+                        <i class="fas fa-file-download text-green-400"></i>
                     </button>
 
-                    <button class="theme-toggle" id="theme-toggle">
-                        <i class="fas fa-moon"></i>
+                    <button id="theme-toggle"
+                        class="flex h-10 w-10 items-center justify-center rounded-full text-white transition hover:bg-white/10">
+                        <i class="fas fa-moon text-lg"></i>
                     </button>
                 </div>
             </div>
@@ -84,19 +92,63 @@
           ========================================================================= -->
         <main id="app" class="app-container">
             <!-- ===============================================================
-                   NAVEGAÇÃO + CARD DO DIA
+                   DESCRIÇÃO DO PLANO (Dropdown)
               =============================================================== -->
-            <section class="dia-navegacao">
+            <section id="descricao" class="mx-auto w-full max-w-6xl px-4 py-4">
+                <div
+                    class="rounded-xl border border-gray-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800">
+                    <button id="btn-descricao-toggle"
+                        class="flex w-full items-center justify-between px-6 py-4 text-left transition hover:bg-gray-50 dark:hover:bg-slate-700/50"
+                        aria-expanded="false" aria-controls="descricao-conteudo">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-info-circle text-blue-600 dark:text-blue-400"></i>
+                            <span class="text-lg font-semibold text-gray-800 dark:text-gray-100">Sobre o Plano
+                                Cronológico</span>
+                        </div>
+                        <i id="descricao-icon"
+                            class="fas fa-chevron-down text-gray-500 transition-transform duration-300 dark:text-gray-400"></i>
+                    </button>
+                    <div id="descricao-conteudo"
+                        class="hidden border-t border-gray-200 px-6 py-4 dark:border-slate-700">
+                        <p class="leading-relaxed text-gray-700 dark:text-gray-300">
+                            Este plano de leitura cronológica da Bíblia foi desenvolvido para guiar você através das
+                            Escrituras em ordem cronológica e temática.
+                            Ao longo de <strong class="text-blue-600 dark:text-blue-400">317 dias</strong>, você
+                            percorrerá do Gênesis ao Apocalipse,
+                            compreendendo a narrativa bíblica em sua sequência histórica. Cada dia inclui leituras do
+                            Antigo e Novo Testamento
+                            organizadas para proporcionar uma visão completa da história da redenção.
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span
+                                class="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">317
+                                dias</span>
+                            <span
+                                class="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">Cronológico</span>
+                            <span
+                                class="rounded-full bg-purple-100 px-3 py-1 text-sm text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">Temático</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===============================================================
+                   NAVEGAÇÃO + CARD DO DIA - Tailwind CSS
+              =============================================================== -->
+            <section class="mx-auto flex w-full max-w-6xl items-stretch gap-6 px-4 py-8">
                 <!-- Botão anterior -->
-                <div class="nav-buttons">
-                    <button id="btn-dia-anterior" class="btn btn-secondary btn-nav" aria-label="Dia anterior">
+                <div class="flex min-w-[120px] items-center justify-center">
+                    <button id="btn-dia-anterior"
+                        class="rounded-lg bg-blue-600 px-6 py-3 text-white shadow-md transition hover:-translate-x-1 hover:bg-blue-700 hover:shadow-lg dark:bg-slate-700 dark:hover:bg-slate-600"
+                        aria-label="Dia anterior">
                         ◀ Anterior
                     </button>
                 </div>
 
                 <!-- CARD DO DIA -->
-                <div class="dia-atual-container">
-                    <div id="card-dia" aria-live="polite" class="card-dia current-day-card pendente">
+                <div class="min-w-0 flex-1">
+                    <div id="card-dia" aria-live="polite"
+                        class="overflow-hidden rounded-2xl border-l-[6px] border-yellow-400 bg-white p-7 shadow-xl dark:bg-slate-800 dark:shadow-black/20">
                         <section id="dia-view">
                             <!-- render_dia_card.js injeta aqui -->
                         </section>
@@ -104,22 +156,37 @@
                 </div>
 
                 <!-- Botão próximo -->
-                <div class="nav-buttons">
-                    <button id="btn-dia-proximo" class="btn btn-secondary btn-nav" aria-label="Próximo dia">
+                <div class="flex min-w-[120px] items-center justify-center">
+                    <button id="btn-dia-proximo"
+                        class="rounded-lg bg-blue-600 px-6 py-3 text-white shadow-md transition hover:translate-x-1 hover:bg-blue-700 hover:shadow-lg dark:bg-slate-700 dark:hover:bg-slate-600"
+                        aria-label="Próximo dia">
                         Próximo ▶
                     </button>
                 </div>
             </section>
 
             <!-- ===============================================================
-                   CALENDÁRIO
+                   CALENDÁRIO - Tailwind CSS
               =============================================================== -->
-            <section id="calendar" class="section-card calendar-section" aria-label="Calendário de leitura">
-                <div class="calendar-header">
-                    <span class="calendar-title"> Calendário de Leitura </span>
+            <section id="calendar"
+                class="mx-auto mb-8 mt-8 w-full max-w-6xl rounded-2xl bg-white/95 p-8 shadow-xl dark:bg-slate-800/95 dark:shadow-black/20"
+                aria-label="Calendário de leitura">
+                <div
+                    class="relative mb-6 flex items-center justify-between border-b border-gray-200 pb-4 dark:border-slate-700">
+                    <button id="btn-mes-anterior"
+                        class="nav-mes-btn min-w-[120px] rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm text-gray-700 transition hover:border-gray-400 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600">
+                        ◀ Mês Anterior
+                    </button>
+                    <h2 id="calendar-title"
+                        class="absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-xl font-semibold text-gray-800 dark:text-gray-100">
+                        Calendário de Leitura</h2>
+                    <button id="btn-mes-proximo"
+                        class="nav-mes-btn min-w-[120px] rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm text-gray-700 transition hover:border-gray-400 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600">
+                        Mês Próximo ▶
+                    </button>
                 </div>
 
-                <div class="calendar-wrapper">
+                <div class="rounded-xl bg-white p-6 shadow-md dark:bg-slate-900">
                     <div id="calendario">
                         <!-- render_calendario.js injeta aqui -->
                     </div>
@@ -195,94 +262,134 @@
     </section>
 
     <!-- =========================================================================
-         FOOTER PROFISSIONAL
+         FOOTER PROFISSIONAL - Tailwind CSS
       ========================================================================= -->
-    <footer id="footer" class="footer">
-        <div class="footer-container">
+    <footer id="footer"
+        class="mt-12 border-t border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 pb-4 pt-10 text-sm text-gray-600 dark:border-slate-700 dark:from-slate-900 dark:to-slate-800 dark:text-gray-400">
+        <div class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 md:grid-cols-2 lg:grid-cols-4">
 
             <!-- SEÇÃO 1: MARCA E DESCRIÇÃO -->
-            <div class="footer-section footer-brand">
-                <div class="footer-logo">
-                    <i class="fas fa-bible"></i>
-                    <span class="footer-app-name">Leitura Bíblica Cronológica</span>
+            <div class="flex flex-col md:col-span-2 lg:col-span-1">
+                <div class="mb-4 flex items-center gap-3">
+                    <i class="fas fa-bible text-3xl text-blue-600 dark:text-blue-400"></i>
+                    <span class="text-xl font-bold text-gray-800 dark:text-gray-100">Leitura Bíblica Cronológica</span>
                 </div>
 
-                <p class="footer-description">
+                <p class="mb-6 max-w-xs leading-relaxed">
                     Transforme sua vida através da leitura organizada das Escrituras.
                     Um capítulo por dia, do Gênesis ao Apocalipse.
                 </p>
 
-                <div class="footer-social">
-                    <a href="#" class="social-icon" title="Compartilhar" aria-label="Compartilhar">
+                <div class="flex gap-4">
+                    <a href="#"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-gray-600 transition hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white dark:bg-slate-700 dark:text-gray-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                        title="Compartilhar" aria-label="Compartilhar">
                         <i class="fas fa-share-alt"></i>
                     </a>
-                    <a href="#" class="social-icon" title="Feedback" aria-label="Enviar feedback">
+                    <a href="#"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-gray-600 transition hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white dark:bg-slate-700 dark:text-gray-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                        title="Feedback" aria-label="Enviar feedback">
                         <i class="fas fa-comment-alt"></i>
                     </a>
-                    <a href="#" class="social-icon" title="Ajuda" aria-label="Ajuda">
+                    <a href="#"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-gray-600 transition hover:-translate-y-0.5 hover:bg-blue-600 hover:text-white dark:bg-slate-700 dark:text-gray-400 dark:hover:bg-blue-500 dark:hover:text-white"
+                        title="Ajuda" aria-label="Ajuda">
                         <i class="fas fa-question-circle"></i>
                     </a>
                 </div>
             </div>
 
             <!-- SEÇÃO 2: NAVEGAÇÃO RÁPIDA -->
-            <div class="footer-section footer-nav">
-                <h3 class="footer-title">Navegação</h3>
-                <ul class="footer-links">
-                    <li><a href="#" data-nav="home"><i class="fas fa-home"></i> Início</a></li>
-                    <li><a href="#" data-nav="calendar"><i class="fas fa-calendar-alt"></i> Calendário</a></li>
-                    <li><a href="#" data-nav="stats"><i class="fas fa-chart-line"></i> Estatísticas</a></li>
-                    <li><a href="#" data-nav="notes"><i class="fas fa-edit"></i> Anotações</a></li>
-                    <li><a href="#" data-nav="settings"><i class="fas fa-cog"></i> Configurações</a></li>
+            <div class="flex flex-col">
+                <h3
+                    class="mb-5 inline-block border-b-2 border-blue-600 pb-2 text-base font-semibold text-gray-800 dark:border-blue-400 dark:text-gray-100">
+                    Navegação</h3>
+                <ul class="space-y-3">
+                    <li><a href="#" data-nav="home"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-home w-5"></i> Início</a></li>
+                    <li><a href="#" data-nav="calendar"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-calendar-alt w-5"></i> Calendário</a></li>
+                    <li><a href="#" data-nav="stats"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-chart-line w-5"></i> Estatísticas</a></li>
+                    <li><a href="#" data-nav="notes"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-edit w-5"></i> Anotações</a></li>
+                    <li><a href="#" data-nav="settings"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-cog w-5"></i> Configurações</a></li>
                 </ul>
             </div>
 
             <!-- SEÇÃO 3: RECURSOS -->
-            <div class="footer-section footer-resources">
-                <h3 class="footer-title">Recursos</h3>
-                <ul class="footer-links">
-                    <li><a href="#" data-action="faq"><i class="fas fa-question"></i> FAQ</a></li>
-                    <li><a href="#" data-action="tips"><i class="fas fa-lightbulb"></i> Dicas de Leitura</a></li>
-                    <li><a href="#" data-action="versions"><i class="fas fa-book"></i> Versões da Bíblia</a></li>
-                    <li><a href="#" data-action="guide"><i class="fas fa-graduation-cap"></i> Guia de Uso</a></li>
-                    <li><a href="#" data-action="contact"><i class="fas fa-envelope"></i> Contato</a></li>
+            <div class="flex flex-col">
+                <h3
+                    class="mb-5 inline-block border-b-2 border-blue-600 pb-2 text-base font-semibold text-gray-800 dark:border-blue-400 dark:text-gray-100">
+                    Recursos</h3>
+                <ul class="space-y-3">
+                    <li><a href="#" data-action="faq"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-question w-5"></i> FAQ</a></li>
+                    <li><a href="#" data-action="tips"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-lightbulb w-5"></i> Dicas de Leitura</a></li>
+                    <li><a href="#" data-action="versions"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-book w-5"></i> Versões da Bíblia</a></li>
+                    <li><a href="#" data-action="guide"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-graduation-cap w-5"></i> Guia de Uso</a></li>
+                    <li><a href="#" data-action="contact"
+                            class="flex items-center gap-2 text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"><i
+                                class="fas fa-envelope w-5"></i> Contato</a></li>
                 </ul>
             </div>
 
             <!-- SEÇÃO 4: LEGAL + TÉCNICO -->
-            <div class="footer-section footer-legal">
-                <h3 class="footer-title">Informações</h3>
+            <div class="flex flex-col">
+                <h3
+                    class="mb-5 inline-block border-b-2 border-blue-600 pb-2 text-base font-semibold text-gray-800 dark:border-blue-400 dark:text-gray-100">
+                    Informações</h3>
 
-                <div class="footer-info">
-                    <div class="footer-info-item">
-                        <i class="fas fa-code-branch"></i>
-                        <span>Versão: <strong id="app-version">2.1.0</strong></span>
+                <div class="mb-6 space-y-3 text-sm">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-code-branch text-blue-600 dark:text-blue-400"></i>
+                        <span>Versão: <strong id="app-version"
+                                class="text-gray-800 dark:text-gray-200">2.1.0</strong></span>
                     </div>
 
-                    <div class="footer-info-item">
-                        <i class="fas fa-sync-alt"></i>
-                        <span>Última atualização: <strong id="last-update">01/02/2026</strong></span>
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-sync-alt text-blue-600 dark:text-blue-400"></i>
+                        <span>Última atualização: <strong id="last-update"
+                                class="text-gray-800 dark:text-gray-200">01/02/2026</strong></span>
                     </div>
 
-                    <div class="footer-info-item">
-                        <i class="fas fa-database"></i>
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-database text-blue-600 dark:text-blue-400"></i>
                         <span>Progresso salvo localmente</span>
                     </div>
                 </div>
 
-                <div class="footer-copyright">
-                    <p>
+                <div class="mt-auto border-t border-gray-200 pt-6 dark:border-slate-700">
+                    <p class="mb-3 leading-relaxed">
                         &copy; <span id="current-year">2026</span>
                         Leitura Bíblica Cronológica.
-                        <span class="footer-rights">Todos os direitos reservados.</span>
+                        <span class="text-sm opacity-80">Todos os direitos reservados.</span>
                     </p>
 
-                    <div class="footer-legal-links">
-                        <a href="#" class="legal-link">Política de Privacidade</a>
-                        <span class="separator">•</span>
-                        <a href="#" class="legal-link">Termos de Uso</a>
-                        <span class="separator">•</span>
-                        <a href="#" class="legal-link">Créditos</a>
+                    <div class="flex flex-wrap items-center gap-2 text-sm">
+                        <a href="#"
+                            class="text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">Política
+                            de Privacidade</a>
+                        <span class="opacity-50">•</span>
+                        <a href="#"
+                            class="text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">Termos
+                            de Uso</a>
+                        <span class="opacity-50">•</span>
+                        <a href="#"
+                            class="text-gray-600 transition hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">Créditos</a>
                     </div>
                 </div>
             </div>
@@ -290,9 +397,10 @@
         </div>
 
         <!-- BADGE DE STATUS -->
-        <div class="footer-status">
-            <span class="status-badge status-online">
-                <i class="fas fa-circle"></i>
+        <div class="mx-auto mt-6 max-w-6xl px-6 text-center">
+            <span
+                class="inline-flex items-center gap-2 rounded-full bg-green-100 px-4 py-1.5 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                <i class="fas fa-circle animate-pulse text-xs"></i>
                 Aplicação funcionando normalmente
             </span>
         </div>
@@ -301,6 +409,7 @@
     <!-- Script principal com Vite -->
     <script type="module" src="./js/main-hibrido.js"></script>
     <script type="module" src="./js/ui/components/footer.js"></script>
+    <script type="module" src="./js/ui/components/descricao-dropdown.js"></script>
 </body>
 
 </html>
