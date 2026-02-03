@@ -33,14 +33,6 @@ type DiaCache = {
   acessoCount: number;
 };
 
-type PlanoCartuchoRaw = {
-  id: string;
-  nome: string;
-  descricao: string;
-  totalDias: number;
-  dias: DiaPlanoRaw[];
-};
-
 type DiaPlanoRaw = {
   numero: number;
   antigoTestamento: TrechoBiblico[];
@@ -49,6 +41,14 @@ type DiaPlanoRaw = {
   capitulos: number[];
   versiculos: string[];
   observacoes: string;
+};
+
+type PlanoCartuchoRaw = {
+  id: string;
+  nome: string;
+  descricao: string;
+  totalDias: number;
+  dias: DiaPlanoRaw[];
 };
 
 // ============================================================================

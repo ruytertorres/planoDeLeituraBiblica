@@ -34,7 +34,7 @@ import {
   inicializarCarregador,
   carregarDia,
   precarregarProximos,
-} from "../../../src/core/services/planos/carregadorDias.js";
+} from "../../../dist-vite/core/services/planos/carregadorDias.js";
 
 /**
  * Orquestrador Central da Aplicação
