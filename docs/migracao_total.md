@@ -476,7 +476,7 @@ Se em qualquer fase:
 
 ---
 
-**Progresso:** \_\_ / 32 itens concluídos
+**Progresso:** 8 / 32 itens concluídos
 
 **Autor:** Cascade AI  
 **Data:** 2025-02-03  
