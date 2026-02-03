@@ -30,6 +30,11 @@ import { initNotasOverlayUI } from "../componentes/notas/NotasOverlayUI.js";
 import { initDarkMode } from "../components/darkmode.js";
 import { ReorganizadorPlano } from "../../core/services/planos/ReorganizadorPlano.js";
 import * as geradorDatas from "../../core/services/tempo/geradorDatas.js";
+import {
+  inicializarCarregador,
+  carregarDia,
+  precarregarProximos,
+} from "../../../src/core/services/planos/carregadorDias.js";
 
 /**
  * Orquestrador Central da Aplicação
@@ -90,6 +95,9 @@ export class MainOrquestrador extends BaseOrquestrador {
    */
   async init() {
     try {
+      // 🆕 NOVO: Inicializar carregador lazy antes de tudo
+      inicializarCarregador(this.planoCronologico);
+
       // Passo 1: Tema escuro
       initDarkMode();
 
@@ -382,14 +390,13 @@ export class MainOrquestrador extends BaseOrquestrador {
    * Renderizar tudo (atalho para render completo)
    * @private
    */
-  render() {
+  async render() {
     // 🔄 PROTEGER diasBloqueados durante renderização
     const diasBloqueadosAntes = [...this.state.diasBloqueados];
 
-    const plano = this.state.managers.plano.getPlano();
-    this.renderDia();
+    await this.renderDia();
     this.renderEstatisticas();
-    this.renderCalendario(plano);
+    this.renderCalendario(this.planoCronologico);
 
     // 🔄 RESTAURAR diasBloqueados se foram alterados indevidamente
     if (
@@ -414,23 +421,22 @@ export class MainOrquestrador extends BaseOrquestrador {
    * Renderizar card do dia
    * @private
    */
-  renderDia() {
-    const plano = this.state.managers.plano.getPlano();
-    const dia = plano.getDia(this.state.diaAtualNumero);
+  async renderDia() {
+    // 🆕 NOVO: Usar carregador lazy para obter o dia
+    const dia = await carregarDia(this.state.diaAtualNumero);
     const container = document.getElementById("dia-view");
 
     // 🚨 VERIFICAÇÃO CRÍTICA: Garantir que o dia existe
     if (!dia) {
       console.error("❌ DIA INEXISTENTE:", {
         diaAtualNumero: this.state.diaAtualNumero,
-        plano: plano,
-        totalDias: plano?.dias?.length,
+        totalDias: this.planoCronologico?.totalDias,
       });
       container.innerHTML = `
         <article class="dia-card erro">
           <h2>❌ Erro Crítico</h2>
           <p>Dia ${this.state.diaAtualNumero} não encontrado no plano!</p>
-          <p>Total de dias no plano: ${plano?.dias?.length || 0}</p>
+          <p>Total de dias no plano: ${this.planoCronologico?.totalDias || 0}</p>
         </article>
       `;
       return;
@@ -491,7 +497,10 @@ export class MainOrquestrador extends BaseOrquestrador {
     this.emit("dia-alterado", { dia: diaParaRenderizar.numero });
 
     // ✅ Atualizar navegação
-    this.updateNavigation(plano.dias.length);
+    // 🆕 NOVO: Pré-carregar dias próximos em background
+    precarregarProximos(this.state.diaAtualNumero, 3);
+
+    this.updateNavigation(this.planoCronologico.totalDias);
 
     // ✅ Highlight no calendário
     if (this.state.apis.calendario) {
@@ -504,9 +513,8 @@ export class MainOrquestrador extends BaseOrquestrador {
    * @private
    */
   renderEstatisticas() {
-    const plano = this.state.managers.plano.getPlano();
     const lidos = this.state.managers.progresso.getTotalLidos();
-    const total = plano.dias.length;
+    const total = this.planoCronologico.totalDias;
 
     const diasLidosEl = document.getElementById("dias-lidos");
     const progressoEl = document.getElementById("progresso");
