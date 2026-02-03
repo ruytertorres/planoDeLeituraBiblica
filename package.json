@@ -7,8 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "dev": "vite",
-    "dev:legacy": "npx http-server . -p 8080 -o",
-    "start": "npm run build && npm run dev"
+    "dev:legacy": "npx http-server . -p 8000 -o",
+    "start": "npm run build && npm run dev:legacy",
+    "build:simple": "echo 'Compilando TypeScript...' && npm run build && echo '✅ Build concluído!'",
+    "serve": "npx http-server . -p 8000 -o",
+    "clean": "rm -rf dist-vite",
+    "rebuild": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",

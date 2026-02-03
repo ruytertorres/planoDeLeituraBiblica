@@ -27,7 +27,7 @@
 --------------------------------------------------------------------------- */
 
 import { Dia } from "../core/models/parametroDia.js";
-import { validarPlano } from "../../contratos/contrato_plano.js";
+import { validarPlano } from "../contratos/contrato_plano.js";
 import {
   gerarDataISO,
   gerarDataBR,

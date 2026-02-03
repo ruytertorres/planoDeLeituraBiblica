@@ -13,7 +13,7 @@
    IMPORTAÇÕES (JavaScript)
 ============================================================================ */
 
-import planoCronologico from "/dist-vite/cartuchos/plano_cronologico.js";
+import planoCronologico from "./cartuchos/plano_cronologico.js";
 import { MainOrquestrador } from "./ui/orquestradores/MainOrquestrador.js";
 import { CertificadoPlugin } from "./ui/plugins/CertificadoPlugin.js";
 import { ExportacaoPlugin } from "./ui/plugins/ExportacaoPlugin.js";
@@ -31,32 +31,10 @@ let nucloTypeScriptCarregado = false;
 ============================================================================ */
 
 async function carregarNucleoTypeScript() {
-  try {
-    // Tentar importar do núcleo compilado
-    const {
-      planoCronologico: planoTS,
-      MainOrquestrador: MainOrquestradorTS,
-      inicializarSistemaTypeScript,
-      getAdapter,
-    } = await import("../dist-vite/index.js");
-
-    // Inicializar sistema TypeScript
-    inicializarSistemaTypeScript();
-    const adapter = getAdapter();
-
-    if (adapter) {
-      return {
-        plano: planoTS,
-        Orquestrador: MainOrquestradorTS,
-        adapter: adapter,
-        tipo: "typescript",
-      };
-    }
-
-    throw new Error("Adaptador não disponível");
-  } catch (error) {
-    return null;
-  }
+  // Sistema operará 100% em modo JavaScript
+  // Não tentar carregar TypeScript para evitar erros 404
+  console.log("📦 Sistema configurado para operar 100% em modo JavaScript");
+  return null;
 }
 
 /* ============================================================================
@@ -65,38 +43,15 @@ async function carregarNucleoTypeScript() {
 
 async function inicializarSistemaHibrido() {
   try {
-    // 1. Tentar carregar núcleo TypeScript
-    const nucleoTS = await carregarNucleoTypeScript();
+    // Sistema 100% JavaScript - sem tentativas de TypeScript
+    console.log("🚀 Inicializando sistema em modo JavaScript 100% funcional");
 
-    if (nucleoTS) {
-      // Sistema TypeScript disponível
-      // Criar orquestrador TypeScript
-      const orquestradorTS = new nucleoTS.Orquestrador(nucleoTS.plano);
-      nucloTypeScriptCarregado = true;
+    // Criar orquestrador JavaScript
+    mainOrquestrador = new MainOrquestrador(planoCronologico);
 
-      // Criar orquestrador JavaScript para compatibilidade com plugins
-      mainOrquestrador = new MainOrquestrador(nucleoTS.plano);
-
-      // Adaptar plugins JavaScript para TypeScript
-      const pluginCertificado = criarPluginAdapter(
-        CertificadoPlugin,
-        mainOrquestrador, // Passar o orquestrador JavaScript que tem o método 'on'
-      );
-      const pluginExportacao = criarPluginAdapter(
-        ExportacaoPlugin,
-        mainOrquestrador, // Passar o orquestrador JavaScript que tem o método 'on'
-      );
-
-      mainOrquestrador.registerPlugin(pluginCertificado);
-      mainOrquestrador.registerPlugin(pluginExportacao);
-    } else {
-      // Fallback para JavaScript
-      mainOrquestrador = new MainOrquestrador(planoCronologico);
-
-      // Plugins JavaScript normais
-      mainOrquestrador.registerPlugin(new CertificadoPlugin());
-      mainOrquestrador.registerPlugin(new ExportacaoPlugin());
-    }
+    // Plugins JavaScript normais
+    mainOrquestrador.registerPlugin(new CertificadoPlugin());
+    mainOrquestrador.registerPlugin(new ExportacaoPlugin());
 
     // 2. Inicializar orquestrador
     await mainOrquestrador.init();
@@ -107,6 +62,9 @@ async function inicializarSistemaHibrido() {
     // 4. Verificar reajuste
     await verificarReajuste();
 
+    console.log(
+      "✅ Sistema inicializado com sucesso - Modo JavaScript 100% funcional",
+    );
     return mainOrquestrador;
   } catch (error) {
     console.error("❌ Erro na inicialização:", error);
