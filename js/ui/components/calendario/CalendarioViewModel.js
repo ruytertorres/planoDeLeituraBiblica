@@ -48,8 +48,7 @@ export class CalendarioViewModel {
     this.diasBloqueados = diasBloqueados; // Dias que não podem ser clicados
 
     // ✅ CORREÇÃO: Inicializar com o mês atual real
-    const dataAtual = new Date();
-    this.mesAtual = dataAtual.getMonth(); // Mês atual (0-11)
+    this.mesAtual = geradorDatas.getMesAtual(); // Mês atual (0-11)
     this.anoAtual = geradorDatas.getAnoAtual();
   }
 

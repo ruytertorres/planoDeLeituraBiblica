@@ -127,9 +127,11 @@ export class ResetProgressoOrquestrador extends BaseOrquestrador {
     const diaDoAnoHoje = this.getDiaDoAnoAtual();
     const deslocamentoDatas = diaDoAnoHoje - 1; // Dia 1 deve virar hoje
 
-    // Verificar se o plano ultrapassará 31/12 (365 dias)
+    // Verificar se o plano ultrapassará o fim do ciclo civil atual
     const totalDias = this.planoManager.getTotalDias();
-    const diaFinalDoAno = 365; // 31/12
+    const diaFinalDoAno = geradorDatas.getTotalDiasNoAno(
+      geradorDatas.getAnoAtual(),
+    );
 
     let avisoUltrapassagem = null;
     if (totalDias > diaFinalDoAno - diaDoAnoHoje + 1) {

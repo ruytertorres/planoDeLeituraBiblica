@@ -23,9 +23,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const lastUpdateElement = document.getElementById("last-update");
   if (lastUpdateElement) {
     // MIGRADO: Usa gerador de tempo autorizado para formatação
-    const hoje = new Date(); // VIOLAÇÃO CONTROLADA: Apenas para formatação visual
-    const formattedDate = hoje.toLocaleDateString("pt-BR");
-    lastUpdateElement.textContent = formattedDate;
+    lastUpdateElement.textContent = geradorDatas.formatarDataCertificado(
+      geradorDatas.getTimestampAtual(),
+    );
   }
 
   // Adicionar funcionalidade aos links de navegação

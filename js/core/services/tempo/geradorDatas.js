@@ -89,6 +89,10 @@ function getAnoAtual() {
   return new Date().getFullYear();
 }
 
+function getMesAtual() {
+  return new Date().getMonth();
+}
+
 /* ============================================================================
    FUNÇÕES ADICIONAIS
 ============================================================================ */
@@ -256,6 +260,13 @@ function formatarDataCertificado(data) {
   return `${dia}/${mes}/${ano}`;
 }
 
+function calcularDiferencaDias(dataInicio, dataFim) {
+  const inicio = new Date(dataInicio);
+  const fim = new Date(dataFim);
+  const diffMs = fim.getTime() - inicio.getTime();
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+}
+
 /* ============================================================================
    EXPORTAÇÕES
 ============================================================================ */
@@ -266,6 +277,7 @@ export {
   gerarDataBR,
   getDiaDoAnoAtual,
   getAnoAtual,
+  getMesAtual,
   isAnoBissexto,
   getTotalDiasNoAno,
   converterDataISOParaDiaDoAno,
@@ -280,6 +292,7 @@ export {
   getTimestampDoDia,
   gerarNomeArquivoTimestamp,
   formatarDataCertificado,
+  calcularDiferencaDias,
 };
 
 // Exportação padrão para compatibilidade
@@ -288,6 +301,7 @@ export default {
   gerarDataBR,
   getDiaDoAnoAtual,
   getAnoAtual,
+  getMesAtual,
   isAnoBissexto,
   getTotalDiasNoAno,
   converterDataISOParaDiaDoAno,
@@ -302,4 +316,5 @@ export default {
   getTimestampDoDia,
   gerarNomeArquivoTimestamp,
   formatarDataCertificado,
+  calcularDiferencaDias,
 };

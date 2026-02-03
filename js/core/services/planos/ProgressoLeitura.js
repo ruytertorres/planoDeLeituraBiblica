@@ -121,9 +121,7 @@ export class ProgressoLeitura {
     try {
       const dados = {
         diasLidos: Array.from(this.diasLidos),
-        ultimaAtualizacao: new Date(
-          geradorDatas.getDiaDoAnoAtual(),
-        ).toISOString(),
+        ultimaAtualizacao: geradorDatas.getTimestampAtual(),
       };
       localStorage.setItem(this.chaveStorage, JSON.stringify(dados));
     } catch (error) {
@@ -155,7 +153,7 @@ export class ProgressoLeitura {
       ativo: true,
       numeroDia,
       diaHoje,
-      dataReajuste: new Date(geradorDatas.getDiaDoAnoAtual()).toISOString(),
+      dataReajuste: geradorDatas.getTimestampAtual(),
     };
     localStorage.setItem(
       this.chaveReajuste,

@@ -17,6 +17,7 @@ import {
   getTimestampAtual,
   formatarDataCertificado,
 } from "../../core/services/tempo/timestampUtil.js";
+import * as geradorDatas from "../../core/services/tempo/geradorDatas.js";
 
 /**
  * Plugin de Certificados
@@ -104,9 +105,9 @@ export class CertificadoPlugin {
       return true;
     }
 
-    const agora = new Date(getTimestampAtual());
-    const diasDecorridos = Math.floor(
-      (agora - dataInicio) / (1000 * 60 * 60 * 24),
+    const diasDecorridos = geradorDatas.calcularDiferencaDias(
+      dataInicio,
+      getTimestampAtual(),
     );
 
     return diasDecorridos >= 90;
@@ -123,9 +124,9 @@ export class CertificadoPlugin {
 
     if (!dataInicio) return 0;
 
-    const agora = new Date(getTimestampAtual());
-    const diasDecorridos = Math.floor(
-      (agora - dataInicio) / (1000 * 60 * 60 * 24),
+    const diasDecorridos = geradorDatas.calcularDiferencaDias(
+      dataInicio,
+      getTimestampAtual(),
     );
     return Math.max(0, 90 - diasDecorridos);
   }
