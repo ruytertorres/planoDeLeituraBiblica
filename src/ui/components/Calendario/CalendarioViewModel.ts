@@ -17,6 +17,7 @@ import {
   getAnoAtual,
   getDiaDoAnoAtual,
   getTotalDiasDoAno,
+  getMesAtual,
 } from "../../../core/services/tempo/geradorDatas.js";
 
 // ============================================================================
@@ -76,9 +77,8 @@ export class CalendarioViewModel {
     this.selecionarDiaCallback = onSelecionarDia;
     this.diasBloqueados = diasBloqueados;
 
-    const agora = new Date();
-    this.mesAtual = agora.getMonth();
-    this.anoAtual = agora.getFullYear();
+    this.mesAtual = getMesAtual();
+    this.anoAtual = getAnoAtual();
   }
 
   /**

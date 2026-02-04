@@ -17,6 +17,7 @@ import {
   getAnoAtual,
   getTimestampAtualISO,
   gerarDataBR,
+  getDataAtualFormatada,
 } from "../../../core/services/tempo/geradorDatas.js";
 
 export class FooterComponent {
@@ -60,7 +61,7 @@ export class FooterComponent {
     // Atualizar data da última atualização
     const lastUpdateElement = document.getElementById("last-update");
     if (lastUpdateElement) {
-      lastUpdateElement.textContent = new Date().toLocaleDateString("pt-BR");
+      lastUpdateElement.textContent = getDataAtualFormatada("pt-BR");
     }
   }
 

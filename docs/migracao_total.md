@@ -32,6 +32,31 @@
 | `css/footer.css`                    | ~6KB    | Obsoleto (Tailwind)                        | ❌ Remover   |
 | `css/responsive.css`                | ~15KB   | Legado, Tailwind cobre                     | ⚠️ Avaliar   |
 
+### Arquivos Legados
+
+| Arquivo/Pasta           | Status    | Ação       |
+| ----------------------- | --------- | ---------- |
+| `js/core/models/`       | JS legado | ⚠️ Gradual |
+| `js/ui/components/`     | JS legado | ⚠️ Gradual |
+| `js/ui/orquestradores/` | JS legado | ⚠️ Gradual |
+
+**Nota:** Não crítico, mas podem ser migrados gradualmente conforme Fase 3.
+
+### Logs e Arquivos Temporários
+
+| Arquivo     | Problema                      | Ação         |
+| ----------- | ----------------------------- | ------------ |
+| `build.log` | Log versionado no repositório | ❌ Gitignore |
+| `error.txt` | Erro temporário versionado    | ❌ Gitignore |
+
+**Solução:** Adicionar ao `.gitignore`:
+
+```bash
+*.log
+build.log
+error.txt
+```
+
 ### Problemas de Performance
 
 ```
