@@ -130,6 +130,35 @@ export function gerarDataBR(diaDoAno: number, ano: number): string {
 }
 
 /* ============================================================================
+   API PÚBLICA — FORMATAÇÃO DE DATAS (PARA UI)
+============================================================================ */
+
+/**
+ * Retorna a data atual formatada para exibição na UI.
+ *
+ * @param locales - Locale para formatação (default: "pt-BR")
+ * @param options - Opções de formatação Intl.DateTimeFormat
+ * @returns Data formatada como string
+ */
+export function getDataAtualFormatada(
+  locales: string | string[] = "pt-BR",
+  options?: Intl.DateTimeFormatOptions,
+): string {
+  const timestamp = Date.now();
+  return new Date(timestamp).toLocaleDateString(locales, options);
+}
+
+/**
+ * Retorna o mês atual (0-11) baseado no dia do ano atual.
+ *
+ * @returns Número do mês (0 = Janeiro, 11 = Dezembro)
+ */
+export function getMesAtual(): number {
+  const timestamp = Date.now();
+  return new Date(timestamp).getMonth();
+}
+
+/* ============================================================================
    OBJETO DE CONTEXTO TEMPORAL (OPCIONAL)
 ============================================================================ */
 
