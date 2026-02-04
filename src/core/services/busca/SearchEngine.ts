@@ -75,7 +75,7 @@ interface IndiceTexto {
  * Plano com dias para indexação
  */
 interface PlanoIndexavel {
-  dias: DiaDoPlano[];
+  readonly dias: readonly DiaDoPlano[];
 }
 
 /* ============================================================================

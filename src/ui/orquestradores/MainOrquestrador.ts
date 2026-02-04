@@ -1,277 +1,509 @@
 /* ============================================================================
-   MainOrquestrador.ts — Orquestrador Principal Tipado
-   Versão: 1.0.0 (TypeScript)
-   Aplicação: Bíblia Responsiva — Migração Parcial
+   MainOrquestrador.ts — Orquestrador Principal Completo
+   Versão: 2.0.0 (TypeScript)
+   ============================================================================
 
    RESPONSABILIDADE:
-   - Substituir MainOrquestrador.js com tipagem forte
-   - Gerenciar plugins e estado da aplicação
-   - Integrar núcleo TypeScript com interface
-   - Manter compatibilidade com código existente
+   - Orquestrar todo o fluxo da leitura bíblica
+   - Gerenciar estado global (dia atual, progresso, etc)
+   - Coordenar entre managers, orquestradores e UI
+   - Implementar navegação, renderização e eventos
 
-   CONTRATO:
-   - Implementar mesma interface do original JavaScript
-   - Respeitar hierarquia (Seção 4 CONTRATO_DO_SISTEMA.md)
-   - Nenhuma regra de domínio na UI
-============================================================================ */
+   CONFORMIDADE COM CONTRATO_DO_SISTEMA.MD:
+   - §3.1: Tempo é soberano (usa geradorDatas.ts)
+   - §4: Hierarquia de Autoridade
+   - §10: UI é reflexo do estado
 
-import { UIAdapter } from "../../compatibilidade/ui-adapter";
+   Camada: ORQUESTRAÇÃO
+   ============================================================================ */
+
+import { BaseOrquestrador } from "./BaseOrquestrador.js";
+import { PlanoManager } from "../../core/services/planos/PlanoManager.js";
+import { ProgressoLeitura } from "../../core/services/planos/ProgressoLeitura.js";
+import { NotasLeituraManager } from "../../core/services/notas/NotasLeituraManager.js";
+import { SearchEngine } from "../../core/services/busca/SearchEngine.js";
+import { ResetProgressoOrquestrador } from "../../core/services/planos/ResetProgressoOrquestrador.js";
+import { ReorganizadorPlano } from "../../core/services/planos/ReorganizadorPlano.js";
+import { NotasOverlayOrquestrador } from "../../core/services/notas/NotasOverlayOrquestrador.js";
+import {
+  getDiaDoAnoAtual,
+  getTimestampAtualISO,
+} from "../../core/services/tempo/geradorDatas.js";
 import type {
   PlanoCartucho,
   DiaDoPlano,
 } from "../../core/types/contratos.types";
 
 /* ============================================================================
-   INTERFACES DE PLUGIN (Compatibilidade)
-============================================================================ */
+   TIPOS E INTERFACES
+   ============================================================================ */
 
-interface Plugin {
-  readonly nome: string;
-  readonly versao: string;
-  init(adapter: UIAdapter): void;
-  destroy(): void;
+/**
+ * Estado do orquestrador
+ */
+interface MainState {
+  diaAtualNumero: number;
+  diaHojeNumero: number;
+  diasBloqueados: number[];
+  managers: {
+    plano: PlanoManager;
+    progresso: ProgressoLeitura;
+    notas: NotasLeituraManager;
+    busca: SearchEngine;
+  };
+  orquestradores: {
+    reset?: ResetProgressoOrquestrador;
+    notasOverlay?: NotasOverlayOrquestrador;
+  };
+  apis: {
+    calendario?: unknown;
+    calendarioVM?: unknown;
+  };
+  [key: string]: unknown;
+}
+
+/**
+ * Resultado de navegação
+ */
+interface NavegacaoResult {
+  sucesso: boolean;
+  dia?: DiaDoPlano;
+  erro?: string;
 }
 
 /* ============================================================================
-   MAIN ORQUESTRADOR TIPO
-============================================================================ */
+   CLASSE MAIN ORQUESTRADOR
+   ============================================================================ */
 
-export class MainOrquestrador {
-  private adapter: UIAdapter;
-  private plugins: Plugin[] = [];
-  private initialized = false;
-  private destroyed = false;
+/**
+ * Orquestrador principal da aplicação.
+ *
+ * Responsável por:
+ * - Inicializar todos os managers e subsistemas
+ * - Gerenciar estado global (dia atual, dia hoje, etc)
+ * - Orquestrar renderizações
+ * - Suportar sistema de plugins
+ * - Gerenciar lifecycle completo
+ *
+ * @extends BaseOrquestrador
+ */
+export class MainOrquestrador extends BaseOrquestrador {
+  /* --------------------------------------------------------------------------
+     ATRIBUTOS PRIVADOS
+     -------------------------------------------------------------------------- */
 
-  /**
-   * Cria novo orquestrador principal.
-   *
-   * @param plano - Plano cartucho válido
-   */
-  constructor(plano: PlanoCartucho) {
-    this.adapter = new UIAdapter(plano);
-  }
+  private planoCronologico: PlanoCartucho;
+  private _state: MainState;
+  private reorganizador?: ReorganizadorPlano;
 
   /* --------------------------------------------------------------------------
-     GERENCIAMENTO DE PLUGINS
+     CONSTRUTOR
      -------------------------------------------------------------------------- */
 
   /**
-   * Registra um plugin no orquestrador.
+   * Cria orquestrador principal
    *
-   * @param plugin - Plugin a ser registrado
+   * @param planoCronologico - Objeto do plano a ser usado
    */
-  registerPlugin(plugin: Plugin): void {
-    if (this.destroyed) {
-      console.warn(
-        "⚠️ Orquestrador destruído, não é possível registrar plugins",
-      );
-      return;
-    }
-
-    if (this.plugins.find((p) => p.nome === plugin.nome)) {
-      console.warn(`⚠️ Plugin '${plugin.nome}' já registrado`);
-      return;
-    }
-
-    this.plugins.push(plugin);
-
-    // Se já inicializado, inicializar o plugin imediatamente
-    if (this.initialized) {
-      try {
-        plugin.init(this.adapter);
-      } catch (error) {
-        console.error(`❌ Erro ao inicializar plugin '${plugin.nome}':`, error);
-      }
-    }
-  }
-
-  /**
-   * Remove um plugin do orquestrador.
-   *
-   * @param nome - Nome do plugin a ser removido
-   */
-  unregisterPlugin(nome: string): void {
-    const index = this.plugins.findIndex((p) => p.nome === nome);
-    if (index === -1) {
-      console.warn(`⚠️ Plugin '${nome}' não encontrado`);
-      return;
-    }
-
-    const plugin = this.plugins[index];
-
-    try {
-      plugin.destroy();
-    } catch (error) {
-      console.error(`❌ Erro ao destruir plugin '${nome}':`, error);
-    }
-
-    this.plugins.splice(index, 1);
+  constructor(planoCronologico: PlanoCartucho) {
+    super("MainOrquestrador");
+    this.planoCronologico = planoCronologico;
+    this._state = {
+      diaAtualNumero: 1,
+      diaHojeNumero: 1,
+      diasBloqueados: [],
+      managers: {} as MainState["managers"],
+      orquestradores: {},
+      apis: {},
+    };
   }
 
   /* --------------------------------------------------------------------------
-     INICIALIZAÇÃO E LIFECYCLE
+     INICIALIZAÇÃO
      -------------------------------------------------------------------------- */
 
   /**
-   * Inicializa o orquestrador e todos os plugins.
+   * Inicializa todo o sistema
    */
   async init(): Promise<void> {
-    if (this.initialized) {
-      console.warn("⚠️ Orquestrador já inicializado");
-      return;
-    }
-
-    if (this.destroyed) {
-      throw new Error(
-        "Orquestrador foi destruído, não pode ser reinicializado",
-      );
-    }
-
     try {
-      // Inicializar todos os plugins registrados
-      for (const plugin of this.plugins) {
-        try {
-          plugin.init(this.adapter);
-        } catch (error) {
-          console.error(
-            `❌ Erro ao inicializar plugin '${plugin.nome}':`,
-            error,
-          );
-          // Continuar com outros plugins
-        }
-      }
+      // Inicializar managers
+      this.initManagers();
 
-      this.initialized = true;
+      // Setup estado inicial
+      this.setupInitialState();
+
+      // Setup event delegation
+      this.setupEventDelegation();
+
+      // Renderização inicial
+      this.renderInitial();
+
+      // Inicializar subsistemas
+      this.initSubsystems();
+
+      // Inicializar plugins
+      await this.initPlugins();
+
+      console.log("[MainOrquestrador] Sistema inicializado com sucesso");
     } catch (error) {
-      console.error(
-        "❌ Erro fatal na inicialização do MainOrquestrador:",
-        error,
-      );
+      this.destroy();
       throw error;
     }
   }
 
   /**
-   * Destrói o orquestrador e todos os plugins.
+   * Inicializa managers de domínio
    */
-  destroy(): void {
-    if (this.destroyed) {
-      console.warn("⚠️ Orquestrador já destruído");
+  private initManagers(): void {
+    const planoManager = new PlanoManager(this.planoCronologico);
+    const progressoManager = new ProgressoLeitura();
+    const notasManager = new NotasLeituraManager();
+    const buscaManager = new SearchEngine(this.planoCronologico);
+
+    this._state.managers = {
+      plano: planoManager,
+      progresso: progressoManager,
+      notas: notasManager,
+      busca: buscaManager,
+    };
+  }
+
+  /**
+   * Configura estado inicial
+   */
+  private setupInitialState(): void {
+    // Carregar dias bloqueados do localStorage
+    try {
+      const diasBloqueadosSalvos = localStorage.getItem("dias-bloqueados");
+      if (diasBloqueadosSalvos) {
+        this._state.diasBloqueados = JSON.parse(diasBloqueadosSalvos);
+      }
+    } catch (error) {
+      console.error(
+        "[MainOrquestrador] Erro ao carregar dias bloqueados:",
+        error,
+      );
+      this._state.diasBloqueados = [];
+    }
+
+    // Restauração: Se há reajuste ativo
+    const reajuste = this._state.managers.progresso.obterReajuste();
+    if (reajuste?.ativo) {
+      this._state.diaAtualNumero = reajuste.numeroDia;
+      const diaDoAno = getDiaDoAnoAtual();
+      this._state.diaHojeNumero = Math.min(
+        Math.max(diaDoAno, 1),
+        this.planoCronologico.dias.length,
+      );
       return;
     }
 
-    // Destruir todos os plugins na ordem inversa
-    for (let i = this.plugins.length - 1; i >= 0; i--) {
-      const plugin = this.plugins[i];
-      try {
-        plugin.destroy();
-      } catch (error) {
-        console.error(`❌ Erro ao destruir plugin '${plugin.nome}':`, error);
-      }
+    // Inicialização normal
+    const diaDoAno = getDiaDoAnoAtual();
+    this._state.diaHojeNumero = Math.min(
+      Math.max(diaDoAno, 1),
+      this.planoCronologico.dias.length,
+    );
+    this._state.diaAtualNumero = this._state.diaHojeNumero;
+  }
+
+  /* --------------------------------------------------------------------------
+     EVENT DELEGATION
+     -------------------------------------------------------------------------- */
+
+  /**
+   * Setup de event delegation (listeners em elementos estáveis)
+   */
+  private setupEventDelegation(): void {
+    // Container estável: dia-view
+    const diaView = document.getElementById("dia-view");
+    if (diaView) {
+      this.on(diaView, "click", (e) => {
+        const target = e.target as HTMLElement;
+        if (target.matches("[data-action='toggle-lido']")) {
+          this.toggleLido();
+        }
+      });
     }
 
-    this.plugins = [];
-    this.initialized = false;
-    this.destroyed = true;
+    // Botões de navegação
+    const btnProximo = document.getElementById("btn-dia-proximo");
+    const btnAnterior = document.getElementById("btn-dia-anterior");
+
+    if (btnProximo) {
+      this.on(btnProximo, "click", () =>
+        this.navegarParaDia(this._state.diaAtualNumero + 1),
+      );
+    }
+
+    if (btnAnterior) {
+      this.on(btnAnterior, "click", () =>
+        this.navegarParaDia(this._state.diaAtualNumero - 1),
+      );
+    }
+
+    // Atalhos de teclado
+    this.on(document, "keydown", (e) => this.handleKeydown(e as KeyboardEvent));
   }
 
   /* --------------------------------------------------------------------------
-     ACESSO AO ADAPTER (Compatibilidade)
+     RENDERIZAÇÃO
      -------------------------------------------------------------------------- */
 
   /**
-   * Retorna o adaptador UI.
+   * Renderização inicial da UI
    */
-  getAdapter(): UIAdapter {
-    return this.adapter;
+  private renderInitial(): void {
+    this.renderEstatisticas();
+    this.emit("dia-alterado", { dia: this._state.diaAtualNumero });
   }
 
   /**
-   * Retorna o plano gerenciado.
+   * Renderizar estatísticas
    */
+  private renderEstatisticas(): void {
+    const lidos = this._state.managers.progresso.getTotalLidos();
+    const total = this.planoCronologico.dias.length;
+
+    const diasLidosEl = document.getElementById("dias-lidos");
+    const progressoEl = document.getElementById("progresso");
+
+    if (diasLidosEl) diasLidosEl.textContent = String(lidos);
+    if (progressoEl)
+      progressoEl.textContent = `${Math.round((lidos / total) * 100)}%`;
+  }
+
+  /* --------------------------------------------------------------------------
+     SUBSISTEMAS
+     -------------------------------------------------------------------------- */
+
+  /**
+   * Inicializar subsistemas (busca, reset, notas)
+   */
+  private initSubsystems(): void {
+    // Reset de progresso
+    this._state.orquestradores.reset = new ResetProgressoOrquestrador(
+      this._state.managers.progresso,
+      this._state.managers.plano,
+    );
+
+    // Listener para evento de reset
+    this.listen("progresso-resetado", (evento) => {
+      const customEvent = evento as CustomEvent;
+      const detalhes = customEvent.detail || {};
+
+      // Atualizar estado
+      this._state.diaAtualNumero = 1;
+
+      // Aplicar dias bloqueados
+      if (detalhes.diasBloqueados) {
+        this._state.diasBloqueados = detalhes.diasBloqueados;
+        localStorage.setItem(
+          "dias-bloqueados",
+          JSON.stringify(this._state.diasBloqueados),
+        );
+      } else {
+        this._state.diasBloqueados = [];
+        localStorage.removeItem("dias-bloqueados");
+      }
+
+      this.renderEstatisticas();
+      this.emit("dia-alterado", { dia: 1 });
+
+      if (detalhes.aviso) {
+        alert(detalhes.aviso);
+      }
+    });
+
+    // Notas
+    this._state.orquestradores.notasOverlay = new NotasOverlayOrquestrador(
+      this._state.managers.notas,
+    );
+  }
+
+  /* --------------------------------------------------------------------------
+     NAVEGAÇÃO
+     -------------------------------------------------------------------------- */
+
+  /**
+   * Navegar para um dia específico
+   *
+   * @param numeroDia - Número do dia (1-based)
+   * @returns Resultado da navegação
+   */
+  navegarParaDia(numeroDia: number): NavegacaoResult {
+    const plano = this._state.managers.plano;
+    const totalDias = plano.getTotalDias();
+
+    if (numeroDia < 1 || numeroDia > totalDias) {
+      return { sucesso: false, erro: "Dia fora do range" };
+    }
+
+    // Bloqueio: Não permitir navegar para dias bloqueados
+    if (this._state.diasBloqueados.includes(numeroDia)) {
+      return { sucesso: false, erro: `Dia ${numeroDia} está bloqueado` };
+    }
+
+    this._state.diaAtualNumero = numeroDia;
+    this._state.managers.notas.setDiaAtual(numeroDia);
+    this.emit("dia-alterado", { dia: numeroDia });
+    this.renderEstatisticas();
+
+    return { sucesso: true };
+  }
+
+  /**
+   * Alternar lido/não lido do dia atual
+   */
+  toggleLido(): void {
+    const diaNumero = this._state.diaAtualNumero;
+    this._state.managers.progresso.alternar(diaNumero);
+    this.renderEstatisticas();
+    this.emit("progresso-alterado", { dia: diaNumero });
+  }
+
+  /* --------------------------------------------------------------------------
+     TECLADO
+     -------------------------------------------------------------------------- */
+
+  /**
+   * Handler de atalhos de teclado
+   */
+  private handleKeydown(e: KeyboardEvent): void {
+    // Ctrl+F / Cmd+F - Foco na busca
+    if ((e.ctrlKey || e.metaKey) && e.key === "f") {
+      e.preventDefault();
+      const searchInput = document.querySelector(
+        "[data-search-input]",
+      ) as HTMLElement;
+      searchInput?.focus();
+    }
+
+    // / - Foco na busca
+    if (
+      e.key === "/" &&
+      e.target instanceof HTMLElement &&
+      e.target.tagName !== "INPUT"
+    ) {
+      e.preventDefault();
+      const searchInput = document.querySelector(
+        "[data-search-input]",
+      ) as HTMLElement;
+      searchInput?.focus();
+    }
+
+    // Setas - Navegação
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      this.navegarParaDia(this._state.diaAtualNumero + 1);
+    }
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      this.navegarParaDia(this._state.diaAtualNumero - 1);
+    }
+
+    // Space - Toggle lido
+    if (
+      e.key === " " &&
+      e.target instanceof HTMLElement &&
+      e.target.tagName !== "INPUT"
+    ) {
+      e.preventDefault();
+      this.toggleLido();
+    }
+  }
+
+  /* --------------------------------------------------------------------------
+     REAJUSTE / LACUNA
+     -------------------------------------------------------------------------- */
+
+  /**
+   * Verificar e disparar reajuste de lacuna
+   *
+   * @returns Dados da lacuna se detectada, null caso contrário
+   */
+  verificarAndDispararReajuste(): unknown {
+    this._state.managers.progresso.sincronizarComStorage();
+    const ultimoDiaLido = this._state.managers.progresso.getUltimoDiaLido();
+
+    if (ultimoDiaLido === null) {
+      return null;
+    }
+
+    const reajusteRecente = this._state.managers.progresso.obterReajuste();
+    if (reajusteRecente) {
+      return null;
+    }
+
+    const diaQueDeveSerHoje = getDiaDoAnoAtual();
+    const totalDias = this._state.managers.plano.getTotalDias();
+
+    if (!this.reorganizador) {
+      this.reorganizador = new ReorganizadorPlano();
+    }
+
+    const lacuna = this.reorganizador.detectarLacuna(
+      ultimoDiaLido,
+      diaQueDeveSerHoje,
+      totalDias,
+      new Set(this._state.managers.progresso.getDiasLidos()),
+    );
+
+    if (lacuna.temLacuna) {
+      this.emit("lacuna-detectada", lacuna);
+
+      if (lacuna.ultrapassagemCiclo?.ultrapassaCiclo) {
+        this.emit("plano-ultrapassara-ciclo", lacuna.ultrapassagemCiclo);
+      }
+
+      return lacuna;
+    }
+
+    return null;
+  }
+
+  /* --------------------------------------------------------------------------
+     LIFECYCLE
+     -------------------------------------------------------------------------- */
+
+  /**
+   * Destrói o orquestrador e faz cleanup
+   */
+  destroy(): void {
+    // Cleanup orquestradores
+    this._state.orquestradores.notasOverlay?.destroy();
+
+    // Limpar estado
+    this._state = {} as MainState;
+
+    // Chamar super
+    super.destroy();
+  }
+
+  /* --------------------------------------------------------------------------
+     GETTERS
+     -------------------------------------------------------------------------- */
+
   getPlano(): PlanoCartucho {
-    return this.adapter.getPlano();
+    return this.planoCronologico;
   }
 
-  /**
-   * Retorna o dia atual.
-   */
-  getDiaAtual(): DiaDoPlano | null {
-    return this.adapter.getDiaAtual();
+  getDiaAtual(): number {
+    return this._state.diaAtualNumero;
   }
 
-  /* --------------------------------------------------------------------------
-     MÉTODOS DE NAVEGAÇÃO (Delegação para Adapter)
-     -------------------------------------------------------------------------- */
-
-  irParaDia(numero: number): DiaDoPlano | null {
-    return this.adapter.irParaDia(numero);
+  getDiaHoje(): number {
+    return this._state.diaHojeNumero;
   }
 
-  proximoDia(): DiaDoPlano | null {
-    return this.adapter.proximoDia();
+  getManagers(): MainState["managers"] {
+    return this._state.managers;
   }
 
-  diaAnterior(): DiaDoPlano | null {
-    return this.adapter.diaAnterior();
-  }
-
-  temProximo(): boolean {
-    return this.adapter.temProximo();
-  }
-
-  temAnterior(): boolean {
-    return this.adapter.temAnterior();
-  }
-
-  resetar(): DiaDoPlano | null {
-    return this.adapter.resetar();
-  }
-
-  /* --------------------------------------------------------------------------
-     MÉTODOS DE INFORMAÇÃO
-     -------------------------------------------------------------------------- */
-
-  getEstadoResumido(): {
-    diaAtual: number;
-    totalDias: number;
-    progressoPercentual: number;
-    temProximo: boolean;
-    temAnterior: boolean;
-  } {
-    return this.adapter.getEstadoResumido();
-  }
-
-  getTotalDias(): number {
-    return this.adapter.getTotalDias();
-  }
-
-  getIndiceAtual(): number {
-    return this.adapter.getIndiceAtual();
-  }
-
-  /* --------------------------------------------------------------------------
-     STATUS
-     -------------------------------------------------------------------------- */
-
-  isInitialized(): boolean {
-    return this.initialized;
-  }
-
-  isDestroyed(): boolean {
-    return this.destroyed;
-  }
-
-  getPluginsRegistrados(): string[] {
-    return this.plugins.map((p) => p.nome);
+  getDiasBloqueados(): number[] {
+    return [...this._state.diasBloqueados];
   }
 }
 
-/* ============================================================================
-   EXPORTAÇÃO GLOBAL (Compatibilidade)
-============================================================================ */
-
-// Expor globalmente para compatibilidade com código existente
-if (typeof window !== "undefined") {
-  (window as any).MainOrquestrador = MainOrquestrador;
-}
+export default MainOrquestrador;
