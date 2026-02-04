@@ -503,15 +503,15 @@ planoDeLeituraBiblica/
 - [x] **3.5** Atualizar `MainOrquestrador.ts` com funcionalidades
 - [ ] **3.6** Testar sistema unificado
 
-**Progresso Fase 3:** 5/6 ✅
+**Progresso Fase 3:** 5/6
 
 ### FASE 4: Plugins
 
-- [ ] **4.1** Migrar `CertificadoPlugin.js` → TS
-- [ ] **4.2** Migrar `ExportacaoPlugin.js` → TS
-- [ ] **4.3** Testar plugins
+- [x] **4.1** Migrar `CertificadoPlugin.js` → TS
+- [x] **4.2** Migrar `ExportacaoPlugin.js` → TS
+- [x] **4.3** Testar plugins
 
-**Progresso Fase 4:** \_\_\_/3
+**Progresso Fase 4:** 3/3
 
 ### FASE 5: UI Components
 
@@ -562,7 +562,7 @@ planoDeLeituraBiblica/
 Fase 1: [░░░░░░░░] 0/8
 Fase 2: [░░░░░░░░] 0/5
 Fase 3: [░░░░░░░░] 0/6
-Fase 4: [░░░░░░░░] 0/3
+Fase 4: [████████] 3/3
 Fase 5: [░░░░░░░░] 0/3
 Fase 6: [░░░░░░░░] 0/4
 Fase 7: [░░░░░░░░] 0/5

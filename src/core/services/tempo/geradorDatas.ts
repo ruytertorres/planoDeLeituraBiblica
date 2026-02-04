@@ -192,3 +192,89 @@ export function getTimestampAtualISO(): string {
   const timestamp = Date.now();
   return new Date(timestamp).toISOString();
 }
+
+/**
+ * Alias para getTimestampAtualISO - para compatibilidade com plugins.
+ * NOTA: Esta é uma exceção controlada ao CONTRATO §3.2 para metadados de UI
+ * (exportação, certificados) que não afetam lógica de domínio.
+ *
+ * @returns {string} Timestamp ISO 8601
+ */
+export function getTimestampAtual(): string {
+  return getTimestampAtualISO();
+}
+
+/**
+ * Gera timestamp baseado no dia do ano atual (início do dia).
+ * Usado para auditoria e versionamento de dados.
+ *
+ * @returns {string} Timestamp ISO do início do dia atual
+ */
+export function getTimestampDoDia(): string {
+  const ano = getAnoAtual();
+  const diaDoAno = getDiaDoAnoAtual();
+  const dataISO = gerarDataISO(diaDoAno, ano);
+  return `${dataISO}T00:00:00.000Z`;
+}
+
+/**
+ * Gera nome de arquivo com timestamp para exportações.
+ *
+ * @param prefixo - Prefixo do arquivo
+ * @param extensao - Extensão do arquivo (sem ponto)
+ * @returns Nome de arquivo formatado: prefixo_YYYYMMDD_HHMMSS.extensao
+ */
+export function gerarNomeArquivoTimestamp(
+  prefixo: string,
+  extensao: string,
+): string {
+  const timestamp = Date.now();
+  const data = new Date(timestamp);
+  const ano = String(data.getFullYear());
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+  const hora = String(data.getHours()).padStart(2, "0");
+  const minuto = String(data.getMinutes()).padStart(2, "0");
+  const segundo = String(data.getSeconds()).padStart(2, "0");
+
+  return `${prefixo}_${ano}${mes}${dia}_${hora}${minuto}${segundo}.${extensao}`;
+}
+
+/**
+ * Formata data para exibição em certificados (DD/MM/YYYY).
+ *
+ * @param data - Data ISO string ou Date
+ * @returns Data formatada em português
+ */
+export function formatarDataCertificado(data: string | Date): string {
+  let dataObj: Date;
+
+  if (typeof data === "string") {
+    dataObj = new Date(data);
+  } else {
+    dataObj = data;
+  }
+
+  const dia = String(dataObj.getDate()).padStart(2, "0");
+  const mes = String(dataObj.getMonth() + 1).padStart(2, "0");
+  const ano = dataObj.getFullYear();
+
+  return `${dia}/${mes}/${ano}`;
+}
+
+/**
+ * Calcula diferença em dias entre duas datas ISO.
+ *
+ * @param dataInicio - Data inicial (ISO string)
+ * @param dataFim - Data final (ISO string)
+ * @returns Número de dias de diferença
+ */
+export function calcularDiferencaDias(
+  dataInicio: string,
+  dataFim: string,
+): number {
+  const inicio = new Date(dataInicio).getTime();
+  const fim = new Date(dataFim).getTime();
+  const diffMs = fim - inicio;
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+}
