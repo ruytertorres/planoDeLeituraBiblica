@@ -542,15 +542,15 @@ planoDeLeituraBiblica/
 
 ### FASE 8: Validação
 
-- [ ] **8.1** Verificar §3.1 (Tempo é soberano)
-- [ ] **8.2** Verificar §3.2 (Sem new Date fora do gerador)
-- [ ] **8.3** Verificar §4 (Hierarquia)
-- [ ] **8.4** Verificar §6 (Princípio do Cartucho)
-- [ ] **8.5** Verificar zero duplicidades
-- [ ] **8.6** Teste completo funcional
-- [ ] **8.7** Build de produção limpo
+- [x] **8.1** Verificar §3.1 (Tempo é soberano)
+- [x] **8.2** Verificar §3.2 (Sem new Date fora do gerador)
+- [x] **8.3** Verificar §4 (Hierarquia)
+- [x] **8.4** Verificar §6 (Princípio do Cartucho)
+- [x] **8.5** Verificar zero duplicidades
+- [x] **8.6** Teste completo funcional
+- [x] **8.7** Build de produção limpo
 
-**Progresso Fase 8:** \_\_\_/7
+**Progresso Fase 8:** 7/7
 
 ---
 

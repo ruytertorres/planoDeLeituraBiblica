@@ -278,3 +278,83 @@ export function calcularDiferencaDias(
   const diffMs = fim - inicio;
   return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
+
+/* ============================================================================
+   FUNÇÕES DE CÁLCULO DE CALENDÁRIO (Conformidade §3.2)
+============================================================================ */
+
+/**
+ * Retorna o primeiro dia do mês (1-31) para um ano e mês específicos.
+ * Usa cálculo baseado em timestamp para evitar new Date() direto.
+ *
+ * @param ano - Ano civil
+ * @param mes - Mês (0-11)
+ * @returns Objeto com dia da semana (0=Domingo) e timestamp do primeiro dia
+ */
+export function getPrimeiroDiaMes(
+  ano: number,
+  mes: number,
+): { diaSemana: number; timestamp: number } {
+  // Criar data do primeiro dia do mês usando UTC para evitar problemas de fuso
+  const timestamp = Date.UTC(ano, mes, 1, 12, 0, 0);
+  const data = new Date(timestamp);
+  return {
+    diaSemana: data.getUTCDay(),
+    timestamp,
+  };
+}
+
+/**
+ * Retorna o último dia do mês (28-31) para um ano e mês específicos.
+ *
+ * @param ano - Ano civil
+ * @param mes - Mês (0-11)
+ * @returns Número do último dia do mês
+ */
+export function getUltimoDiaMes(ano: number, mes: number): number {
+  // Dia 0 do próximo mês = último dia do mês atual
+  const timestamp = Date.UTC(ano, mes + 1, 0, 12, 0, 0);
+  const data = new Date(timestamp);
+  return data.getUTCDate();
+}
+
+/**
+ * Calcula o dia do ano (1-366) a partir de ano, mês e dia.
+ * Centralizado aqui para obedecer §3.2 (sem new Date fora do gerador).
+ *
+ * @param ano - Ano civil
+ * @param mes - Mês (0-11)
+ * @param dia - Dia do mês (1-31)
+ * @returns Dia do ano (1-366)
+ */
+export function calcularDiaDoAnoFromData(
+  ano: number,
+  mes: number,
+  dia: number,
+): number {
+  const timestampAtual = Date.UTC(ano, mes, dia, 12, 0, 0);
+  const timestampInicioAno = Date.UTC(ano, 0, 1, 12, 0, 0);
+  const diffMs = timestampAtual - timestampInicioAno;
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+}
+
+/**
+ * Gera string ISO (YYYY-MM-DD) a partir de ano, mês e dia.
+ *
+ * @param ano - Ano civil
+ * @param mes - Mês (0-11)
+ * @param dia - Dia do mês (1-31)
+ * @returns String ISO da data
+ */
+export function gerarDataISOFromComponents(
+  ano: number,
+  mes: number,
+  dia: number,
+): string {
+  const timestamp = Date.UTC(ano, mes, dia, 12, 0, 0);
+  const data = new Date(timestamp);
+  const anoStr = data.getUTCFullYear();
+  const mesStr = String(data.getUTCMonth() + 1).padStart(2, "0");
+  const diaStr = String(data.getUTCDate()).padStart(2, "0");
+  return `${anoStr}-${mesStr}-${diaStr}`;
+}

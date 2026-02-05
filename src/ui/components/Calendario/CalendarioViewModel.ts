@@ -18,6 +18,10 @@ import {
   getDiaDoAnoAtual,
   getTotalDiasDoAno,
   getMesAtual,
+  getPrimeiroDiaMes,
+  getUltimoDiaMes,
+  calcularDiaDoAnoFromData,
+  gerarDataISOFromComponents,
 } from "../../../core/services/tempo/geradorDatas.js";
 
 // ============================================================================
@@ -115,10 +119,10 @@ export class CalendarioViewModel {
     const diaHoje = this.getDiaHoje();
     const diaAtual = this.getDiaAtual();
 
-    // Calcular primeiro dia do mês
-    const primeiroDia = new Date(this.anoAtual, this.mesAtual, 1);
-    const ultimoDia = new Date(this.anoAtual, this.mesAtual + 1, 0);
-    const diaDaSemanaInicio = primeiroDia.getDay(); // 0 = Domingo
+    // Calcular primeiro dia do mês usando geradorDatas (§3.2)
+    const primeiroDiaInfo = getPrimeiroDiaMes(this.anoAtual, this.mesAtual);
+    const ultimoDiaMes = getUltimoDiaMes(this.anoAtual, this.mesAtual);
+    const diaDaSemanaInicio = primeiroDiaInfo.diaSemana; // 0 = Domingo
 
     const dias: DiaCalendarioViewModel[] = [];
 
@@ -132,11 +136,19 @@ export class CalendarioViewModel {
       });
     }
 
-    // Dias do mês
-    for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
-      const dataAtual = new Date(this.anoAtual, this.mesAtual, dia);
-      const diaDoAno = this.calcularDiaDoAno(dataAtual);
+    // Dias do mês - usar funções do geradorDatas (§3.2)
+    for (let dia = 1; dia <= ultimoDiaMes; dia++) {
+      const diaDoAno = calcularDiaDoAnoFromData(
+        this.anoAtual,
+        this.mesAtual,
+        dia,
+      );
       const diaPlano = diaDoAno <= this.plano.totalDias ? diaDoAno : null;
+      const dataISO = gerarDataISOFromComponents(
+        this.anoAtual,
+        this.mesAtual,
+        dia,
+      );
 
       const classes: string[] = [];
       let clicavel = false;
@@ -178,7 +190,7 @@ export class CalendarioViewModel {
         classes,
         clicavel,
         tooltip,
-        dataISO: dataAtual.toISOString().split("T")[0],
+        dataISO,
       });
     }
 
@@ -191,11 +203,11 @@ export class CalendarioViewModel {
 
   /**
    * Calcula o dia do ano a partir de uma data
+   * @deprecated Use calcularDiaDoAnoFromData de geradorDatas.ts
    */
-  private calcularDiaDoAno(data: Date): number {
-    const inicioAno = new Date(data.getFullYear(), 0, 1);
-    const diff = data.getTime() - inicioAno.getTime();
-    return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+  private calcularDiaDoAno(_data: Date): number {
+    // Este método está deprecated - usar calcularDiaDoAnoFromData
+    return 0;
   }
 
   /**
