@@ -515,11 +515,11 @@ planoDeLeituraBiblica/
 
 ### FASE 5: UI Components
 
-- [ ] **5.1** Migrar componentes Notas (5 arquivos)
-- [ ] **5.2** Migrar Modais (2 arquivos)
-- [ ] **5.3** Limpar CSS componentes
+- [x] **5.1** Migrar componentes Notas (5 arquivos)
+- [x] **5.2** Migrar Modais (2 arquivos)
+- [x] **5.3** Limpar CSS componentes
 
-**Progresso Fase 5:** \_\_\_/3
+**Progresso Fase 5:** 3/3
 
 ### FASE 6: Transição Entry Point
 
