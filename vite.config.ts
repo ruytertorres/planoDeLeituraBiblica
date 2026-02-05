@@ -29,15 +29,25 @@ export default defineConfig({
   // Configuração de build otimizada para produção
   build: {
     outDir: "dist",
-    sourcemap: false,
+    sourcemap: true,
     minify: "esbuild",
     target: "es2022",
     cssMinify: true,
     cssCodeSplit: true,
 
+    // Configuração lib para gerar entry point
+    lib: {
+      entry: resolve(__dirname, "src/main.ts"),
+      name: "PlanoLeituraBiblica",
+      fileName: "main",
+      formats: ["es"],
+    },
+
     // Otimizações de bundle
     rollupOptions: {
       treeshake: true,
+      // External libs que não devem ser bundled
+      external: [],
       output: {
         // Code-splitting otimizado por categoria
         manualChunks: (id) => {
@@ -46,8 +56,8 @@ export default defineConfig({
           if (id.includes("/ui/components/")) return "ui-components";
           if (id.includes("/core/types/")) return "types";
         },
-        // Nomenclatura com hash curto
-        entryFileNames: "assets/[name]-[hash:8].js",
+        // Nomenclatura com hash curto para chunks, mas entry file fixo
+        entryFileNames: "main.js",
         chunkFileNames: "assets/[name]-[hash:8].js",
         assetFileNames: "assets/[name]-[hash:8][extname]",
       },

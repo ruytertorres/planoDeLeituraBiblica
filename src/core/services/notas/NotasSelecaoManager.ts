@@ -79,7 +79,6 @@ export class NotasSelecaoManager {
       element,
       NodeFilter.SHOW_TEXT,
       null,
-      false,
     );
 
     const textNodes: Text[] = [];
@@ -102,7 +101,15 @@ export class NotasSelecaoManager {
 
     let node: Node | null = sel.anchorNode;
     const BLOCOS_PERMITIDOS = [
-      "P", "H1", "H2", "H3", "H4", "H5", "H6", "LI", "DIV",
+      "P",
+      "H1",
+      "H2",
+      "H3",
+      "H4",
+      "H5",
+      "H6",
+      "LI",
+      "DIV",
     ];
 
     while (node && node !== editor) {

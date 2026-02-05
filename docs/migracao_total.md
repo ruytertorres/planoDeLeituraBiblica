@@ -523,12 +523,12 @@ planoDeLeituraBiblica/
 
 ### FASE 6: Transição Entry Point
 
-- [ ] **6.1** Atualizar `index.html` para `dist/main.js`
-- [ ] **6.2** Configurar `vite.config.ts`
-- [ ] **6.3** Testar build de produção
-- [ ] **6.4** Testar preview
+- [x] **6.1** Atualizar `index.html` para `dist/main.js`
+- [x] **6.2** Configurar `vite.config.ts`
+- [x] **6.3** Testar build de produção
+- [x] **6.4** Testar preview
 
-**Progresso Fase 6:** \_\_\_/4
+**Progresso Fase 6:** 4/4
 
 ### FASE 7: Limpeza Final
 
