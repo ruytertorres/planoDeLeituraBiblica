@@ -532,13 +532,13 @@ planoDeLeituraBiblica/
 
 ### FASE 7: Limpeza Final
 
-- [ ] **7.1** Eliminar pasta `js/`
-- [ ] **7.2** Eliminar arquivos de teste
-- [ ] **7.3** Eliminar CSS obsoleto
-- [ ] **7.4** Limpar `dist-vite/`
-- [ ] **7.5** Commit final
+- [x] **7.1** Eliminar pasta `js/`
+- [x] **7.2** Eliminar arquivos de teste
+- [x] **7.3** Eliminar CSS obsoleto
+- [x] **7.4** Limpar `dist-vite/`
+- [x] **7.5** Commit final
 
-**Progresso Fase 7:** \_\_\_/5
+**Progresso Fase 7:** 5/5
 
 ### FASE 8: Validação
 
