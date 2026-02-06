@@ -31,7 +31,14 @@
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
     @apply dark:bg-slate-900 dark:text-gray-100;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      sans-serif;
     line-height: 1.6;
     min-height: 100vh;
   }
@@ -208,6 +215,393 @@
 
   .day-card-reading {
     @apply prose prose-sm max-w-none dark:prose-invert;
+  }
+
+  /* ============================================================================
+     COMPONENTES DO CALENDÁRIO
+     ============================================================================ */
+
+  /* Container principal do calendário */
+  .calendar-section {
+    @apply rounded-2xl bg-white/95 p-8 shadow-lg;
+    @apply dark:bg-slate-800/95;
+    @apply my-8;
+  }
+
+  .calendar-wrapper {
+    @apply rounded-xl bg-white p-6 shadow-md;
+    @apply dark:bg-slate-700;
+    @apply mb-8;
+  }
+
+  /* Header do calendário */
+  .calendar-header {
+    @apply relative mb-6 flex items-center justify-between border-b border-gray-200 pb-4;
+    @apply dark:border-slate-600;
+  }
+
+  .calendar-title {
+    @apply absolute left-1/2 -translate-x-1/2 text-xl font-semibold text-slate-700;
+    @apply dark:text-slate-200;
+    @apply whitespace-nowrap;
+  }
+
+  .calendar-nav-btn,
+  .nav-mes-btn {
+    @apply min-w-[120px] rounded-md border border-gray-300 bg-gray-50 px-4 py-2;
+    @apply text-sm text-gray-600 transition-all duration-200;
+    @apply hover:bg-gray-100 hover:border-gray-400;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+    @apply dark:bg-slate-700 dark:border-slate-600 dark:text-gray-300;
+    @apply dark:hover:bg-slate-600;
+  }
+
+  /* Dias da semana */
+  .calendar-weekdays {
+    @apply mb-4 grid grid-cols-7 gap-2 text-center;
+  }
+
+  .weekday {
+    @apply py-2 text-sm font-semibold uppercase text-gray-500;
+    @apply dark:text-gray-400;
+  }
+
+  /* Grade do calendário */
+  .calendario-grid {
+    @apply grid grid-cols-7 gap-2;
+  }
+
+  /* Células vazias */
+  .calendario-dia-vazio {
+    @apply h-[42px] bg-transparent;
+  }
+
+  .calendario-dia-vazio:disabled {
+    @apply cursor-not-allowed border-2 border-dashed border-gray-300 bg-gray-50 opacity-70;
+  }
+
+  /* Dia base */
+  .calendario-dia {
+    @apply relative flex h-[42px] items-center justify-center rounded-lg;
+    @apply border border-gray-200 bg-white text-sm font-medium;
+    @apply transition-all duration-200 outline-none cursor-pointer;
+    @apply hover:-translate-y-0.5 hover:shadow-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply dark:border-slate-600 dark:bg-slate-700 dark:text-gray-200;
+  }
+
+  /* Dia não lido (default) */
+  .calendario-dia:not(.lido):not(.ativo):not(.hoje):not(.calendario-sem-plano) {
+    @apply bg-gray-50 text-gray-500 border-gray-200;
+    @apply hover:bg-gray-100 hover:border-gray-300;
+    @apply dark:bg-slate-800 dark:text-gray-400 dark:border-slate-700;
+    @apply dark:hover:bg-slate-700;
+  }
+
+  /* Dia lido */
+  .calendario-dia.lido {
+    @apply border-green-200 bg-green-100 font-semibold text-green-800;
+    @apply hover:border-green-300 hover:bg-green-200;
+    @apply hover:shadow-green-200/50;
+    @apply dark:border-green-900 dark:bg-green-900/30 dark:text-green-300;
+    @apply dark:hover:bg-green-900/50;
+  }
+
+  /* Dia ativo (selecionado) */
+  .calendario-dia.ativo {
+    @apply z-10 scale-105 border-blue-600 bg-blue-600 font-bold text-white;
+    @apply shadow-lg shadow-blue-500/25;
+    @apply hover:bg-blue-700;
+  }
+
+  /* Hoje */
+  .calendario-dia.hoje {
+    @apply border-cyan-600 bg-cyan-600 font-bold text-white;
+    @apply shadow-lg shadow-cyan-500/30;
+  }
+
+  .calendario-dia.hoje:not(.calendario-hoje-plano) {
+    @apply border-2 border-cyan-600;
+  }
+
+  .calendario-dia.hoje.calendario-hoje-plano {
+    @apply border-2 border-yellow-400;
+  }
+
+  /* Ícone bíblia no canto */
+  .calendario-dia.calendario-hoje-plano::after {
+    content: "";
+    @apply absolute top-0.5 right-0.5 h-4 w-4 bg-contain bg-center bg-no-repeat;
+    background-image: url("../assets/biblia-ico-calendar.png");
+  }
+
+  /* Sem plano (desabilitado) */
+  .calendario-dia.calendario-sem-plano {
+    @apply cursor-not-allowed bg-gray-50 text-gray-400 opacity-60;
+    @apply hover:bg-gray-50 hover:transform-none hover:shadow-none;
+    @apply dark:bg-slate-800 dark:text-slate-500;
+  }
+
+  /* Dia bloqueado */
+  .calendario-dia.dia-bloqueado {
+    @apply relative cursor-not-allowed border-2 border-dashed border-gray-400;
+    @apply bg-gray-200 text-gray-500 opacity-70;
+    @apply pointer-events-none line-through italic;
+    @apply hover:transform-none hover:shadow-none;
+    @apply dark:bg-slate-700 dark:border-slate-500 dark:text-gray-400;
+  }
+
+  .calendario-dia.dia-bloqueado::after {
+    content: "🔒";
+    @apply absolute top-0.5 right-0.5 text-[10px] opacity-70;
+    @apply flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/80;
+    @apply dark:bg-slate-600/80;
+  }
+
+  /* Estados combinados com bloqueado */
+  .calendario-dia.dia-bloqueado.lido,
+  .calendario-dia.dia-bloqueado.hoje,
+  .calendario-dia.dia-bloqueado.ativo {
+    @apply border-2 border-dashed border-gray-400 bg-gray-200 text-gray-500;
+    @apply dark:bg-slate-700 dark:border-slate-500;
+  }
+
+  /* Combinados especiais */
+  .calendario-dia.lido.hoje {
+    @apply bg-gradient-to-br from-cyan-600 to-emerald-500 border-cyan-600;
+  }
+
+  .calendario-dia.lido.ativo {
+    @apply bg-gradient-to-br from-blue-600 to-violet-600 border-blue-600;
+  }
+
+  .calendario-dia.hoje:not(.lido) {
+    @apply bg-gradient-to-br from-cyan-600 to-sky-500 border-cyan-600;
+  }
+
+  /* Erro do calendário */
+  .calendar-error {
+    @apply rounded-lg border border-red-200 bg-red-50 p-8 text-center text-red-800;
+    @apply dark:bg-red-900/20 dark:border-red-800 dark:text-red-300;
+  }
+
+  /* ============================================================================
+     COMPONENTES DE NOTAS
+     ============================================================================ */
+
+  /* Botão flutuante */
+  #btn-notas {
+    @apply fixed bottom-8 right-8 z-50 flex h-14 w-14 items-center justify-center;
+    @apply rounded-full text-3xl text-white shadow-lg;
+    @apply bg-gradient-to-br from-blue-500 to-indigo-600;
+    @apply transition-all duration-300;
+    @apply hover:scale-110 hover:rotate-12 hover:shadow-xl;
+    @apply active:scale-95;
+  }
+
+  /* Overlay do modal */
+  #notas-overlay {
+    @apply fixed inset-0 z-50 hidden bg-black/75 opacity-0 transition-opacity duration-300;
+  }
+
+  #notas-overlay.aberto {
+    @apply flex items-center justify-center opacity-100;
+  }
+
+  /* Container do modal */
+  .notas-container {
+    @apply relative flex w-[90%] max-w-3xl flex-col rounded-2xl bg-white shadow-2xl;
+    @apply h-[80vh] overflow-hidden;
+    @apply transform translate-y-8 scale-95 transition-transform duration-400;
+    @apply dark:bg-slate-800;
+  }
+
+  #notas-overlay.aberto .notas-container {
+    @apply translate-y-0 scale-100;
+  }
+
+  /* Header */
+  .notas-header {
+    @apply flex flex-shrink-0 items-center justify-between px-6 py-4;
+    @apply bg-gradient-to-r from-slate-700 to-slate-800 text-white;
+    @apply dark:from-slate-800 dark:to-slate-900;
+  }
+
+  .notas-title {
+    @apply flex items-center gap-3 text-lg font-semibold tracking-wide;
+  }
+
+  .notas-acoes {
+    @apply flex gap-3;
+  }
+
+  .notas-btn-icon {
+    @apply flex h-9 w-9 items-center justify-center rounded-lg;
+    @apply bg-white/15 text-white transition-all duration-200;
+    @apply hover:bg-white/25 hover:scale-110;
+  }
+
+  /* Toolbar */
+  .notas-toolbar {
+    @apply flex flex-shrink-0 flex-wrap gap-2 border-b border-gray-200 bg-gray-50 px-6 py-3;
+    @apply dark:border-slate-600 dark:bg-slate-700;
+  }
+
+  .notas-toolbar button {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-300;
+    @apply bg-white px-3 py-2 text-sm font-medium transition-all duration-200;
+    @apply hover:-translate-y-0.5 hover:border-blue-500 hover:bg-blue-500 hover:text-white;
+    @apply dark:border-slate-600 dark:bg-slate-600 dark:text-gray-200;
+    @apply dark:hover:border-blue-500 dark:hover:bg-blue-600;
+  }
+
+  .notas-toolbar button.active {
+    @apply border-blue-500 bg-blue-500 text-white;
+  }
+
+  /* Dropdown highlight */
+  .highlight-dropdown {
+    @apply relative inline-block;
+  }
+
+  .highlight-btn {
+    @apply flex items-center justify-center gap-1 rounded-lg border border-gray-300;
+    @apply bg-white px-3 py-2 text-sm transition-all duration-200;
+    @apply hover:border-blue-500 hover:bg-blue-500 hover:text-white;
+    @apply dark:border-slate-600 dark:bg-slate-600 dark:text-gray-200;
+  }
+
+  .highlight-colors {
+    @apply absolute top-full left-0 mt-1 hidden w-36 flex-wrap gap-2 rounded-lg;
+    @apply border border-gray-200 bg-white p-3 shadow-lg;
+    @apply dark:border-slate-600 dark:bg-slate-700;
+  }
+
+  .highlight-dropdown:hover .highlight-colors {
+    @apply flex;
+  }
+
+  .highlight-colors button {
+    @apply h-8 w-8 rounded-md border-2 border-transparent transition-all duration-200;
+    @apply hover:scale-115 hover:border-gray-400;
+  }
+
+  /* Editor */
+  #notas-editor {
+    @apply flex-1 overflow-y-auto p-6 text-base leading-relaxed outline-none;
+    @apply dark:text-gray-100;
+    min-height: 200px;
+    max-height: calc(80vh - 200px);
+  }
+
+  #notas-editor:empty:before {
+    content: "Comece a digitar suas anotações aqui...";
+    @apply italic text-gray-400;
+  }
+
+  #notas-editor p {
+    @apply mb-4 min-h-[1.5em];
+  }
+
+  #notas-editor h2 {
+    @apply mb-4 mt-6 border-b-2 border-blue-500 pb-2 text-2xl font-bold text-slate-700;
+    @apply dark:text-slate-300 dark:border-blue-400;
+  }
+
+  #notas-editor h3 {
+    @apply mb-3 mt-5 text-xl font-semibold text-slate-700;
+    @apply dark:text-slate-300;
+  }
+
+  #notas-editor ul,
+  #notas-editor ol {
+    @apply my-4 ml-6 list-disc pl-4;
+  }
+
+  #notas-editor ol {
+    @apply list-decimal;
+  }
+
+  #notas-editor li {
+    @apply mb-2;
+  }
+
+  #notas-editor mark {
+    @apply rounded px-0.5 py-px;
+  }
+
+  /* Footer */
+  .notas-footer {
+    @apply flex flex-shrink-0 justify-end border-t border-gray-200 bg-gray-50 px-6 py-4;
+    @apply dark:border-slate-600 dark:bg-slate-700;
+  }
+
+  #btn-limpar {
+    @apply inline-flex items-center gap-2 rounded-lg px-5 py-2.5 font-semibold text-white;
+    @apply bg-gradient-to-r from-red-500 to-red-600 shadow-md;
+    @apply transition-all duration-200;
+    @apply hover:-translate-y-0.5 hover:from-red-600 hover:to-red-700 hover:shadow-lg;
+    @apply active:translate-y-0;
+  }
+
+  /* Scrollbar personalizada */
+  #notas-editor::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  #notas-editor::-webkit-scrollbar-track {
+    @apply rounded bg-black/5;
+  }
+
+  #notas-editor::-webkit-scrollbar-thumb {
+    @apply rounded bg-blue-500;
+  }
+
+  #notas-editor::-webkit-scrollbar-thumb:hover {
+    @apply bg-blue-600;
+  }
+
+  /* Responsividade Notas */
+  @media (max-width: 768px) {
+    #btn-notas {
+      @apply bottom-5 right-5 h-14 w-14 text-2xl;
+    }
+
+    .notas-container {
+      @apply h-[90vh] w-[98%] max-w-none mx-2;
+    }
+
+    .notas-toolbar {
+      @apply flex-nowrap overflow-x-auto;
+    }
+
+    #notas-editor {
+      @apply text-sm;
+      max-height: calc(90vh - 170px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    #btn-notas {
+      @apply h-12 w-12 text-xl;
+    }
+
+    .notas-container {
+      @apply h-[95vh] mx-1 rounded-xl;
+    }
+
+    .notas-header {
+      @apply px-4 py-3;
+    }
+
+    .notas-title {
+      @apply text-base;
+    }
+
+    #notas-editor {
+      @apply p-4 text-sm;
+      max-height: calc(95vh - 160px);
+    }
   }
 }
 
