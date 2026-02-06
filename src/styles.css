@@ -14,7 +14,30 @@
    @LAYER BASE - Reset e estilos fundamentais
    ============================================================================ */
 @layer base {
-  /* Reset moderno */
+  /* Reset Mínimo */
+  * {
+    @apply m-0 p-0 box-border;
+  }
+
+  html,
+  body {
+    @apply font-sans bg-gray-100 text-slate-800 leading-relaxed min-h-screen flex flex-col w-full overflow-x-hidden;
+    scroll-padding-top: 120px;
+  }
+
+  /* Containers principais */
+  #app {
+    @apply flex-1 w-full max-w-6xl mx-auto px-4 flex flex-col min-h-full;
+  }
+
+  .app-container {
+    @apply flex-1 w-full max-w-6xl mx-auto px-4 flex flex-col;
+  }
+
+  .container {
+    @apply max-w-6xl mx-auto w-full;
+  }
+
   *,
   *::before,
   *::after {
@@ -412,7 +435,7 @@
   .notas-container {
     @apply relative flex w-[90%] max-w-3xl flex-col rounded-2xl bg-white shadow-2xl;
     @apply h-[80vh] overflow-hidden;
-    @apply transform translate-y-8 scale-95 transition-transform duration-400;
+    @apply transform translate-y-8 scale-95 transition-transform duration-300;
     @apply dark:bg-slate-800;
   }
 
@@ -602,26 +625,383 @@
       @apply p-4 text-sm;
       max-height: calc(95vh - 160px);
     }
-  }
-}
+    /* ============================================================================
+     COMPONENTES DE MODAIS
+     ============================================================================ */
 
-/* ============================================================================
+    /* Modal Overlay Base */
+    .modal-overlay {
+      @apply fixed inset-0 z-50 flex items-center justify-center bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300;
+    }
+
+    .modal-overlay.active {
+      @apply opacity-100 pointer-events-auto;
+    }
+
+    /* Modal Card Base */
+    .modal {
+      @apply relative w-[90%] max-w-lg rounded-2xl bg-white p-8 shadow-2xl;
+      @apply transform translate-y-5 scale-95 transition-all duration-300;
+      @apply dark:bg-slate-800;
+    }
+
+    .modal-overlay.active .modal {
+      @apply translate-y-0 scale-100;
+    }
+
+    .modal-header {
+      @apply mb-6 border-b border-gray-200 pb-4;
+      @apply dark:border-slate-600;
+    }
+
+    .modal-header h3 {
+      @apply text-xl font-bold text-slate-700 dark:text-slate-200;
+    }
+
+    .modal-body {
+      @apply mb-6;
+    }
+
+    .modal-actions {
+      @apply flex justify-end gap-4;
+    }
+
+    /* Variantes de Modal */
+    .modal-danger .modal-header {
+      @apply border-red-300 dark:border-red-800;
+    }
+
+    .modal-danger .modal-header h3 {
+      @apply text-red-700 dark:text-red-400;
+    }
+
+    .modal-info .modal-header {
+      @apply border-blue-300 dark:border-blue-800;
+    }
+
+    .modal-info .modal-header h3 {
+      @apply text-blue-700 dark:text-blue-400;
+    }
+
+    /* Botão Reset Navbar */
+    .btn-reset {
+      @apply flex items-center justify-center rounded-md p-2 text-xl transition-all duration-200;
+      @apply text-slate-600 hover:bg-slate-100 hover:scale-110;
+      @apply dark:text-slate-300 dark:hover:bg-slate-700;
+      @apply active:scale-95;
+    }
+
+    /* Reajuste Modal Específico */
+    .reajuste-modal-overlay {
+      @apply fixed inset-0 z-[2000] flex items-center justify-center bg-black/50;
+      animation: fadeInOverlay 0.3s ease;
+    }
+
+    @keyframes fadeInOverlay {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .reajuste-modal {
+      @apply w-[90%] max-w-md rounded-2xl bg-white p-8 shadow-2xl;
+      animation: slideUp 0.3s ease;
+      @apply dark:bg-slate-800;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .reajuste-modal-header {
+      @apply mb-6 border-b-2 border-gray-200 pb-4;
+      @apply dark:border-slate-600;
+    }
+
+    .reajuste-modal-header h3 {
+      @apply text-xl font-bold text-slate-700 dark:text-slate-200;
+    }
+
+    .reajuste-modal-subtitle {
+      @apply text-sm text-gray-500 dark:text-gray-400;
+    }
+
+    .reajuste-modal-info {
+      @apply mb-4 rounded-lg border-l-4 border-blue-500 bg-blue-50 p-3 text-sm text-blue-700;
+      @apply dark:bg-blue-900/20 dark:text-blue-300;
+    }
+
+    .reajuste-modal-question {
+      @apply rounded-lg bg-gray-50 p-4 text-center font-semibold text-slate-700;
+      @apply dark:bg-slate-700 dark:text-slate-200;
+    }
+
+    .reajuste-modal-actions {
+      @apply mt-6 flex justify-end gap-4;
+    }
+
+    .reajuste-modal-btn {
+      @apply inline-flex items-center gap-2 rounded-lg px-6 py-3 font-semibold transition-all duration-200;
+      min-height: 42px;
+    }
+
+    .reajuste-modal-btn.nao {
+      @apply border border-gray-300 bg-gray-100 text-gray-600;
+      @apply hover:bg-gray-200;
+      @apply dark:border-slate-600 dark:bg-slate-700 dark:text-gray-300;
+    }
+
+    .reajuste-modal-btn.sim {
+      @apply bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg;
+      @apply hover:from-blue-700 hover:to-indigo-700 hover:-translate-y-0.5;
+    }
+
+    .reajuste-modal-footer {
+      @apply mt-6 border-t border-gray-200 pt-4 text-center text-xs text-gray-400;
+      @apply dark:border-slate-600 dark:text-gray-500;
+    }
+
+    /* Reset Modal Específico */
+    .reset-modal-overlay {
+      @apply fixed inset-0 z-[999] flex items-center justify-center bg-black/50 p-4 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm;
+    }
+
+    .reset-modal-overlay.active {
+      @apply opacity-100 pointer-events-auto;
+    }
+
+    .reset-modal {
+      @apply relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-xl border border-gray-200 bg-white p-8 shadow-2xl;
+      @apply dark:border-slate-600 dark:bg-slate-800;
+      animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .reset-modal h3 {
+      @apply mb-4 text-center text-2xl font-bold text-slate-700 dark:text-slate-200;
+    }
+
+    .reset-modal-security {
+      @apply mt-6 rounded-lg border-l-4 border-yellow-400 bg-yellow-50 p-4;
+      @apply dark:bg-yellow-900/20;
+    }
+
+    .reset-modal-security label {
+      @apply flex cursor-pointer items-start gap-3 text-sm text-slate-600 dark:text-slate-300;
+    }
+
+    .reset-modal-actions {
+      @apply mt-6 flex gap-4;
+    }
+
+    .reset-modal-btn {
+      @apply flex-1 rounded-lg px-4 py-3 font-semibold uppercase tracking-wide transition-all duration-200;
+    }
+
+    .reset-modal-btn.cancel {
+      @apply border border-gray-300 bg-gray-100 text-slate-700;
+      @apply hover:bg-gray-200 hover:-translate-y-0.5;
+      @apply dark:border-slate-600 dark:bg-slate-700 dark:text-gray-200;
+    }
+
+    .reset-modal-btn.confirm {
+      @apply border border-red-800 bg-red-800 text-white shadow-lg;
+      @apply hover:bg-red-900 hover:-translate-y-0.5;
+    }
+
+    .reset-modal-btn.confirm:disabled {
+      @apply cursor-not-allowed opacity-50;
+      @apply dark:bg-slate-600 dark:text-gray-400;
+    }
+
+    /* Opções de Reset */
+    .reset-opcoes {
+      @apply my-6 flex flex-col gap-4;
+    }
+
+    .opcao-destaque,
+    .opcao-secundaria {
+      @apply block cursor-pointer;
+    }
+
+    .opcao-destaque input,
+    .opcao-secundaria input {
+      @apply hidden;
+    }
+
+    .opcao-conteudo {
+      @apply rounded-xl border-2 border-gray-200 p-6 transition-all duration-300;
+      @apply hover:border-gray-400 hover:shadow-md;
+      @apply dark:border-slate-600 dark:bg-slate-700/50;
+    }
+
+    .opcao-destaque input:checked + .opcao-conteudo {
+      @apply border-red-600 bg-gradient-to-r from-red-50 to-red-100 shadow-lg;
+      @apply dark:from-red-900/20 dark:to-red-900/30;
+    }
+
+    .opcao-secundaria input:checked + .opcao-conteudo {
+      @apply border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100 shadow-lg;
+      @apply dark:from-blue-900/20 dark:to-blue-900/30;
+    }
+
+    .opcao-conteudo h4 {
+      @apply mb-3 flex items-center gap-2 text-lg font-semibold text-slate-700;
+      @apply dark:text-slate-200;
+    }
+
+    .opcao-conteudo p {
+      @apply mb-4 text-sm text-gray-600 dark:text-gray-400;
+    }
+
+    .opcao-detalhes {
+      @apply list-none space-y-2;
+    }
+
+    .opcao-detalhes li {
+      @apply flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400;
+    }
+
+    .opcao-detalhes li i {
+      @apply mt-0.5 text-green-500;
+    }
+
+    /* Toasts para Modais */
+    .modal-toast {
+      @apply fixed bottom-8 left-1/2 z-[3000] max-w-sm -translate-x-1/2 translate-y-[200px] rounded-lg px-6 py-4 opacity-0 shadow-xl transition-all duration-300;
+    }
+
+    .modal-toast.visible {
+      @apply translate-y-0 opacity-100;
+    }
+
+    .modal-toast.success {
+      @apply border border-green-200 bg-green-100 text-green-800;
+      @apply dark:bg-green-900/30 dark:text-green-300 dark:border-green-800;
+    }
+
+    .modal-toast.info {
+      @apply border border-blue-200 bg-blue-100 text-blue-800;
+      @apply dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800;
+    }
+
+    .modal-toast.error {
+      @apply border border-red-200 bg-red-100 text-red-800;
+      @apply dark:bg-red-900/30 dark:text-red-300 dark:border-red-800;
+    }
+
+    /* Responsividade Modais */
+    @media (max-width: 600px) {
+      .reajuste-modal,
+      .reset-modal {
+        @apply mx-4 p-6;
+      }
+
+      .reajuste-modal-actions,
+      .reset-modal-actions {
+        @apply flex-col-reverse;
+      }
+
+      .reajuste-modal-btn,
+      .reset-modal-btn {
+        @apply w-full justify-center;
+      }
+
+      .modal-toast {
+        @apply bottom-4 left-4 right-4 max-w-none translate-x-0;
+      }
+
+      .search-results.active {
+        @apply block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .search-result-item {
+        @apply flex cursor-pointer items-center justify-between border-b border-gray-200 px-4 py-3 text-slate-700 transition-colors duration-200;
+        @apply hover:bg-gray-100;
+        @apply dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700;
+      }
+
+      .search-result-item:last-child {
+        @apply border-b-0;
+      }
+
+      .search-result-item.selected {
+        @apply bg-blue-50 dark:bg-blue-900/20;
+      }
+
+      .result-type {
+        @apply ml-2 rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600;
+        @apply dark:bg-slate-600 dark:text-gray-300;
+      }
+
+      .result-details {
+        @apply max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap text-right text-xs text-gray-500;
+        @apply dark:text-gray-400;
+      }
+
+      .no-results {
+        @apply p-4 text-center text-sm italic text-gray-500;
+        @apply dark:text-gray-400;
+      }
+
+      /* Responsividade Search */
+      @media (max-width: 768px) {
+        .search-container {
+          @apply order-3 mx-0 my-2 w-full;
+        }
+      }
+
+      /* ============================================================================
    @LAYER UTILITIES - Utilitários específicos
    ============================================================================ */
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+      @layer utilities {
+        .text-balance {
+          text-wrap: balance;
+        }
 
-  .animate-delay-100 {
-    animation-delay: 100ms;
-  }
+        .animate-delay-100 {
+          animation-delay: 100ms;
+        }
 
-  .animate-delay-200 {
-    animation-delay: 200ms;
-  }
+        .animate-delay-200 {
+          animation-delay: 200ms;
+        }
 
-  .animate-delay-300 {
-    animation-delay: 300ms;
+        .animate-delay-300 {
+          animation-delay: 300ms;
+        }
+      }
+    }
   }
 }

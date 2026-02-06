@@ -32,6 +32,7 @@ import {
 import type {
   PlanoCartucho,
   DiaDoPlano,
+  TrechoBiblico,
 } from "../../core/types/contratos.types";
 
 /* ============================================================================
@@ -216,31 +217,51 @@ export class MainOrquestrador extends BaseOrquestrador {
    * Setup de event delegation (listeners em elementos estáveis)
    */
   private setupEventDelegation(): void {
+    console.log("[MainOrquestrador] Configurando event delegation...");
+
     // Container estável: dia-view
     const diaView = document.getElementById("dia-view");
     if (diaView) {
+      console.log(
+        "[MainOrquestrador] #dia-view encontrado, adicionando listener",
+      );
       this.on(diaView, "click", (e) => {
         const target = e.target as HTMLElement;
+        console.log("[MainOrquestrador] Click em:", target);
         if (target.matches("[data-action='toggle-lido']")) {
+          console.log("[MainOrquestrador] Toggle lido clicado");
           this.toggleLido();
         }
       });
+    } else {
+      console.error("[MainOrquestrador] #dia-view NÃO encontrado");
     }
 
     // Botões de navegação
     const btnProximo = document.getElementById("btn-dia-proximo");
     const btnAnterior = document.getElementById("btn-dia-anterior");
 
+    console.log(
+      "[MainOrquestrador] Botão próximo:",
+      btnProximo ? "encontrado" : "NÃO encontrado",
+    );
+    console.log(
+      "[MainOrquestrador] Botão anterior:",
+      btnAnterior ? "encontrado" : "NÃO encontrado",
+    );
+
     if (btnProximo) {
-      this.on(btnProximo, "click", () =>
-        this.navegarParaDia(this._state.diaAtualNumero + 1),
-      );
+      this.on(btnProximo, "click", () => {
+        console.log("[MainOrquestrador] Botão próximo clicado");
+        this.navegarParaDia(this._state.diaAtualNumero + 1);
+      });
     }
 
     if (btnAnterior) {
-      this.on(btnAnterior, "click", () =>
-        this.navegarParaDia(this._state.diaAtualNumero - 1),
-      );
+      this.on(btnAnterior, "click", () => {
+        console.log("[MainOrquestrador] Botão anterior clicado");
+        this.navegarParaDia(this._state.diaAtualNumero - 1);
+      });
     }
 
     // Atalhos de teclado
@@ -255,8 +276,167 @@ export class MainOrquestrador extends BaseOrquestrador {
    * Renderização inicial da UI
    */
   private renderInitial(): void {
+    console.log("[MainOrquestrador] Renderizando UI inicial...");
+
     this.renderEstatisticas();
+    this.renderCardDia();
+    this.renderCalendario();
+
     this.emit("dia-alterado", { dia: this._state.diaAtualNumero });
+
+    console.log("[MainOrquestrador] UI inicial renderizada");
+  }
+
+  /**
+   * Renderizar card do dia atual
+   */
+  private renderCardDia(): void {
+    const diaView = document.getElementById("dia-view");
+    if (!diaView) {
+      console.error("[MainOrquestrador] Elemento #dia-view não encontrado");
+      return;
+    }
+
+    const dia = this._state.managers.plano.getDiaAtual();
+    if (!dia) {
+      console.error(`[MainOrquestrador] Dia atual não encontrado`);
+      return;
+    }
+
+    diaView.innerHTML = this.gerarHTMLCardDia(dia);
+    console.log(`[MainOrquestrador] Card do dia ${dia.numero} renderizado`);
+  }
+
+  /**
+   * Gerar HTML para o card do dia
+   */
+  private gerarHTMLCardDia(dia: DiaDoPlano): string {
+    const lido = this._state.managers.progresso.estaLido(dia.numero);
+    const bloqueado = this._state.diasBloqueados.includes(dia.numero);
+
+    // Formatar leituras: "GÊNESIS 1-2, ÊXODO 3"
+    const formatarLeituras = (trechos: readonly TrechoBiblico[]): string => {
+      return trechos
+        .map((t) => {
+          const capituloStr =
+            t.capituloFim && t.capituloFim !== t.capituloInicio
+              ? `${t.capituloInicio}-${t.capituloFim}`
+              : `${t.capituloInicio}`;
+          return `${t.livroNome.toUpperCase()} ${capituloStr}`;
+        })
+        .join(", ");
+    };
+
+    const leiturasAT = formatarLeituras(dia.antigoTestamento);
+    const leiturasNT = formatarLeituras(dia.novoTestamento);
+    const todasLeituras = [leiturasAT, leiturasNT].filter(Boolean).join("; ");
+
+    return `
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+              Dia ${dia.numero}
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">${dia.dataFormatada}</p>
+          </div>
+          <div class="flex gap-2">
+            ${lido ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm dark:bg-green-900/30 dark:text-green-400">✓ Lido</span>' : ""}
+            ${bloqueado ? '<span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm dark:bg-red-900/30 dark:text-red-400">🔒 Bloqueado</span>' : ""}
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          ${
+            todasLeituras
+              ? `
+            <div class="p-4 bg-blue-50 rounded-lg dark:bg-blue-900/20">
+              <strong class="text-blue-800 dark:text-blue-300 text-sm uppercase tracking-wide">Leitura</strong>
+              <p class="text-gray-800 dark:text-gray-200 mt-2 font-medium">${todasLeituras}</p>
+            </div>
+          `
+              : ""
+          }
+
+          ${
+            dia.observacoes
+              ? `
+            <div class="p-3 bg-yellow-50 rounded-lg dark:bg-yellow-900/20">
+              <strong class="text-yellow-700 dark:text-yellow-300 text-sm">Observações</strong>
+              <p class="text-gray-700 dark:text-gray-300 mt-1">${dia.observacoes}</p>
+            </div>
+          `
+              : ""
+          }
+        </div>
+
+        <div class="mt-6 flex gap-3">
+          <button data-action="toggle-lido"
+            class="px-4 py-2 rounded-lg font-medium transition ${
+              lido
+                ? "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-slate-700 dark:text-gray-300"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            }">
+            ${lido ? "Marcar como não lido" : "Marcar como lido"}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Renderizar calendário
+   */
+  private renderCalendario(): void {
+    const calendarioEl = document.getElementById("calendario");
+    if (!calendarioEl) {
+      console.error("[MainOrquestrador] Elemento #calendario não encontrado");
+      return;
+    }
+
+    const totalDias = this._state.managers.plano.getTotalDias();
+    const dias = [];
+
+    for (let i = 1; i <= totalDias; i++) {
+      const lido = this._state.managers.progresso.estaLido(i);
+      const bloqueado = this._state.diasBloqueados.includes(i);
+      const atual = i === this._state.diaAtualNumero;
+
+      dias.push(`
+        <button data-dia="${i}" 
+          class="w-10 h-10 rounded-lg text-sm font-medium transition
+          ${atual ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-800" : ""}
+          ${
+            lido
+              ? "bg-green-500 text-white hover:bg-green-600"
+              : bloqueado
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-slate-700"
+                : "bg-white text-gray-700 hover:bg-blue-50 border border-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:border-slate-600"
+          }">
+          ${i}
+        </button>
+      `);
+    }
+
+    calendarioEl.innerHTML = `
+      <div class="grid grid-cols-7 gap-2">
+        ${dias.join("")}
+      </div>
+    `;
+
+    // Adicionar listeners aos botões do calendário
+    calendarioEl.querySelectorAll("button[data-dia]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const diaNum = parseInt((e.target as HTMLElement).dataset.dia || "0");
+        if (diaNum && !this._state.diasBloqueados.includes(diaNum)) {
+          this.navegarParaDia(diaNum);
+        }
+      });
+    });
+
+    console.log(
+      `[MainOrquestrador] Calendário renderizado com ${totalDias} dias`,
+    );
   }
 
   /**
@@ -333,6 +513,8 @@ export class MainOrquestrador extends BaseOrquestrador {
    * @returns Resultado da navegação
    */
   navegarParaDia(numeroDia: number): NavegacaoResult {
+    console.log(`[MainOrquestrador] Navegando para dia ${numeroDia}`);
+
     const plano = this._state.managers.plano;
     const totalDias = plano.getTotalDias();
 
@@ -346,9 +528,15 @@ export class MainOrquestrador extends BaseOrquestrador {
     }
 
     this._state.diaAtualNumero = numeroDia;
+    this._state.managers.plano.irParaDia(numeroDia);
     this._state.managers.notas.setDiaAtual(numeroDia);
-    this.emit("dia-alterado", { dia: numeroDia });
+
+    // Atualizar UI
+    this.renderCardDia();
+    this.renderCalendario();
     this.renderEstatisticas();
+
+    this.emit("dia-alterado", { dia: numeroDia });
 
     return { sucesso: true };
   }
@@ -358,8 +546,15 @@ export class MainOrquestrador extends BaseOrquestrador {
    */
   toggleLido(): void {
     const diaNumero = this._state.diaAtualNumero;
+    console.log(`[MainOrquestrador] Alternando estado do dia ${diaNumero}`);
+
     this._state.managers.progresso.alternar(diaNumero);
+
+    // Re-renderizar card e calendário para mostrar novo estado
+    this.renderCardDia();
+    this.renderCalendario();
     this.renderEstatisticas();
+
     this.emit("progresso-alterado", { dia: diaNumero });
   }
 

@@ -1,7 +1,30 @@
 📘 NOTA DE CONTINUIDADE — APP DE LEITURA BÍBLICA
 
-Data: 29/01/2026
-Estado: Arquitetura saudável, evolução controlada, sem dívida técnica, 18/18 arquivos auditados
+Data: 06/02/2026
+Estado: CSS 100% Tailwind, componentes renderizando, ajustes finais em andamento
+
+# ============================================================================
+
+# 🔹 TAREFAS ATUAIS (EM ANDAMENTO)
+
+# ============================================================================
+
+🎯 AJUSTES PENDENTES - SPRINT ATUAL
+
+1. Arrumar toggle de descrição do plano
+   Status: ⏳ Verificando event listeners
+
+2. Arrumar calendário
+   Status: ⏳ Renderização dos dias
+
+3. Arrumar bloco de notas
+   Status: ⏳ Evento de abertura
+
+4. Testar as demais funcionalidades
+   Status: ⏳ Validação completa
+
+5. Verificar a responsividade
+   Status: ⏳ Validação completa
 
 # ============================================================================
 

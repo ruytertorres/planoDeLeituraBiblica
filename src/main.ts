@@ -18,20 +18,20 @@
 import planoCronologico from "./cartuchos/plano_cronologico";
 import { inicializarAdapter, getUIAdapter } from "./compatibilidade/ui-adapter";
 import { materializarPlanoCartucho } from "./core/services/planos/materializarPlanoCartucho";
+import { MainOrquestrador } from "./ui/orquestradores/MainOrquestrador";
 
 /* ============================================================================
    INICIALIZAÇÃO DO SISTEMA
 ============================================================================ */
 
+let mainOrquestrador: MainOrquestrador | null = null;
+
 /**
  * Inicializa o núcleo TypeScript e cria ponte para UI.
- *
- * Esta função substituirá gradualmente a inicialização JavaScript
- * mantendo compatibilidade total com o código existente.
  */
-export function inicializarSistemaTypeScript(): void {
+export async function inicializarSistemaTypeScript(): Promise<void> {
   try {
-    // Validar plano (já feito em importação, mas dupla segurança)
+    // Validar plano
     if (!planoCronologico || !planoCronologico.id) {
       throw new Error("Plano cronológico inválido");
     }
@@ -43,12 +43,19 @@ export function inicializarSistemaTypeScript(): void {
     // Inicializar adaptador global para UI JavaScript
     inicializarAdapter(planoMaterializado);
 
+    // Inicializar MainOrquestrador (gerencia toda a UI)
+    mainOrquestrador = new MainOrquestrador(planoMaterializado);
+    await mainOrquestrador.init();
+
     // Expor adaptador globalmente para compatibilidade
     if (typeof window !== "undefined") {
       (window as any).uiAdapter = getUIAdapter();
+      (window as any).mainOrquestrador = mainOrquestrador;
     }
+
+    console.log("✅ Sistema inicializado com sucesso");
   } catch (error) {
-    console.error("❌ Erro na inicialização do núcleo TypeScript:", error);
+    console.error("❌ Erro na inicialização:", error);
     throw error;
   }
 }
