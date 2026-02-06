@@ -1,8 +1,9 @@
 {
   "name": "planodeleiturabiblica",
   "version": "1.0.0",
-  "description": "**Versão atual:** 1.0.0  \r **Status:** Open Source · Sem fins lucrativos · Em evolução contínua",
-  "main": "plano.html",
+  "description": "**Versão atual:** 1.0.0  \n **Status:** Open Source · Sem fins lucrativos · Em evolução contínua",
+  "main": "index.html",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc && vite build",
@@ -11,10 +12,10 @@
     "dev": "vite",
     "dev:legacy": "npx http-server . -p 8000 -o",
     "start": "npm run build && npm run dev:legacy",
-    "build:simple": "echo 'Compilando TypeScript...' && npm run build && echo '✅ Build concluíd o!'",
+    "build:simple": "echo 'Compilando TypeScript...' && npm run build && echo '✅ Build concluído!'",
     "serve": "npx http-server . -p 8000 -o",
     "preview": "vite preview",
-    "clean": "rm -rf dist dist-vite",
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
     "rebuild": "npm run clean && npm run build"
   },
   "repository": {
@@ -24,7 +25,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/ruytertorres/planoDeLeituraBiblica/issues"
   },

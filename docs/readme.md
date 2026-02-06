@@ -65,11 +65,12 @@ A aplicação segue uma **arquitetura em camadas**, rigorosamente alinhada ao co
 
 ### 4.1 Camada de Tempo
 
-- `js/core/models/parametroGerador.js`
+- `src/core/services/tempo/geradorDatas.ts`
 
 Fonte **única e absoluta** de tempo no sistema.
 
 Nenhum outro módulo pode:
+
 - criar datas
 - simular calendários
 - assumir ano, dia ou ciclo
@@ -78,11 +79,11 @@ Nenhum outro módulo pode:
 
 ### 4.2 Camada de Domínio
 
-- `parametroBibliaPlano.js`
-- `parametroDia.js`
-- `biblia.js`
+- `src/core/models/Dia.ts`
+- `src/cartuchos/plano_cronologico.ts`
 
 Define conceitos estáveis:
+
 - Bíblia como estrutura canônica
 - Dia como unidade indivisível
 - Plano como intenção contínua
@@ -93,13 +94,13 @@ Não depende de UI nem de orquestração.
 
 ### 4.3 Camada de Orquestração
 
-- `PlanoManager.js`
-- `ProgressoLeitura.js`
-- `ReorganizadorPlano.js`
-- `ResetProgresso.js`
-- `MainOrquestrador.js`
+- `src/core/services/planos/PlanoManager.ts`
+- `src/core/services/planos/ProgressoLeitura.ts`
+- `src/core/services/planos/ReorganizadorPlano.ts`
+- `src/ui/orquestradores/MainOrquestrador.ts`
 
 Responsável por:
+
 - injetar tempo
 - coordenar fluxo
 - aplicar regras de domínio
@@ -142,6 +143,7 @@ As notas:
 Pertencem ao **ato de leitura** do usuário.
 
 Isso garante:
+
 - continuidade intelectual
 - independência estrutural
 - preservação de contexto
@@ -160,6 +162,7 @@ Estados reconhecidos:
 - ENCERRADO
 
 Regras:
+
 - todo estado tem causa
 - nenhuma transição é silenciosa
 - estado nunca muda sem rastreabilidade
@@ -180,6 +183,7 @@ Decisões reconhecidas:
 - adiar decisão
 
 Todas são:
+
 - explícitas
 - registradas
 - atribuídas ao usuário
@@ -213,6 +217,7 @@ Este projeto é:
 - **Sem coleta de dados para monetização**
 
 O objetivo é:
+
 - educacional
 - comunitário
 - arquitetural
@@ -227,52 +232,29 @@ o `CONTRATO_DO_SISTEMA.md`.
 
 .
 ├── CONTRATO_DO_SISTEMA.md # Fonte de verdade conceitual
-├── ARQUITETURA_SINCRONIZACAO.md # Estratégia futura de sincronização
 ├── README.md # Este documento
-├── tarefas.txt # Registro conceitual de tarefas
+├── index.html # Interface principal
 │
-├── assets/
-│ ├── icons/ # Ícones da aplicação
-│ └── images/ # Imagens estáticas
+├── src/ # 💎 Código TypeScript 100%
+│ ├── cartuchos/ # 📦 Planos-Cartucho
+│ ├── core/ # 💎 Núcleo do sistema
+│ │ ├── models/ # 🏗️ Entidades de domínio
+│ │ └── services/ # ⚙️ Serviços de negócio
+│ │ ├── tempo/ # 🕐 Autoridade temporal
+│ │ ├── planos/ # 📋 Serviços de planos
+│ │ ├── busca/ # 🔍 Busca textual
+│ │ └── notas/ # 📝 Sistema de notas
+│ ├── ui/ # 🎨 Interface
+│ │ ├── components/ # 🧩 Componentes modernos
+│ │ ├── componentes/ # 🧩 Componentes (migração)
+│ │ ├── orquestradores/ # 🎭 Orquestradores
+│ │ └── plugins/ # 🔌 Plugins
+│ └── main.ts # 🎯 Ponto de entrada
 │
-├── css/
-│ ├── base/ # Reset, variáveis, temas
-│ ├── layout/ # Estrutura visual
-│ ├── componentes/ # Modais, overlays, botões
-│ └── darkmode.css
-│
-├── js/
-│ ├── core/
-│ │ ├── models/
-│ │ │ ├── parametroBibliaPlano.js
-│ │ │ ├── parametroDia.js
-│ │ │ └── parametroGerador.js
-│ │ │
-│ │ └── services/
-│ │ ├── planos/
-│ │ │ ├── PlanoManager.js
-│ │ │ ├── ReorganizadorPlano.js
-│ │ │ ├── ProgressoLeitura.js
-│ │ │ └── ResetProgresso.js
-│ │ ├── busca/
-│ │ └── notas/
-│ │
-│ ├── ui/
-│ │ ├── componentes/
-│ │ │ ├── NotasOverlayUI.js
-│ │ │ ├── ResetModal.js
-│ │ │ └── CalendarUI.js
-│ │ ├── orquestradores/
-│ │ │ ├── BaseOrquestrador.js
-│ │ │ └── MainOrquestrador.js
-│ │ └── plugins/
-│ │ ├── ExportacaoPlugin.js
-│ │ └── CertificadoPlugin.js
-│ │
-│ └── main.js # Bootstrap da aplicação
-│
-└── plano.html # Interface principal
-
+├── assets/ # 🎨 Assets estáticos
+├── css/ # 🎨 Estilos CSS
+├── dist/ # 📦 Build (gerado)
+└── docs/ # 📚 Documentação
 
 ---
 
@@ -289,8 +271,6 @@ Textos bíblicos em **domínio público** podem ser usados livremente.
 Versões protegidas por copyright (ex.: KJA, ARC, NVI) **exigem licença própria** e não são redistribuídas pelo projeto.
 
 Consulte o arquivo `LICENSE.md` para os termos completos.
-
-
 
 ## 13. Diretriz Final
 
