@@ -1,10 +1,21 @@
 # 🚀 Como Iniciar o Sistema
 
+> **Versão:** 3.0.0 (TypeScript 100%)
+> **Requisitos:** Node.js 18+, npm 9+
+
+---
+
 ## ⚡ **Forma Mais Rápida (Recomendado)**
 
 ```bash
-npm run start
+npm install
+npm run build
+npm run preview
 ```
+
+Acesse: `http://localhost:4173`
+
+---
 
 ## 📋 **Passo a Passo Manual**
 
@@ -18,72 +29,43 @@ npm install
 npm run build
 ```
 
-### 3️⃣ Iniciar Servidor Local
+### 3️⃣ Iniciar Servidor de Preview
 ```bash
-npm run serve
+npm run preview
 ```
 
 ### 4️⃣ Acessar Sistema
-Abra no navegador: `http://localhost:8000`
+Abra no navegador: `http://localhost:4173`
 
 ---
 
-## 🌐 **Como Iniciar Localhost**
+## 🌐 **Modo Desenvolvimento (com Hot Reload)**
 
-### **Comando Principal:**
+Para desenvolvimento com atualização automática:
+
 ```bash
-npm run serve
+npm run dev
 ```
 
-### **URLs de Acesso:**
-- **Principal:** `http://localhost:8000`
-- **Alternativa:** `http://localhost:8080`
-
-### **Outras Opções:**
-```bash
-# Com build automático
-npm run start
-
-# Servidor manual
-npx http-server . -p 8000 -o
-
-# Outra porta
-npx http-server . -p 8080 -o
-```
+Acesse: `http://localhost:5173`
 
 ---
 
 ## ✅ **Verificação de Sucesso**
 
 Se funcionou, você verá:
-- ✅ "Build concluído sem erros"
-- ✅ "Servidor iniciado na porta 8000"
+- ✅ Build concluído sem erros (dist/ criado)
+- ✅ Servidor iniciado na porta 4173 (preview) ou 5173 (dev)
 - ✅ Sistema funcionando no navegador
-
----
-
-## 🎯 **Resumo Completo**
-
-**Para iniciar do zero:**
-```bash
-npm install
-npm run start
-```
-
-**Para iniciar rapidamente:**
-```bash
-npm run serve
-```
-
-**Acesso:** `http://localhost:8000`
 
 ---
 
 ## 📁 **Arquivos Importantes**
 
-- **`plano.html`** - Página principal
-- **`js/main-hibrido.js`** - Ponto de entrada
-- **`dist-vite/`** - Arquivos compilados
+- **`index.html`** - Página principal (entry point)
+- **`src/main.ts`** - Código fonte TypeScript
+- **`dist/main.js`** - Build gerado pelo Vite
+- **`package.json`** - Scripts e dependências
 
 ---
 
@@ -91,11 +73,39 @@ npm run serve
 
 | Comando | Função |
 |---------|--------|
-| `npm run start` | Compila + Inicia servidor |
-| `npm run serve` | Inicia servidor apenas |
-| `npm run build` | Compila TypeScript apenas |
+| `npm run dev` | Modo desenvolvimento (hot reload) |
+| `npm run build` | Compila para produção (dist/) |
+| `npm run preview` | Preview do build de produção |
 | `npm run clean` | Limpa build anterior |
+| `npm run rebuild` | Limpa + Compila novamente |
 
 ---
 
-**Pronto! Sistema rodando em 2 comandos!** 🎉
+## 🐛 **Problemas Comuns**
+
+### Erro: "tsc não encontrado"
+```bash
+npm install
+```
+
+### Erro: "Porta 4173 em uso"
+```bash
+npm run dev  # Usa porta 5173
+```
+
+### Limpar e recomeçar
+```bash
+npm run rebuild
+```
+
+---
+
+## 📝 **Notas**
+
+- Sistema **100% TypeScript** - sem JavaScript legado
+- Build otimizado pelo Vite (tree-shaking, code-splitting)
+- `dist/` é gerado automaticamente - não versionar
+
+---
+
+**Pronto! Sistema rodando em 3 comandos!** 🎉
