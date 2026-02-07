@@ -57,7 +57,11 @@ interface CalendarioAPI {
 export class CalendarioComponent {
   private container: HTMLElement | null = null;
   private config: CalendarioConfig;
-  private eventListeners: Array<{ element: Element; type: string; handler: EventListener }> = [];
+  private eventListeners: Array<{
+    element: Element;
+    type: string;
+    handler: EventListener;
+  }> = [];
 
   constructor(config: CalendarioConfig) {
     this.config = config;
@@ -125,13 +129,17 @@ export class CalendarioComponent {
     btnAnterior.type = "button";
     btnAnterior.className = "nav-mes-btn anterior";
     btnAnterior.textContent = "◀ anterior";
-    
+
     const handlerAnterior = () => {
       this.config.viewModel.onMesPosterior();
       this.render();
     };
     btnAnterior.addEventListener("click", handlerAnterior);
-    this.eventListeners.push({ element: btnAnterior, type: "click", handler: handlerAnterior });
+    this.eventListeners.push({
+      element: btnAnterior,
+      type: "click",
+      handler: handlerAnterior,
+    });
 
     // Título
     const titulo = document.createElement("span");
@@ -143,13 +151,17 @@ export class CalendarioComponent {
     btnProximo.type = "button";
     btnProximo.className = "nav-mes-btn proximo";
     btnProximo.textContent = "posterior ▶";
-    
+
     const handlerProximo = () => {
       this.config.viewModel.onProximoMes();
       this.render();
     };
     btnProximo.addEventListener("click", handlerProximo);
-    this.eventListeners.push({ element: btnProximo, type: "click", handler: handlerProximo });
+    this.eventListeners.push({
+      element: btnProximo,
+      type: "click",
+      handler: handlerProximo,
+    });
 
     header.appendChild(btnAnterior);
     header.appendChild(titulo);
@@ -235,7 +247,7 @@ export class CalendarioComponent {
 
     // Adicionar novo destaque
     const diaEl = document.querySelector(
-      `.calendario-dia[data-dia-numero="${diaNumero}"]`
+      `.calendario-dia[data-dia-numero="${diaNumero}"]`,
     ) as HTMLElement;
 
     if (diaEl) {
@@ -267,7 +279,9 @@ export class CalendarioComponent {
  * Função de fábrica para criar e renderizar calendário
  * Mantém compatibilidade com código JavaScript existente
  */
-export function renderCalendario(config: CalendarioConfig): CalendarioAPI | null {
+export function renderCalendario(
+  config: CalendarioConfig,
+): CalendarioAPI | null {
   const componente = new CalendarioComponent(config);
   return componente.render();
 }

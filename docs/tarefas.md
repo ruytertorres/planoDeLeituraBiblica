@@ -12,10 +12,10 @@ Estado: CSS 100% Tailwind, componentes renderizando, ajustes finais em andamento
 🎯 AJUSTES PENDENTES - SPRINT ATUAL
 
 1. Arrumar toggle de descrição do plano
-   Status: ⏳ Verificando event listeners
+   Status: ⏳ Verificando event listeners - OK
 
 2. Arrumar calendário
-   Status: ⏳ Renderização dos dias
+   Status: ⏳ Renderização dos dias - OK
 
 3. Arrumar bloco de notas
    Status: ⏳ Evento de abertura

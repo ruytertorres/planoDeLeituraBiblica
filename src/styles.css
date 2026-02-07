@@ -313,15 +313,18 @@
     @apply dark:border-slate-600 dark:bg-slate-700 dark:text-gray-200;
   }
 
-  /* Dia não lido (default) */
-  .calendario-dia:not(.lido):not(.ativo):not(.hoje):not(.calendario-sem-plano) {
+  /* Dia não lido (default) - exclui classes do ViewModel também */
+  .calendario-dia:not(.lido):not(.ativo):not(.hoje):not(.dia-lido):not(
+      .dia-atual
+    ):not(.dia-hoje):not(.calendario-sem-plano) {
     @apply bg-gray-50 text-gray-500 border-gray-200;
     @apply hover:bg-gray-100 hover:border-gray-300;
     @apply dark:bg-slate-800 dark:text-gray-400 dark:border-slate-700;
     @apply dark:hover:bg-slate-700;
   }
 
-  /* Dia lido */
+  /* Dia lido - classe dia-lido do ViewModel */
+  .calendario-dia.dia-lido,
   .calendario-dia.lido {
     @apply border-green-200 bg-green-100 font-semibold text-green-800;
     @apply hover:border-green-300 hover:bg-green-200;
@@ -330,14 +333,16 @@
     @apply dark:hover:bg-green-900/50;
   }
 
-  /* Dia ativo (selecionado) */
+  /* Dia ativo (selecionado) - classe dia-atual do ViewModel */
+  .calendario-dia.dia-atual,
   .calendario-dia.ativo {
     @apply z-10 scale-105 border-blue-600 bg-blue-600 font-bold text-white;
     @apply shadow-lg shadow-blue-500/25;
     @apply hover:bg-blue-700;
   }
 
-  /* Hoje */
+  /* Hoje - classe dia-hoje do ViewModel */
+  .calendario-dia.dia-hoje,
   .calendario-dia.hoje {
     @apply border-cyan-600 bg-cyan-600 font-bold text-white;
     @apply shadow-lg shadow-cyan-500/30;
@@ -382,6 +387,9 @@
   }
 
   /* Estados combinados com bloqueado */
+  .calendario-dia.dia-bloqueado.dia-lido,
+  .calendario-dia.dia-bloqueado.dia-hoje,
+  .calendario-dia.dia-bloqueado.dia-atual,
   .calendario-dia.dia-bloqueado.lido,
   .calendario-dia.dia-bloqueado.hoje,
   .calendario-dia.dia-bloqueado.ativo {
@@ -390,14 +398,17 @@
   }
 
   /* Combinados especiais */
+  .calendario-dia.dia-lido.dia-hoje,
   .calendario-dia.lido.hoje {
     @apply bg-gradient-to-br from-cyan-600 to-emerald-500 border-cyan-600;
   }
 
+  .calendario-dia.dia-lido.dia-atual,
   .calendario-dia.lido.ativo {
     @apply bg-gradient-to-br from-blue-600 to-violet-600 border-blue-600;
   }
 
+  .calendario-dia.dia-hoje:not(.dia-lido),
   .calendario-dia.hoje:not(.lido) {
     @apply bg-gradient-to-br from-cyan-600 to-sky-500 border-cyan-600;
   }

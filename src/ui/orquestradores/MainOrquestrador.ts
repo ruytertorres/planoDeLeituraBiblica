@@ -28,12 +28,16 @@ import { NotasOverlayOrquestrador } from "../../core/services/notas/NotasOverlay
 import {
   getDiaDoAnoAtual,
   getTimestampAtualISO,
+  getMesAtual,
+  getAnoAtual,
 } from "../../core/services/tempo/geradorDatas.js";
 import type {
   PlanoCartucho,
   DiaDoPlano,
   TrechoBiblico,
 } from "../../core/types/contratos.types";
+import { CalendarioViewModel } from "../components/Calendario/CalendarioViewModel.js";
+import { CalendarioComponent } from "../components/Calendario/CalendarioComponent.js";
 
 /* ============================================================================
    TIPOS E INTERFACES
@@ -57,8 +61,9 @@ interface MainState {
     notasOverlay?: NotasOverlayOrquestrador;
   };
   apis: {
-    calendario?: unknown;
-    calendarioVM?: unknown;
+    calendario?: ReturnType<CalendarioComponent["render"]>;
+    calendarioVM?: CalendarioViewModel;
+    calendarioComponent?: CalendarioComponent;
   };
   [key: string]: unknown;
 }
@@ -266,6 +271,46 @@ export class MainOrquestrador extends BaseOrquestrador {
 
     // Atalhos de teclado
     this.on(document, "keydown", (e) => this.handleKeydown(e as KeyboardEvent));
+
+    // Dropdown de descrição (Sobre o Plano Cronológico)
+    const btnDescricao = document.getElementById("btn-descricao-toggle");
+    if (btnDescricao) {
+      this.on(btnDescricao, "click", () => {
+        const conteudo = document.getElementById("descricao-conteudo");
+        const icon = document.getElementById("descricao-icon");
+        if (conteudo) {
+          const isHidden = conteudo.classList.contains("hidden");
+          if (isHidden) {
+            conteudo.classList.remove("hidden");
+            btnDescricao.setAttribute("aria-expanded", "true");
+          } else {
+            conteudo.classList.add("hidden");
+            btnDescricao.setAttribute("aria-expanded", "false");
+          }
+        }
+        if (icon) {
+          icon.classList.toggle("rotate-180");
+        }
+      });
+    }
+
+    // Botão de reset de progresso
+    const btnReset = document.getElementById("btn-resetar-progresso");
+    if (btnReset) {
+      this.on(btnReset, "click", () => {
+        console.log("[MainOrquestrador] Botão resetar progresso clicado");
+        this._state.orquestradores.reset?.resetCompleto();
+      });
+    }
+
+    // Botão de notas flutuante
+    const btnNotas = document.getElementById("btn-notas");
+    if (btnNotas) {
+      this.on(btnNotas, "click", () => {
+        console.log("[MainOrquestrador] Botão notas clicado");
+        this._state.orquestradores.notasOverlay?.alternar();
+      });
+    }
   }
 
   /* --------------------------------------------------------------------------
@@ -394,49 +439,42 @@ export class MainOrquestrador extends BaseOrquestrador {
       return;
     }
 
-    const totalDias = this._state.managers.plano.getTotalDias();
-    const dias = [];
-
-    for (let i = 1; i <= totalDias; i++) {
-      const lido = this._state.managers.progresso.estaLido(i);
-      const bloqueado = this._state.diasBloqueados.includes(i);
-      const atual = i === this._state.diaAtualNumero;
-
-      dias.push(`
-        <button data-dia="${i}" 
-          class="w-10 h-10 rounded-lg text-sm font-medium transition
-          ${atual ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-800" : ""}
-          ${
-            lido
-              ? "bg-green-500 text-white hover:bg-green-600"
-              : bloqueado
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed dark:bg-slate-700"
-                : "bg-white text-gray-700 hover:bg-blue-50 border border-gray-200 dark:bg-slate-700 dark:text-gray-300 dark:border-slate-600"
-          }">
-          ${i}
-        </button>
-      `);
+    // Criar ou reutilizar ViewModel
+    if (!this._state.apis.calendarioVM) {
+      this._state.apis.calendarioVM = new CalendarioViewModel(
+        {
+          totalDias: this.planoCronologico.dias.length,
+          getDia: (numero: number) =>
+            this.planoCronologico.dias.find((d) => d.numero === numero) || null,
+        },
+        {
+          estaLido: (diaNumero: number) =>
+            this._state.managers.progresso.estaLido(diaNumero),
+        },
+        () => this._state.diaHojeNumero,
+        () => this._state.diaAtualNumero,
+        (diaNumero: number) => this.navegarParaDia(diaNumero),
+        this._state.diasBloqueados,
+      );
     }
 
-    calendarioEl.innerHTML = `
-      <div class="grid grid-cols-7 gap-2">
-        ${dias.join("")}
-      </div>
-    `;
-
-    // Adicionar listeners aos botões do calendário
-    calendarioEl.querySelectorAll("button[data-dia]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const diaNum = parseInt((e.target as HTMLElement).dataset.dia || "0");
-        if (diaNum && !this._state.diasBloqueados.includes(diaNum)) {
-          this.navegarParaDia(diaNum);
-        }
+    // Criar componente apenas na primeira vez, depois reutilizar
+    if (!this._state.apis.calendarioComponent) {
+      this._state.apis.calendarioComponent = new CalendarioComponent({
+        containerId: "calendario",
+        viewModel: this._state.apis.calendarioVM,
       });
-    });
+    }
 
-    console.log(
-      `[MainOrquestrador] Calendário renderizado com ${totalDias} dias`,
-    );
+    // Renderizar (reutiliza a mesma instância)
+    this._state.apis.calendario = this._state.apis.calendarioComponent.render();
+
+    // Destacar o dia atual
+    if (this._state.apis.calendario) {
+      this._state.apis.calendario.highlightDay(this._state.diaAtualNumero);
+    }
+
+    console.log("[MainOrquestrador] Calendário mensal renderizado");
   }
 
   /**
@@ -535,6 +573,13 @@ export class MainOrquestrador extends BaseOrquestrador {
     this.renderCardDia();
     this.renderCalendario();
     this.renderEstatisticas();
+
+    // Focar no card do dia
+    const cardDia = document.getElementById("card-dia");
+    if (cardDia) {
+      cardDia.focus();
+      cardDia.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
 
     this.emit("dia-alterado", { dia: numeroDia });
 
@@ -668,6 +713,9 @@ export class MainOrquestrador extends BaseOrquestrador {
   destroy(): void {
     // Cleanup orquestradores
     this._state.orquestradores.notasOverlay?.destroy();
+
+    // Cleanup calendario
+    this._state.apis.calendarioComponent?.destroy();
 
     // Limpar estado
     this._state = {} as MainState;
