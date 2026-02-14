@@ -39,6 +39,7 @@ import type {
 import { CalendarioViewModel } from "../components/Calendario/CalendarioViewModel.js";
 import { CalendarioComponent } from "../components/Calendario/CalendarioComponent.js";
 import { ReajusteModalUI } from "../componentes/modais/ReajusteModalUI.js";
+import { ResetModal } from "../componentes/modais/ResetModal.js";
 
 /* ============================================================================
    TIPOS E INTERFACES
@@ -301,15 +302,6 @@ export class MainOrquestrador extends BaseOrquestrador {
       });
     }
 
-    // Botão de reset de progresso
-    const btnReset = document.getElementById("btn-resetar-progresso");
-    if (btnReset) {
-      this.on(btnReset, "click", () => {
-        console.log("[MainOrquestrador] Botão resetar progresso clicado");
-        this._state.orquestradores.reset?.resetCompleto();
-      });
-    }
-
     // Botão de notas flutuante
     const btnNotas = document.getElementById("btn-notas");
     if (btnNotas) {
@@ -518,6 +510,10 @@ export class MainOrquestrador extends BaseOrquestrador {
       this._state.managers.progresso,
       this._state.managers.plano,
     );
+
+    // Reset Modal - UI para confirmação de reset
+    const resetModal = new ResetModal(this._state.orquestradores.reset);
+    resetModal.inicializar();
 
     // Listener para evento de reset
     this.listen("progresso-resetado", (evento) => {
