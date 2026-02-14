@@ -9,6 +9,8 @@ import { setupEnterHandler } from "./NotasEnterHandler.js";
 export function initNotasOverlayUI(
   orquestrador: INotasOverlayOrquestrador,
 ): void {
+  console.log("[NotasOverlayUI] Inicializando...");
+
   const botaoAbrir = document.getElementById("btn-notas");
   const overlay = document.getElementById("notas-overlay");
   const editor = document.getElementById("notas-editor");
@@ -16,10 +18,21 @@ export function initNotasOverlayUI(
   const btnLimpar = document.getElementById("btn-limpar");
   const btnExportar = document.getElementById("btn-exportar");
 
+  console.log("[NotasOverlayUI] Elementos encontrados:", {
+    botaoAbrir: !!botaoAbrir,
+    overlay: !!overlay,
+    editor: !!editor,
+    btnFechar: !!btnFechar,
+    btnLimpar: !!btnLimpar,
+    btnExportar: !!btnExportar,
+  });
+
   if (!botaoAbrir || !overlay || !editor) {
-    console.warn("Bloco de notas não encontrado no DOM.");
+    console.warn("[NotasOverlayUI] Bloco de notas não encontrado no DOM.");
     return;
   }
+
+  console.log("[NotasOverlayUI] Elementos OK, configurando listeners...");
 
   // Toolbar
   const toolbar = document.querySelector(".notas-toolbar");
