@@ -55,68 +55,82 @@ export class ResetModal {
 
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "reset-modal-overlay";
-    modalOverlay.className = "reset-modal-overlay";
+    modalOverlay.className =
+      "fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-sm";
+    modalOverlay.style.display = "none";
 
     modalOverlay.innerHTML = `
-      <div class="reset-modal">
-        <h3>⚠️ Resetar Progresso</h3>
+      <div class="bg-slate-800 rounded-xl shadow-2xl max-w-lg w-full mx-4 p-6 border border-slate-700">
+        <h3 class="text-xl font-bold text-center text-white mb-4 flex items-center justify-center gap-2">
+          <span class="text-yellow-500">⚠️</span> Resetar Progresso
+        </h3>
 
-        <div class="reset-mensagem-principal">
-          <p>Tem certeza que deseja <strong>resetar TODO o seu progresso</strong> de leitura?</p>
-          <p><strong>Esta ação não pode ser desfeita!</strong></p>
+        <div class="bg-red-900/30 border border-red-500/30 rounded-lg p-4 mb-4">
+          <p class="text-red-200 text-sm">Tem certeza que deseja <strong class="text-red-400">resetar TODO o seu progresso</strong> de leitura?</p>
+          <p class="text-red-300 text-sm font-semibold mt-1">Esta ação não pode ser desfeita!</p>
         </div>
 
-        <div class="reset-opcoes">
-          <div class="reset-opcao-destaque">
-            <label class="opcao-destaque">
-              <input type="radio" name="reset-tipo" id="reset-completo" value="completo" checked>
-              <div class="opcao-conteudo">
-                <h4><i class="fas fa-calendar-day"></i> Reset Completo</h4>
-                <p>Reiniciar do <strong>Dia 01 do plano</strong> com as datas originais (01/01, 02/01, ...).</p>
-                <ul class="opcao-detalhes">
-                  <li><i class="fas fa-check"></i> Todos os dias marcados como lidos serão desmarcados</li>
-                  <li><i class="fas fa-check"></i> O calendário volta a usar a linha do tempo original</li>
-                  <li><i class="fas fa-check"></i> Você recomeça do Dia 1 no plano padrão</li>
+        <div class="space-y-3 mb-4">
+          <div class="border-2 border-red-500/50 rounded-lg p-3 bg-red-900/20 cursor-pointer hover:bg-red-900/30 transition">
+            <label class="flex items-start gap-3 cursor-pointer">
+              <input type="radio" name="reset-tipo" id="reset-completo" value="completo" checked class="mt-1 accent-red-500">
+              <div>
+                <h4 class="font-semibold text-white flex items-center gap-2">
+                  <i class="fas fa-calendar-day text-red-400"></i> Reset Completo
+                </h4>
+                <p class="text-slate-300 text-sm mt-1">Reiniciar do <strong class="text-white">Dia 01 do plano</strong> com as datas originais (01/01, 02/01, ...).</p>
+                <ul class="text-slate-400 text-xs mt-2 space-y-1">
+                  <li class="flex items-center gap-1"><i class="fas fa-check text-green-400"></i> Todos os dias marcados como lidos serão desmarcados</li>
+                  <li class="flex items-center gap-1"><i class="fas fa-check text-green-400"></i> O calendário volta a usar a linha do tempo original</li>
+                  <li class="flex items-center gap-1"><i class="fas fa-check text-green-400"></i> Você recomeça do Dia 1 no plano padrão</li>
                 </ul>
               </div>
             </label>
           </div>
 
-          <div class="reset-opcao-secundaria">
-            <label class="opcao-secundaria">
-              <input type="radio" name="reset-tipo" id="reset-hoje" value="hoje">
-              <div class="opcao-conteudo">
-                <h4><i class="fas fa-calendar-alt"></i> Dia 01 do Plano na Data de Hoje</h4>
-                <p>Alinhar o <strong>Dia 1 do plano</strong> com a data civil atual (por exemplo, 05/05).</p>
-                <ul class="opcao-detalhes">
-                  <li><i class="fas fa-check"></i> Progresso atual será apagado</li>
-                  <li><i class="fas fa-check"></i> As leituras serão empurradas para frente a partir de hoje</li>
-                  <li><i class="fas fa-check"></i> O plano poderá ultrapassar 31/12 e continuar no próximo ano</li>
+          <div class="border border-slate-600 rounded-lg p-3 bg-slate-700/50 cursor-pointer hover:bg-slate-700 transition">
+            <label class="flex items-start gap-3 cursor-pointer">
+              <input type="radio" name="reset-tipo" id="reset-hoje" value="hoje" class="mt-1 accent-blue-500">
+              <div>
+                <h4 class="font-semibold text-white flex items-center gap-2">
+                  <i class="fas fa-calendar-alt text-blue-400"></i> Dia 01 do Plano na Data de Hoje
+                </h4>
+                <p class="text-slate-300 text-sm mt-1">Alinhar o <strong class="text-white">Dia 1 do plano</strong> com a data civil atual (por exemplo, 05/05).</p>
+                <ul class="text-slate-400 text-xs mt-2 space-y-1">
+                  <li class="flex items-center gap-1"><i class="fas fa-check text-green-400"></i> Progresso atual será apagado</li>
+                  <li class="flex items-center gap-1"><i class="fas fa-check text-green-400"></i> As leituras serão empurradas para frente a partir de hoje</li>
+                  <li class="flex items-center gap-1"><i class="fas fa-check text-green-400"></i> O plano poderá ultrapassar 31/12 e continuar no próximo ano</li>
                 </ul>
               </div>
             </label>
           </div>
         </div>
 
-        <div class="reset-modal-security">
-          <label>
-            <input type="checkbox" id="reset-confirm-checkbox">
-            Eu entendo que esta ação <strong>apagará permanentemente</strong> todo o meu progresso e não poderá ser desfeita.
+        <div class="bg-yellow-900/20 border border-yellow-600/30 rounded-lg p-3 mb-4">
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="checkbox" id="reset-confirm-checkbox" class="mt-0.5 accent-yellow-500">
+            <span class="text-yellow-200 text-sm">Eu entendo que esta ação <strong class="text-yellow-400">apagará permanentemente</strong> todo o meu progresso e não poderá ser desfeita.</span>
           </label>
         </div>
 
-        <div class="reset-modal-actions">
-          <button id="reset-cancel-btn" class="reset-modal-btn cancel">
+        <div class="flex gap-3">
+          <button id="reset-cancel-btn" class="flex-1 px-4 py-2 rounded-lg bg-slate-700 text-white hover:bg-slate-600 transition">
             Cancelar
           </button>
-          <button id="reset-confirm-btn" class="reset-modal-btn confirm">
+          <button id="reset-confirm-btn" class="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
             Confirmar Reset
           </button>
         </div>
       </div>
     `;
 
-    document.body.appendChild(modalOverlay);
+    // Inserir no início do body para garantir z-index correto
+    if (document.body.firstChild) {
+      document.body.insertBefore(modalOverlay, document.body.firstChild);
+    } else {
+      document.body.appendChild(modalOverlay);
+    }
+
     this.modal = modalOverlay;
     this.modalCriado = true;
   }

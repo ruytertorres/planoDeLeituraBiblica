@@ -209,12 +209,19 @@ export class CalendarioViewModel {
         }
 
         // Dia bloqueado?
-        // Só bloqueia se o dia do plano está na lista E estamos na região do gap (antes da retomada)
+        // Para reset "para hoje": bloquear todas as datas ANTERIORES à data atual
+        // Para reajuste normal: só bloqueia se está na região do gap
         const estaNaRegiaoGap =
           diaRetomada !== null &&
           deslocamento > 0 &&
           diaDoAno < diaRetomada + deslocamento;
-        if (this.diasBloqueados.includes(diaPlano) && estaNaRegiaoGap) {
+
+        const deveBloquear =
+          deslocamento > 0 && diaRetomada === 1
+            ? diaDoAno < diaHoje // Reset "para hoje": bloquear datas anteriores a hoje
+            : this.diasBloqueados.includes(diaPlano) && estaNaRegiaoGap; // Reajuste normal
+
+        if (deveBloquear) {
           classes.push("dia-bloqueado");
           clicavel = false;
           tooltip = "Dia bloqueado";
@@ -276,38 +283,24 @@ export class CalendarioViewModel {
    * Seleciona um dia
    */
   public onSelecionarDia(diaNumero: number, diaDoAno?: number): void {
-    console.log(
-      `[CalendarioViewModel] onSelecionarDia chamado: diaNumero=${diaNumero}, diaDoAno=${diaDoAno}`,
-    );
-
-    // Verificar se o dia está bloqueado considerando a região do gap
+    // Verificar se o dia está bloqueado
     const deslocamento = this.getDeslocamento();
     const diaRetomada = this.getDiaRetomada();
+    const diaHoje = this.getDiaHoje();
+
     const estaNaRegiaoGap =
       diaRetomada !== null &&
       deslocamento > 0 &&
       diaDoAno !== undefined &&
       diaDoAno < diaRetomada + deslocamento;
 
-    console.log(
-      `[CalendarioViewModel] deslocamento=${deslocamento}, diaRetomada=${diaRetomada}, estaNaRegiaoGap=${estaNaRegiaoGap}`,
-    );
-    console.log(
-      `[CalendarioViewModel] diasBloqueados=${JSON.stringify(this.diasBloqueados)}, includes=${this.diasBloqueados.includes(diaNumero)}`,
-    );
+    const podeSelecionar =
+      deslocamento > 0 && diaRetomada === 1
+        ? diaDoAno !== undefined && diaDoAno >= diaHoje // Reset "para hoje": só permitir datas >= hoje
+        : !this.diasBloqueados.includes(diaNumero) || !estaNaRegiaoGap; // Reajuste normal
 
-    if (
-      diaNumero &&
-      (!this.diasBloqueados.includes(diaNumero) || !estaNaRegiaoGap)
-    ) {
-      console.log(
-        `[CalendarioViewModel] Chamando callback para dia ${diaNumero}`,
-      );
+    if (diaNumero && podeSelecionar) {
       this.selecionarDiaCallback(diaNumero);
-    } else {
-      console.log(
-        `[CalendarioViewModel] Dia ${diaNumero} bloqueado - não chamando callback`,
-      );
     }
   }
 }
