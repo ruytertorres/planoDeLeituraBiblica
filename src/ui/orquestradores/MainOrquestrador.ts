@@ -536,6 +536,8 @@ export class MainOrquestrador extends BaseOrquestrador {
       }
 
       this.renderEstatisticas();
+      this.renderCardDia(); // Atualizar card do dia atual
+      this.renderCalendario(); // Re-renderizar calendário com novos dados
       this.emit("dia-alterado", { dia: 1 });
 
       if (detalhes.aviso) {
