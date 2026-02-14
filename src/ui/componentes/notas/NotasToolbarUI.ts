@@ -108,6 +108,7 @@ export class NotasToolbarUI {
     if (this.botoes.highlightBtn) {
       this.botoes.highlightBtn.addEventListener("click", (e) => {
         e.preventDefault();
+        e.stopPropagation();
         this.botoes.highlightDropdown?.classList.toggle("active");
         this.atualizarEstadoBotoes();
       });
@@ -117,6 +118,7 @@ export class NotasToolbarUI {
       this.botoes.highlightColors.forEach((btn) => {
         btn.addEventListener("click", (e) => {
           e.preventDefault();
+          e.stopPropagation();
           const cor = (btn as HTMLElement).dataset.cor;
           this.formatador.highlight(cor);
           this.botoes.highlightDropdown?.classList.remove("active");
