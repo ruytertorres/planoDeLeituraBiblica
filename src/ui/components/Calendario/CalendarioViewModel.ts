@@ -64,7 +64,7 @@ export class CalendarioViewModel {
   private getDiaAtual: () => number;
   private getDeslocamento: () => number;
   private getDiaRetomada: () => number | null;
-  private selecionarDiaCallback: (diaNumero: number) => void;
+  private selecionarDiaCallback: (diaNumero: number, diaDoAno?: number) => void;
   public diasBloqueados: number[];
   private mesAtual: number;
   private anoAtual: number;
@@ -210,8 +210,8 @@ export class CalendarioViewModel {
 
         // Dia bloqueado?
         // Para reset "para hoje": bloquear todas as datas ANTERIORES à data atual
-        // Para reajuste normal: só bloqueia se está na região do gap
-        const estaNaRegiaoGap =
+        // Para reajuste normal: só bloqueia se está na região do gap (sem deslocamento)
+        const estaNaRegiaoGapSemDeslocamento =
           diaRetomada !== null &&
           deslocamento > 0 &&
           diaDoAno < diaRetomada + deslocamento;
@@ -219,7 +219,12 @@ export class CalendarioViewModel {
         const deveBloquear =
           deslocamento > 0 && diaRetomada === 1
             ? diaDoAno < diaHoje // Reset "para hoje": bloquear datas anteriores a hoje
-            : this.diasBloqueados.includes(diaPlano) && estaNaRegiaoGap; // Reajuste normal
+            : this.diasBloqueados.includes(diaPlano) &&
+              estaNaRegiaoGapSemDeslocamento; // Reajuste normal: só bloqueia se está na região SEM deslocamento
+
+        console.log(
+          `[CalendarioVM] Dia ${dia}/${this.mesAtual} (diaPlano=${diaPlano}, diaDoAno=${diaDoAno}): deslocamento=${deslocamento}, diaRetomada=${diaRetomada}, estaNaRegiaoGap=${estaNaRegiaoGapSemDeslocamento}, bloqueado=${this.diasBloqueados.includes(diaPlano)}, deveBloquear=${deveBloquear}`,
+        );
 
         if (deveBloquear) {
           classes.push("dia-bloqueado");
@@ -288,19 +293,25 @@ export class CalendarioViewModel {
     const diaRetomada = this.getDiaRetomada();
     const diaHoje = this.getDiaHoje();
 
-    const estaNaRegiaoGap =
+    // Só bloqueia se está na região SEM deslocamento (antes da retomada)
+    const estaNaRegiaoGapSemDeslocamento =
       diaRetomada !== null &&
       deslocamento > 0 &&
       diaDoAno !== undefined &&
       diaDoAno < diaRetomada + deslocamento;
 
-    const podeSelecionar =
+    const diaEstaBloqueado =
       deslocamento > 0 && diaRetomada === 1
-        ? diaDoAno !== undefined && diaDoAno >= diaHoje // Reset "para hoje": só permitir datas >= hoje
-        : !this.diasBloqueados.includes(diaNumero) || !estaNaRegiaoGap; // Reajuste normal
+        ? diaDoAno !== undefined && diaDoAno < diaHoje // Reset "para hoje"
+        : this.diasBloqueados.includes(diaNumero) &&
+          estaNaRegiaoGapSemDeslocamento; // Reajuste normal
 
-    if (diaNumero && podeSelecionar) {
-      this.selecionarDiaCallback(diaNumero);
+    console.log(
+      `[onSelecionarDia] diaNumero=${diaNumero}, diaDoAno=${diaDoAno}, deslocamento=${deslocamento}, diaRetomada=${diaRetomada}, estaNaRegiaoGap=${estaNaRegiaoGapSemDeslocamento}, bloqueado=${this.diasBloqueados.includes(diaNumero)}, diaEstaBloqueado=${diaEstaBloqueado}`,
+    );
+
+    if (diaNumero && !diaEstaBloqueado) {
+      this.selecionarDiaCallback(diaNumero, diaDoAno);
     }
   }
 }
