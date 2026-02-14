@@ -180,7 +180,7 @@ export class ResetModal {
       if (
         e.key === "Escape" &&
         this.modal &&
-        this.modal.classList.contains("active")
+        this.modal.style.display === "flex"
       ) {
         this.esconderModal();
       }
@@ -210,7 +210,7 @@ export class ResetModal {
     if (checkbox) checkbox.checked = false;
     if (btnConfirm) btnConfirm.disabled = true;
 
-    this.modal.classList.add("active");
+    this.modal.style.display = "flex";
 
     setTimeout(() => {
       if (checkbox) checkbox.focus();
@@ -219,7 +219,7 @@ export class ResetModal {
 
   private esconderModal(): void {
     if (!this.modal) return;
-    this.modal.classList.remove("active");
+    this.modal.style.display = "none";
   }
 
   private aoClicarConfirmar(): void {
