@@ -44,6 +44,7 @@ interface DiaCalendarioViewModel {
   clicavel: boolean;
   tooltip?: string;
   dataISO?: string;
+  diaDoAno?: number;
 }
 
 interface MesCalendarioViewModel {
@@ -61,6 +62,8 @@ export class CalendarioViewModel {
   private progresso: Progresso;
   private getDiaHoje: () => number;
   private getDiaAtual: () => number;
+  private getDeslocamento: () => number;
+  private getDiaRetomada: () => number | null;
   private selecionarDiaCallback: (diaNumero: number) => void;
   public diasBloqueados: number[];
   private mesAtual: number;
@@ -71,8 +74,10 @@ export class CalendarioViewModel {
     progresso: Progresso,
     getDiaHoje: () => number,
     getDiaAtual: () => number,
-    onSelecionarDia: (diaNumero: number) => void,
+    onSelecionarDia: (diaNumero: number, diaDoAno?: number) => void,
     diasBloqueados: number[] = [],
+    getDeslocamento?: () => number,
+    getDiaRetomada?: () => number | null,
   ) {
     this.plano = plano;
     this.progresso = progresso;
@@ -80,6 +85,8 @@ export class CalendarioViewModel {
     this.getDiaAtual = getDiaAtual;
     this.selecionarDiaCallback = onSelecionarDia;
     this.diasBloqueados = diasBloqueados;
+    this.getDeslocamento = getDeslocamento || (() => 0);
+    this.getDiaRetomada = getDiaRetomada || (() => null);
 
     this.mesAtual = getMesAtual();
     this.anoAtual = getAnoAtual();
@@ -137,13 +144,40 @@ export class CalendarioViewModel {
     }
 
     // Dias do mês - usar funções do geradorDatas (§3.2)
+    const deslocamento = this.getDeslocamento();
+    const diaRetomada = this.getDiaRetomada();
+    const hojeDiaDoAno = getDiaDoAnoAtual();
     for (let dia = 1; dia <= ultimoDiaMes; dia++) {
       const diaDoAno = calcularDiaDoAnoFromData(
         this.anoAtual,
         this.mesAtual,
         dia,
       );
-      const diaPlano = diaDoAno <= this.plano.totalDias ? diaDoAno : null;
+
+      // Calcular dia do plano
+      let diaPlano: number | null = null;
+
+      if (diaRetomada !== null && deslocamento > 0) {
+        // Com reajuste ativo: dias antes da retomada não têm deslocamento
+        // dias a partir da retomada têm deslocamento
+        const diaRetomadaDoAno = diaRetomada + deslocamento; // dia do ano onde o dia de retomada aparece
+        if (diaDoAno < diaRetomadaDoAno) {
+          // Antes do gap: sem deslocamento
+          diaPlano =
+            diaDoAno >= 1 && diaDoAno <= this.plano.totalDias ? diaDoAno : null;
+        } else {
+          // Após o gap: com deslocamento
+          const diaPlanoCalculado = diaDoAno - deslocamento;
+          diaPlano =
+            diaPlanoCalculado >= 1 && diaPlanoCalculado <= this.plano.totalDias
+              ? diaPlanoCalculado
+              : null;
+        }
+      } else {
+        // Sem reajuste: sem deslocamento
+        diaPlano =
+          diaDoAno >= 1 && diaDoAno <= this.plano.totalDias ? diaDoAno : null;
+      }
       const dataISO = gerarDataISOFromComponents(
         this.anoAtual,
         this.mesAtual,
@@ -163,8 +197,8 @@ export class CalendarioViewModel {
           classes.push("dia-lido");
         }
 
-        // É o dia de hoje?
-        if (diaPlano === diaHoje) {
+        // É o dia de hoje? (considerando deslocamento)
+        if (diaDoAno === diaHoje) {
           classes.push("dia-hoje");
           tooltip = "Hoje";
         }
@@ -175,7 +209,12 @@ export class CalendarioViewModel {
         }
 
         // Dia bloqueado?
-        if (this.diasBloqueados.includes(diaPlano)) {
+        // Só bloqueia se o dia do plano está na lista E estamos na região do gap (antes da retomada)
+        const estaNaRegiaoGap =
+          diaRetomada !== null &&
+          deslocamento > 0 &&
+          diaDoAno < diaRetomada + deslocamento;
+        if (this.diasBloqueados.includes(diaPlano) && estaNaRegiaoGap) {
           classes.push("dia-bloqueado");
           clicavel = false;
           tooltip = "Dia bloqueado";
@@ -191,6 +230,7 @@ export class CalendarioViewModel {
         clicavel,
         tooltip,
         dataISO,
+        diaDoAno,
       });
     }
 
@@ -235,9 +275,39 @@ export class CalendarioViewModel {
   /**
    * Seleciona um dia
    */
-  public onSelecionarDia(diaNumero: number): void {
-    if (diaNumero && !this.diasBloqueados.includes(diaNumero)) {
+  public onSelecionarDia(diaNumero: number, diaDoAno?: number): void {
+    console.log(
+      `[CalendarioViewModel] onSelecionarDia chamado: diaNumero=${diaNumero}, diaDoAno=${diaDoAno}`,
+    );
+
+    // Verificar se o dia está bloqueado considerando a região do gap
+    const deslocamento = this.getDeslocamento();
+    const diaRetomada = this.getDiaRetomada();
+    const estaNaRegiaoGap =
+      diaRetomada !== null &&
+      deslocamento > 0 &&
+      diaDoAno !== undefined &&
+      diaDoAno < diaRetomada + deslocamento;
+
+    console.log(
+      `[CalendarioViewModel] deslocamento=${deslocamento}, diaRetomada=${diaRetomada}, estaNaRegiaoGap=${estaNaRegiaoGap}`,
+    );
+    console.log(
+      `[CalendarioViewModel] diasBloqueados=${JSON.stringify(this.diasBloqueados)}, includes=${this.diasBloqueados.includes(diaNumero)}`,
+    );
+
+    if (
+      diaNumero &&
+      (!this.diasBloqueados.includes(diaNumero) || !estaNaRegiaoGap)
+    ) {
+      console.log(
+        `[CalendarioViewModel] Chamando callback para dia ${diaNumero}`,
+      );
       this.selecionarDiaCallback(diaNumero);
+    } else {
+      console.log(
+        `[CalendarioViewModel] Dia ${diaNumero} bloqueado - não chamando callback`,
+      );
     }
   }
 }

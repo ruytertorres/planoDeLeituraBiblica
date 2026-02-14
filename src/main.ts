@@ -19,6 +19,7 @@ import planoCronologico from "./cartuchos/plano_cronologico";
 import { inicializarAdapter, getUIAdapter } from "./compatibilidade/ui-adapter";
 import { materializarPlanoCartucho } from "./core/services/planos/materializarPlanoCartucho";
 import { MainOrquestrador } from "./ui/orquestradores/MainOrquestrador";
+import "./styles.css";
 
 /* ============================================================================
    INICIALIZAÇÃO DO SISTEMA

@@ -38,6 +38,7 @@ import type {
 } from "../../core/types/contratos.types";
 import { CalendarioViewModel } from "../components/Calendario/CalendarioViewModel.js";
 import { CalendarioComponent } from "../components/Calendario/CalendarioComponent.js";
+import { ReajusteModalUI } from "../componentes/modais/ReajusteModalUI.js";
 
 /* ============================================================================
    TIPOS E INTERFACES
@@ -59,6 +60,7 @@ interface MainState {
   orquestradores: {
     reset?: ResetProgressoOrquestrador;
     notasOverlay?: NotasOverlayOrquestrador;
+    reajusteModal?: ReajusteModalUI;
   };
   apis: {
     calendario?: ReturnType<CalendarioComponent["render"]>;
@@ -147,6 +149,11 @@ export class MainOrquestrador extends BaseOrquestrador {
 
       // Inicializar subsistemas
       this.initSubsystems();
+
+      // Verificar se há lacuna para reajuste (após subsistemas inicializados)
+      setTimeout(() => {
+        this.verificarAndDispararReajuste();
+      }, 500);
 
       // Inicializar plugins
       await this.initPlugins();
@@ -453,9 +460,15 @@ export class MainOrquestrador extends BaseOrquestrador {
         },
         () => this._state.diaHojeNumero,
         () => this._state.diaAtualNumero,
-        (diaNumero: number) => this.navegarParaDia(diaNumero),
+        (diaNumero: number, diaDoAno?: number) =>
+          this.navegarParaDia(diaNumero, diaDoAno),
         this._state.diasBloqueados,
+        () => this._state.managers.progresso.obterDeslocamentoDatas(),
+        () => this._state.managers.progresso.obterDiaRetomada(),
       );
+    } else {
+      // Atualizar dias bloqueados no ViewModel existente
+      this._state.apis.calendarioVM.diasBloqueados = this._state.diasBloqueados;
     }
 
     // Criar componente apenas na primeira vez, depois reutilizar
@@ -538,6 +551,43 @@ export class MainOrquestrador extends BaseOrquestrador {
     this._state.orquestradores.notasOverlay = new NotasOverlayOrquestrador(
       this._state.managers.notas,
     );
+
+    // Reajuste de lacuna (modal)
+    this._state.orquestradores.reajusteModal = new ReajusteModalUI(this);
+
+    // Listener para evento de lacuna detectada - mostrar modal
+    this.listen("lacuna-detectada", (evento) => {
+      const customEvent = evento as CustomEvent;
+      const dadosBrutos = customEvent.detail;
+      console.log("[MainOrquestrador] Lacuna detectada (bruto):", dadosBrutos);
+
+      // Mapear dados do ReorganizadorPlano para formato do ReajusteModalUI
+      const dadosLacuna = {
+        temLacuna: true,
+        diasGapCount: dadosBrutos.diasAtraso || dadosBrutos.diasNaoLidos || 0,
+        percentualAtraso: Math.round(
+          ((dadosBrutos.diasAtraso || dadosBrutos.diasNaoLidos || 0) /
+            (dadosBrutos.totalDias || 365)) *
+            100,
+        ),
+        descricao: dadosBrutos.descricao,
+        buracos: dadosBrutos.buracos,
+        tipo: dadosBrutos.tipo,
+      };
+
+      console.log("[MainOrquestrador] Dados mapeados para modal:", dadosLacuna);
+      console.log(
+        "[MainOrquestrador] reajusteModal existe?",
+        !!this._state.orquestradores.reajusteModal,
+      );
+
+      if (this._state.orquestradores.reajusteModal) {
+        console.log("[MainOrquestrador] Chamando criarEExibir...");
+        this._state.orquestradores.reajusteModal.criarEExibir(dadosLacuna);
+      } else {
+        console.error("[MainOrquestrador] ERRO: reajusteModal não existe!");
+      }
+    });
   }
 
   /* --------------------------------------------------------------------------
@@ -550,8 +600,10 @@ export class MainOrquestrador extends BaseOrquestrador {
    * @param numeroDia - Número do dia (1-based)
    * @returns Resultado da navegação
    */
-  navegarParaDia(numeroDia: number): NavegacaoResult {
-    console.log(`[MainOrquestrador] Navegando para dia ${numeroDia}`);
+  navegarParaDia(numeroDia: number, diaDoAno?: number): NavegacaoResult {
+    console.log(
+      `[MainOrquestrador] Navegando para dia ${numeroDia}, diaDoAno=${diaDoAno}`,
+    );
 
     const plano = this._state.managers.plano;
     const totalDias = plano.getTotalDias();
@@ -560,8 +612,27 @@ export class MainOrquestrador extends BaseOrquestrador {
       return { sucesso: false, erro: "Dia fora do range" };
     }
 
-    // Bloqueio: Não permitir navegar para dias bloqueados
-    if (this._state.diasBloqueados.includes(numeroDia)) {
+    // Bloqueio: Não permitir navegar para dias bloqueados na região do gap
+    const deslocamento =
+      this._state.managers.progresso.obterDeslocamentoDatas();
+    const diaRetomada = this._state.managers.progresso.obterDiaRetomada();
+    const estaNaRegiaoGap =
+      diaRetomada !== null &&
+      deslocamento > 0 &&
+      diaDoAno !== undefined &&
+      diaDoAno < diaRetomada + deslocamento;
+
+    console.log(
+      `[MainOrquestrador] deslocamento=${deslocamento}, diaRetomada=${diaRetomada}, estaNaRegiaoGap=${estaNaRegiaoGap}`,
+    );
+    console.log(
+      `[MainOrquestrador] diasBloqueados includes ${numeroDia}: ${this._state.diasBloqueados.includes(numeroDia)}`,
+    );
+
+    if (this._state.diasBloqueados.includes(numeroDia) && estaNaRegiaoGap) {
+      console.log(
+        `[MainOrquestrador] Dia ${numeroDia} bloqueado na região do gap`,
+      );
       return { sucesso: false, erro: `Dia ${numeroDia} está bloqueado` };
     }
 
@@ -664,20 +735,38 @@ export class MainOrquestrador extends BaseOrquestrador {
    * @returns Dados da lacuna se detectada, null caso contrário
    */
   verificarAndDispararReajuste(): unknown {
+    console.log("[DEBUG] ========== Verificando lacuna ==========");
+
     this._state.managers.progresso.sincronizarComStorage();
     const ultimoDiaLido = this._state.managers.progresso.getUltimoDiaLido();
+    const diasLidos = this._state.managers.progresso.getDiasLidos();
+
+    console.log("[DEBUG] últimoDiaLido:", ultimoDiaLido);
+    console.log("[DEBUG] diasLidos:", diasLidos);
+    console.log("[DEBUG] total dias lidos:", diasLidos.length);
 
     if (ultimoDiaLido === null) {
+      console.log("[DEBUG] Sem último dia lido - retornando null");
       return null;
     }
 
     const reajusteRecente = this._state.managers.progresso.obterReajuste();
+    console.log("[DEBUG] reajusteRecente:", reajusteRecente);
+
     if (reajusteRecente) {
+      console.log("[DEBUG] Já existe reajuste ativo - retornando null");
       return null;
     }
 
     const diaQueDeveSerHoje = getDiaDoAnoAtual();
     const totalDias = this._state.managers.plano.getTotalDias();
+
+    console.log("[DEBUG] diaQueDeveSerHoje:", diaQueDeveSerHoje);
+    console.log("[DEBUG] totalDias:", totalDias);
+    console.log(
+      "[DEBUG] diasGap calculado:",
+      diaQueDeveSerHoje - ultimoDiaLido - 1,
+    );
 
     if (!this.reorganizador) {
       this.reorganizador = new ReorganizadorPlano();
@@ -687,10 +776,13 @@ export class MainOrquestrador extends BaseOrquestrador {
       ultimoDiaLido,
       diaQueDeveSerHoje,
       totalDias,
-      new Set(this._state.managers.progresso.getDiasLidos()),
+      new Set(diasLidos),
     );
 
+    console.log("[DEBUG] Resultado detectarLacuna:", lacuna);
+
     if (lacuna.temLacuna) {
+      console.log("[DEBUG] ✅ Lacuna detectada! Emitindo evento...");
       this.emit("lacuna-detectada", lacuna);
 
       if (lacuna.ultrapassagemCiclo?.ultrapassaCiclo) {
@@ -700,12 +792,105 @@ export class MainOrquestrador extends BaseOrquestrador {
       return lacuna;
     }
 
+    console.log("[DEBUG] Nenhuma lacuna detectada");
     return null;
   }
 
-  /* --------------------------------------------------------------------------
-     LIFECYCLE
-     -------------------------------------------------------------------------- */
+  /**
+   * Aplicar reajuste de lacuna - chamado pelo modal quando usuário confirma
+   *
+   * @param lacuna - Dados da lacuna detectada (opcional, para buracos esparsos)
+   * @returns Resultado do reajuste
+   */
+  aplicarReajuste(lacuna?: { buracos?: number[]; tipo?: string }): {
+    sucesso: boolean;
+    novoIndice: number;
+    aviso?: string;
+  } {
+    console.log("[MainOrquestrador] Aplicando reajuste de lacuna...", lacuna);
+
+    const ultimoDiaLido = this._state.managers.progresso.getUltimoDiaLido();
+    const diaQueDeveSerHoje = getDiaDoAnoAtual();
+    const totalDias = this._state.managers.plano.getTotalDias();
+
+    if (ultimoDiaLido === null) {
+      return { sucesso: false, novoIndice: this._state.diaAtualNumero };
+    }
+
+    // Calcular novo índice (próximo dia após o último lido)
+    const novoDia = ultimoDiaLido + 1;
+
+    // Calcular deslocamento para alinhar o plano
+    const deslocamento = diaQueDeveSerHoje - novoDia;
+
+    // Salvar reajuste no progresso
+    this._state.managers.progresso.salvarReajuste(novoDia, diaQueDeveSerHoje);
+
+    // Calcular dias bloqueados
+    let diasBloqueados: number[] = [];
+
+    if (lacuna?.buracos && lacuna.buracos.length > 0) {
+      // Caso de buracos esparsos: bloquear os dias não lidos específicos
+      // exceto o dia de retomada (novoDia)
+      diasBloqueados = lacuna.buracos.filter((dia) => dia !== novoDia);
+      console.log(
+        `[MainOrquestrador] Dias bloqueados (buracos esparsos, exceto ${novoDia}):`,
+        diasBloqueados,
+      );
+    } else {
+      // Caso de lacuna consecutiva: bloquear dias do plano entre último lido e novo dia
+      // Ex: último lido 7, hoje é 45 (14/02), novo dia é 8
+      // Bloquear dias 8-44 do plano (dias que ficaram para trás)
+      // Mas o dia 8 (novoDia) NÃO deve ser bloqueado - é onde retoma
+      for (let i = ultimoDiaLido + 1; i < diaQueDeveSerHoje; i++) {
+        if (i !== novoDia) {
+          diasBloqueados.push(i);
+        }
+      }
+      console.log(
+        `[MainOrquestrador] Dias bloqueados (${ultimoDiaLido} -> ${diaQueDeveSerHoje}, exceto ${novoDia}):`,
+        diasBloqueados,
+      );
+    }
+
+    this._state.diasBloqueados = diasBloqueados;
+    localStorage.setItem("dias-bloqueados", JSON.stringify(diasBloqueados));
+
+    // Atualizar dia atual
+    this._state.diaAtualNumero = novoDia;
+    this._state.managers.plano.irParaDia(novoDia);
+
+    // Verificar se há aviso de ultrapassagem de ciclo
+    let aviso: string | undefined;
+    if (novoDia + totalDias > 366) {
+      aviso =
+        "Este plano ultrapassará 31/12 e continuará no próximo ano civil.";
+    }
+
+    // Re-renderizar UI
+    this.renderCardDia();
+    this.renderCalendario();
+    this.renderEstatisticas();
+
+    // Emitir evento
+    this.emit("reajuste-aplicado", {
+      sucesso: true,
+      novoIndice: novoDia,
+      deslocamento,
+      diasBloqueados,
+      aviso,
+    });
+
+    console.log(
+      `[MainOrquestrador] Reajuste aplicado: Dia ${novoDia}, deslocamento: ${deslocamento}`,
+    );
+
+    return {
+      sucesso: true,
+      novoIndice: novoDia,
+      aviso,
+    };
+  }
 
   /**
    * Destrói o orquestrador e faz cleanup

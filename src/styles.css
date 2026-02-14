@@ -704,7 +704,7 @@
 
     /* Reajuste Modal Específico */
     .reajuste-modal-overlay {
-      @apply fixed inset-0 z-[2000] flex items-center justify-center bg-black/50;
+      @apply fixed inset-0 z-[9999] flex items-center justify-center bg-black/50;
       animation: fadeInOverlay 0.3s ease;
     }
 

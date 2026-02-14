@@ -26,13 +26,14 @@
 export interface ResultadoLacuna {
   temLacuna: boolean;
   motivo?: string;
-  tipo?: "aleatorio" | "consecutivo";
+  tipo?: "aleatorio" | "consecutivo" | "esparsos";
   ultimoDiaLido?: number;
   diaHoje?: number;
   diasAtraso?: number;
   diasNaoLidos?: number;
   totalDias?: number;
   proximoDia?: number;
+  buracos?: number[];
   descricao?: string;
   requerDecisao?: boolean;
   ultrapassagemCiclo?: {
@@ -113,29 +114,24 @@ export class ReorganizadorPlano {
       return { temLacuna: false, motivo: "plano-concluido" };
     }
 
-    // 🔄 DETECÇÃO: Apenas detecta, não decide
+    // 🔄 DETECÇÃO DE BURACOS ESPARSOS: Detectar dias não lidos entre 1 e diaHoje
     if (diasLidosSet && diasLidosSet.size > 0) {
-      const diasNaoLidosRecentes = this.contarDiasNaoLidosRecentes(
-        diasLidosSet,
-        diaHoje,
-      );
+      const buracos = this.encontrarBuracos(diasLidosSet, diaHoje, totalDias);
 
-      if (diasNaoLidosRecentes >= 3) {
-        const proximoDia = this.encontrarProximoDiaNaoLido(
-          diasLidosSet,
-          ultimoDiaLido,
-          totalDias,
-        );
+      if (buracos.length > 0) {
+        const proximoDia = buracos[0]; // Primeiro buraco não lido
+        const diasNaoLidos = buracos.length;
 
         return {
           temLacuna: true,
-          tipo: "aleatorio",
+          tipo: "esparsos",
           ultimoDiaLido,
           diaHoje,
-          diasNaoLidos: diasNaoLidosRecentes,
+          diasNaoLidos,
           totalDias,
           proximoDia,
-          descricao: `Detectados ${diasNaoLidosRecentes} dias não lidos recentemente. Requer decisão do usuário.`,
+          buracos, // Lista de todos os dias não lidos
+          descricao: `Detectados ${diasNaoLidos} dias não lidos (buracos: ${buracos.join(", ")}). Requer decisão do usuário.`,
           requerDecisao: true,
           ultrapassagemCiclo: this.verificarUltrapassagemCiclo(
             proximoDia,
@@ -287,6 +283,31 @@ export class ReorganizadorPlano {
           descricao: `Ação ${decisao.acao} ainda não foi implementada.`,
         };
     }
+  }
+
+  /**
+   * Encontra todos os buracos (dias não lidos) até o dia de hoje
+   *
+   * @param diasLidosSet - Set de dias lidos
+   * @param diaHoje - Dia atual
+   * @param totalDias - Total de dias do plano
+   * @returns Array de dias não lidos (buracos)
+   */
+  encontrarBuracos(
+    diasLidosSet: Set<number>,
+    diaHoje: number,
+    totalDias: number,
+  ): number[] {
+    const buracos: number[] = [];
+
+    // Verificar todos os dias de 1 até diaHoje
+    for (let dia = 1; dia <= Math.min(diaHoje, totalDias); dia++) {
+      if (!diasLidosSet.has(dia)) {
+        buracos.push(dia);
+      }
+    }
+
+    return buracos;
   }
 
   /**

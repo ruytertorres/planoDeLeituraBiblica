@@ -261,6 +261,18 @@ export class ProgressoLeitura implements IProgressoLeitura {
   }
 
   /**
+   * Obtém o dia de retomada do reajuste (primeiro dia após o gap)
+   *
+   * @returns Número do dia de retomada ou null se não houver reajuste
+   */
+  obterDiaRetomada(): number | null {
+    if (!this.reajusteAtivo?.ativo) {
+      return null;
+    }
+    return this.reajusteAtivo.numeroDia;
+  }
+
+  /**
    * Define deslocamento de datas para alinhamento
    *
    * @param deslocamento - Deslocamento em dias

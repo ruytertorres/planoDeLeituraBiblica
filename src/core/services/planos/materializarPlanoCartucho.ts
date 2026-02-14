@@ -27,7 +27,9 @@ type PlanoCartuchoRaw = {
   dias: DiaPlanoRaw[];
 };
 
-export function materializarPlanoCartucho(planoRaw: PlanoCartuchoRaw): PlanoCartucho {
+export function materializarPlanoCartucho(
+  planoRaw: PlanoCartuchoRaw,
+): PlanoCartucho {
   const ano = getAnoAtual();
 
   const dias: DiaDoPlano[] = planoRaw.dias.map((d) => {

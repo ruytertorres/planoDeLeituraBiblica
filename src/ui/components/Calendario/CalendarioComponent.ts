@@ -25,6 +25,7 @@ interface DiaCalendario {
   clicavel: boolean;
   tooltip?: string;
   dataISO?: string;
+  diaDoAno?: number;
 }
 
 interface MesCalendario {
@@ -37,7 +38,7 @@ interface CalendarioViewModel {
   gerarMesAtual: () => MesCalendario;
   onMesPosterior: () => void;
   onProximoMes: () => void;
-  onSelecionarDia: (diaNumero: number) => void;
+  onSelecionarDia: (diaNumero: number, diaDoAno?: number) => void;
 }
 
 interface CalendarioConfig {
@@ -219,7 +220,7 @@ export class CalendarioComponent {
     // Event listener de clique
     if (dia.clicavel && dia.numero !== null) {
       const handler = () => {
-        this.config.viewModel.onSelecionarDia(dia.numero!);
+        this.config.viewModel.onSelecionarDia(dia.numero!, dia.diaDoAno);
       };
       diaEl.addEventListener("click", handler);
       this.eventListeners.push({ element: diaEl, type: "click", handler });
