@@ -23,6 +23,7 @@ import { ProgressoLeitura } from "../../core/services/planos/ProgressoLeitura.js
 import { NotasLeituraManager } from "../../core/services/notas/NotasLeituraManager.js";
 import { SearchEngine } from "../../core/services/busca/SearchEngine.js";
 import { ResetProgressoOrquestrador } from "../../core/services/planos/ResetProgressoOrquestrador.js";
+import { ResetModal } from "../../ui/componentes/modais/ResetModal.js";
 import { ReorganizadorPlano } from "../../core/services/planos/ReorganizadorPlano.js";
 import { NotasOverlayOrquestrador } from "../../core/services/notas/NotasOverlayOrquestrador.js";
 import {
@@ -518,6 +519,10 @@ export class MainOrquestrador extends BaseOrquestrador {
       this._state.managers.progresso,
       this._state.managers.plano,
     );
+
+    // Reset Modal - UI para confirmação de reset
+    const resetModal = new ResetModal(this._state.orquestradores.reset);
+    resetModal.inicializar();
 
     // Listener para evento de reset
     this.listen("progresso-resetado", (evento) => {
