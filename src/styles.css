@@ -518,7 +518,7 @@
 
   .highlight-options button {
     @apply h-8 w-8 rounded-md border-2 border-transparent transition-all duration-200;
-    @apply hover:scale-115 hover:border-gray-400;
+    @apply hover:scale-110 hover:border-gray-400;
   }
 
   /* Editor */
