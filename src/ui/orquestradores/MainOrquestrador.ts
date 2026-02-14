@@ -71,6 +71,8 @@ import { ReajusteModalUI } from "../componentes/modais/ReajusteModalUI.js";
 
 import { ResetModal } from "../componentes/modais/ResetModal.js";
 
+import { initNotasOverlayUI } from "../componentes/notas/NotasOverlayUI.js";
+
 /* ============================================================================
 
    TIPOS E INTERFACES
@@ -812,6 +814,9 @@ export class MainOrquestrador extends BaseOrquestrador {
     this._state.orquestradores.notasOverlay = new NotasOverlayOrquestrador(
       this._state.managers.notas,
     );
+
+    // Inicializar UI das notas
+    initNotasOverlayUI(this._state.orquestradores.notasOverlay);
 
     // Reajuste de lacuna (modal)
 
