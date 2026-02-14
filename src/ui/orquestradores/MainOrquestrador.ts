@@ -455,16 +455,13 @@ export class MainOrquestrador extends BaseOrquestrador {
       });
     }
 
-    // Botão de notas flutuante
-
+    // Botão de notas flutuante - listener removido, agora gerenciado por NotasOverlayUI
+    // Mantém referência para compatibilidade
     const btnNotas = document.getElementById("btn-notas");
-
     if (btnNotas) {
-      this.on(btnNotas, "click", () => {
-        console.log("[MainOrquestrador] Botão notas clicado");
-
-        this._state.orquestradores.notasOverlay?.alternar();
-      });
+      console.log(
+        "[MainOrquestrador] Botão notas encontrado (gerenciado por NotasOverlayUI)",
+      );
     }
   }
 
