@@ -52,9 +52,9 @@ import { NotasOverlayOrquestrador } from "../../core/services/notas/NotasOverlay
 
 import {
   getDiaDoAnoAtual,
-  getTimestampAtualISO,
-  getMesAtual,
   getAnoAtual,
+  gerarDataISO,
+  gerarDataBR,
 } from "../../core/services/tempo/geradorDatas.js";
 
 import type {
@@ -529,13 +529,9 @@ export class MainOrquestrador extends BaseOrquestrador {
   private gerarHTMLCardDia(dia: DiaDoPlano): string {
     const lido = this._state.managers.progresso.estaLido(dia.numero);
 
-    const bloqueado = this._state.diasBloqueados.includes(dia.numero);
-
     // Formatar leituras: "GÊNESIS 1-2, ÊXODO 3"
-
     const formatarLeituras = (trechos: readonly TrechoBiblico[]): string => {
       return trechos
-
         .map((t) => {
           const capituloStr =
             t.capituloFim && t.capituloFim !== t.capituloInicio
@@ -544,15 +540,24 @@ export class MainOrquestrador extends BaseOrquestrador {
 
           return `${t.livroNome.toUpperCase()} ${capituloStr}`;
         })
-
         .join(", ");
     };
 
     const leiturasAT = formatarLeituras(dia.antigoTestamento);
-
     const leiturasNT = formatarLeituras(dia.novoTestamento);
-
     const todasLeituras = [leiturasAT, leiturasNT].filter(Boolean).join("; ");
+
+    // Calcular data formatada considerando reajuste
+    const deslocamento =
+      this._state.managers.progresso.obterDeslocamentoDatas();
+    const diaRetomada = this._state.managers.progresso.obterDiaRetomada();
+    let dataFormatada = dia.dataFormatada;
+
+    if (deslocamento > 0 && diaRetomada !== null) {
+      // Com reajuste: calcular a data real onde este dia aparece
+      const diaDoAno = dia.numero + deslocamento;
+      dataFormatada = gerarDataBR(diaDoAno, getAnoAtual());
+    }
 
     return `
 
@@ -568,16 +573,12 @@ export class MainOrquestrador extends BaseOrquestrador {
 
             </h2>
 
-            <p class="text-sm text-gray-500 dark:text-gray-400">${dia.dataFormatada}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">${dataFormatada}</p>
 
           </div>
 
           <div class="flex gap-2">
-
-            ${lido ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm dark:bg-green-900/30 dark:text-green-400">✓ Lido</span>' : ""}
-
-            ${bloqueado ? '<span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm dark:bg-red-900/30 dark:text-red-400">🔒 Bloqueado</span>' : ""}
-
+            ${lido ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm dark:bg-green-900/30 dark:text-green-400">✓ Lido</span>' : '<span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm dark:bg-blue-900/30 dark:text-blue-400">� Não lido</span>'}
           </div>
 
         </div>
