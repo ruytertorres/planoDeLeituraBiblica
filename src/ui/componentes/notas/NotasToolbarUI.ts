@@ -52,10 +52,17 @@ export class NotasToolbarUI {
   private setupBotoes(): void {
     this.botoes.bold = this.toolbar.querySelector("[data-cmd='bold']");
     this.botoes.italic = this.toolbar.querySelector("[data-cmd='italic']");
-    this.botoes.underline = this.toolbar.querySelector("[data-cmd='underline']");
-    this.botoes.highlightBtn = this.toolbar.querySelector("[data-cmd='highlight']");
-    this.botoes.highlightDropdown = this.toolbar.querySelector(".highlight-options");
-    this.botoes.highlightColors = this.toolbar.querySelectorAll("[data-cmd='highlight-color']");
+    this.botoes.underline = this.toolbar.querySelector(
+      "[data-cmd='underline']",
+    );
+    this.botoes.highlightBtn = this.toolbar.querySelector(
+      "[data-cmd='highlight']",
+    );
+    this.botoes.highlightDropdown =
+      this.toolbar.querySelector(".highlight-options");
+    this.botoes.highlightColors = this.toolbar.querySelectorAll(
+      "[data-cmd='highlight-color']",
+    );
 
     this.botoes.h2 = this.toolbar.querySelector("[data-cmd='h2']");
     this.botoes.h3 = this.toolbar.querySelector("[data-cmd='h3']");
@@ -65,8 +72,12 @@ export class NotasToolbarUI {
     this.botoes.undo = this.toolbar.querySelector("[data-cmd='undo']");
     this.botoes.redo = this.toolbar.querySelector("[data-cmd='redo']");
 
-    this.botoes.limparInline = this.toolbar.querySelector("[data-cmd='limpar-inline']");
-    this.botoes.limparTudo = this.toolbar.querySelector("[data-cmd='limpar-tudo']");
+    this.botoes.limparInline = this.toolbar.querySelector(
+      "[data-cmd='limpar-inline']",
+    );
+    this.botoes.limparTudo = this.toolbar.querySelector(
+      "[data-cmd='limpar-tudo']",
+    );
   }
 
   private setupListeners(): void {
@@ -115,7 +126,9 @@ export class NotasToolbarUI {
     }
 
     document.addEventListener("click", (e) => {
-      const highlightDropdownParent = this.toolbar.querySelector(".highlight-dropdown");
+      const highlightDropdownParent = this.toolbar.querySelector(
+        ".highlight-dropdown",
+      );
       if (
         highlightDropdownParent &&
         !highlightDropdownParent.contains(e.target as Node)
@@ -175,7 +188,7 @@ export class NotasToolbarUI {
     if (this.botoes.limparInline) {
       this.botoes.limparInline.addEventListener("click", (e) => {
         e.preventDefault();
-        this.estruturador.limparFormatacaoInline();
+        this.estruturador.limparFormatacaoCompleta();
         this.atualizarEstadoBotoes();
       });
     }
@@ -183,7 +196,9 @@ export class NotasToolbarUI {
     if (this.botoes.limparTudo) {
       this.botoes.limparTudo.addEventListener("click", (e) => {
         e.preventDefault();
-        if (confirm("Tem certeza? Vai remover toda a formatação e estrutura.")) {
+        if (
+          confirm("Tem certeza? Vai remover toda a formatação e estrutura.")
+        ) {
           this.estruturador.limparFormatacaoCompleta();
           this.atualizarEstadoBotoes();
         }
@@ -196,21 +211,42 @@ export class NotasToolbarUI {
 
   atualizarEstadoBotoes(): void {
     this.atualizarEstadoBotao(this.botoes.bold, this.formatador.estaBold());
-    this.atualizarEstadoBotao(this.botoes.italic, this.formatador.estaItalico());
-    this.atualizarEstadoBotao(this.botoes.underline, this.formatador.estaUnderlined());
+    this.atualizarEstadoBotao(
+      this.botoes.italic,
+      this.formatador.estaItalico(),
+    );
+    this.atualizarEstadoBotao(
+      this.botoes.underline,
+      this.formatador.estaUnderlined(),
+    );
 
     this.atualizarEstadoBotao(this.botoes.h2, this.estruturador.estaH2());
     this.atualizarEstadoBotao(this.botoes.h3, this.estruturador.estaH3());
-    this.atualizarEstadoBotao(this.botoes.ul, this.estruturador.estaEmListaNaoOrdenada());
-    this.atualizarEstadoBotao(this.botoes.ol, this.estruturador.estaEmListaOrdenada());
+    this.atualizarEstadoBotao(
+      this.botoes.ul,
+      this.estruturador.estaEmListaNaoOrdenada(),
+    );
+    this.atualizarEstadoBotao(
+      this.botoes.ol,
+      this.estruturador.estaEmListaOrdenada(),
+    );
 
     if (this.historicoManager) {
-      this.atualizarEstadoBotao(this.botoes.undo, this.historicoManager.podeUndo());
-      this.atualizarEstadoBotao(this.botoes.redo, this.historicoManager.podeRedo());
+      this.atualizarEstadoBotao(
+        this.botoes.undo,
+        this.historicoManager.podeUndo(),
+      );
+      this.atualizarEstadoBotao(
+        this.botoes.redo,
+        this.historicoManager.podeRedo(),
+      );
     }
   }
 
-  private atualizarEstadoBotao(botao: HTMLElement | null | undefined, ativo: boolean): void {
+  private atualizarEstadoBotao(
+    botao: HTMLElement | null | undefined,
+    ativo: boolean,
+  ): void {
     if (!botao) return;
 
     if (ativo) {
