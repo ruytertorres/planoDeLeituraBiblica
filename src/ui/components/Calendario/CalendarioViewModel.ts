@@ -158,15 +158,17 @@ export class CalendarioViewModel {
       let diaPlano: number | null = null;
 
       if (diaRetomada !== null && deslocamento > 0) {
-        // Com reajuste ativo: dias antes da retomada não têm deslocamento
-        // dias a partir da retomada têm deslocamento
-        const diaRetomadaDoAno = diaRetomada + deslocamento; // dia do ano onde o dia de retomada aparece
-        if (diaDoAno < diaRetomadaDoAno) {
-          // Antes do gap: sem deslocamento
+        // Com reajuste ativo:
+        // - Antes da retomada (diaRetomada-1): mapeamento direto
+        // - A partir da retomada: aplicar deslocamento
+        // - O intervalo [diaRetomada, diaRetomada+deslocamento) vira GAP (sem diaPlano)
+        //   para evitar duplicação (ex.: dia 4 em 04/01 e também na data deslocada)
+        const diaRetomadaDoAno = diaRetomada + deslocamento;
+
+        if (diaDoAno < diaRetomada) {
           diaPlano =
             diaDoAno >= 1 && diaDoAno <= this.plano.totalDias ? diaDoAno : null;
         } else {
-          // Após o gap: com deslocamento
           const diaPlanoCalculado = diaDoAno - deslocamento;
           diaPlano =
             diaPlanoCalculado >= 1 && diaPlanoCalculado <= this.plano.totalDias
@@ -232,7 +234,20 @@ export class CalendarioViewModel {
           tooltip = "Dia bloqueado";
         }
       } else {
-        classes.push("fora-do-plano");
+        // Se existe reajuste, o intervalo [diaRetomada, diaRetomada+deslocamento)
+        // é um GAP: mostrar no calendário, mas sem diaPlano (não clicável)
+        if (
+          diaRetomada !== null &&
+          deslocamento > 0 &&
+          diaDoAno >= diaRetomada &&
+          diaDoAno < diaRetomada + deslocamento
+        ) {
+          classes.push("dia-bloqueado");
+          clicavel = false;
+          tooltip = "Dia bloqueado";
+        } else {
+          classes.push("fora-do-plano");
+        }
       }
 
       dias.push({

@@ -377,7 +377,12 @@ export class MainOrquestrador extends BaseOrquestrador {
 
         console.log("[MainOrquestrador] Click em:", target);
 
-        if (target.matches("[data-action='toggle-lido']")) {
+        const toggleBtn = target.closest(
+          "button[data-action='toggle-lido']",
+        ) as HTMLButtonElement | null;
+
+        if (toggleBtn) {
+          e.preventDefault();
           console.log("[MainOrquestrador] Toggle lido clicado");
 
           this.toggleLido();
@@ -577,7 +582,7 @@ export class MainOrquestrador extends BaseOrquestrador {
           </div>
 
           <div class="flex gap-2">
-            ${lido ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm dark:bg-green-900/30 dark:text-green-400">✓ Lido</span>' : '<span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm dark:bg-blue-900/30 dark:text-blue-400">� Não lido</span>'}
+            ${lido ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm dark:bg-green-900/30 dark:text-green-400">✓ Lido</span>' : '<span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm dark:bg-blue-900/30 dark:text-blue-400">Não lido</span>'}
           </div>
 
         </div>
@@ -624,17 +629,13 @@ export class MainOrquestrador extends BaseOrquestrador {
 
 
 
-        <div class="mt-6 flex gap-3">
+        <div class="mt-6 flex justify-end gap-3">
 
           <button data-action="toggle-lido"
 
-            class="px-4 py-2 rounded-lg font-medium transition ${
-              lido
-                ? "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-slate-700 dark:text-gray-300"
-                : "bg-blue-600 text-white hover:bg-blue-700"
-            }">
+            class="px-4 py-2 rounded-lg font-medium transition ${"bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"}">
 
-            ${lido ? "Marcar como não lido" : "Marcar como lido"}
+            ${lido ? "Desmarcar como lido" : "Marcar como lido"}
 
           </button>
 
@@ -962,9 +963,17 @@ export class MainOrquestrador extends BaseOrquestrador {
    */
 
   toggleLido(): void {
-    const diaNumero = this._state.diaAtualNumero;
+    const diaAtual = this._state.managers.plano.getDiaAtual();
+    const diaNumero = diaAtual?.numero ?? this._state.diaAtualNumero;
+
+    const estavaLido = this._state.managers.progresso.estaLido(diaNumero);
 
     this._state.managers.progresso.alternar(diaNumero);
+
+    const agoraLido = this._state.managers.progresso.estaLido(diaNumero);
+    console.log(
+      `[MainOrquestrador] toggleLido dia=${diaNumero} estavaLido=${estavaLido} agoraLido=${agoraLido}`,
+    );
 
     // Re-renderizar card e calendário para mostrar novo estado
 

@@ -21,21 +21,21 @@
 
   html,
   body {
-    @apply font-sans bg-gray-100 text-slate-800 leading-relaxed min-h-screen flex flex-col w-full overflow-x-hidden;
+    @apply font-sans bg-gray-100 text-slate-800 leading-relaxed min-h-screen flex flex-col w-full overflow-x-hidden p-0 m-0;
     scroll-padding-top: 120px;
   }
 
   /* Containers principais */
   #app {
-    @apply flex-1 w-full max-w-6xl mx-auto px-4 flex flex-col min-h-full;
+    @apply flex-1 w-full max-w-none mx-0 px-0 flex flex-col min-h-full;
   }
 
   .app-container {
-    @apply flex-1 w-full max-w-6xl mx-auto px-4 flex flex-col;
+    @apply flex-1 w-full max-w-none mx-0 px-0 flex flex-col;
   }
 
   .container {
-    @apply max-w-6xl mx-auto w-full;
+    @apply w-full;
   }
 
   *,
@@ -100,6 +100,80 @@
     @apply flex min-h-screen flex-col;
   }
 
+  .layout-principal {
+    @apply mx-auto w-full max-w-6xl px-4;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (min-width: 1360px) {
+    .layout-principal {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1.5rem;
+      align-items: stretch;
+      height: auto;
+      min-height: 0;
+      max-height: none;
+      border: 0;
+      border-radius: 0;
+      padding: 1rem;
+      background: transparent;
+    }
+
+    .secao-calendario {
+      margin-top: 0;
+    }
+
+    .secao-dia {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .secao-calendario {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    #card-dia,
+    #calendar {
+      height: 100%;
+      overflow: visible;
+    }
+
+    .secao-dia,
+    .secao-calendario {
+      height: 100%;
+    }
+
+    .secao-dia > div {
+      height: 100%;
+    }
+  }
+
+  #card-dia,
+  #calendar {
+    outline: none;
+  }
+
+  #card-dia:focus,
+  #card-dia:focus-visible,
+  #calendar:focus,
+  #calendar:focus-visible {
+    outline: none;
+  }
+
+  @media (min-width: 1360px) {
+    .layout-principal {
+      border-color: transparent;
+    }
+
+    .dark .layout-principal {
+      border-color: transparent;
+      background: transparent;
+    }
+  }
+
   /* Navbar */
   .navbar {
     @apply sticky top-0 z-50 w-full;
@@ -113,6 +187,389 @@
     @apply rounded-xl border border-gray-200 bg-white p-6 shadow-md;
     @apply dark:border-slate-700 dark:bg-slate-800;
     @apply transition-all duration-200;
+  }
+
+  .card-modern {
+    @apply rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-xl;
+    @apply dark:border-slate-700 dark:bg-slate-800/95 dark:shadow-black/20;
+    @apply transition-transform duration-200;
+    @apply flex flex-col;
+  }
+
+  #calendar.card-modern {
+    padding: 1.5rem !important;
+  }
+
+  #calendar {
+    padding: 1.5rem !important;
+  }
+
+  #calendar {
+    min-height: 0;
+  }
+
+  .card-modern:hover {
+    transform: translateY(-2px);
+  }
+
+  .card-modern-accent {
+    border-left-width: 0;
+    @apply border-slate-200;
+    @apply dark:border-slate-700;
+  }
+
+  .nav-btn-modern {
+    @apply inline-flex items-center justify-center;
+    @apply rounded-full border border-gray-200 bg-white;
+    @apply px-6 py-3 font-semibold text-slate-800;
+    @apply shadow-sm transition-all duration-200;
+    @apply hover:border-blue-300 hover:bg-blue-50 hover:shadow-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2;
+    @apply dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100;
+    @apply dark:hover:border-blue-400 dark:hover:bg-blue-400/10;
+    @apply dark:focus:ring-blue-400/40 dark:focus:ring-offset-slate-900;
+    @apply ring-1 ring-transparent;
+    @apply hover:ring-blue-200 dark:hover:ring-blue-400/20;
+  }
+
+  .dia-nav-footer {
+    @apply mt-6 grid grid-cols-1 gap-3 border-t border-gray-200 p-6;
+    @apply dark:border-slate-700;
+  }
+
+  #card-dia {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #dia-view {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  #card-dia {
+    min-height: 0;
+  }
+
+  @media (min-width: 520px) {
+    .dia-nav-footer {
+      @apply grid-cols-2;
+    }
+  }
+
+  /* Repaginação visual do card do dia (HTML injetado em #dia-view) */
+  #dia-view > div {
+    padding: 0;
+  }
+
+  #dia-view > div {
+    padding: 0;
+  }
+
+  #dia-view > div > .flex.items-center.justify-between {
+    @apply mb-5;
+  }
+
+  #dia-view h2 {
+    @apply text-2xl font-bold text-slate-900;
+    @apply dark:text-slate-100;
+    letter-spacing: -0.02em;
+  }
+
+  #dia-view p {
+    @apply text-sm text-slate-500;
+    @apply dark:text-slate-400;
+  }
+
+  #dia-view span.rounded-full {
+    @apply inline-flex items-center gap-2;
+    border-radius: 9999px;
+    @apply px-3 py-1 text-sm font-semibold;
+  }
+
+  #dia-view .space-y-4 > div {
+    @apply rounded-2xl;
+  }
+
+  #dia-view .space-y-4 > div.bg-blue-50 {
+    @apply bg-slate-50;
+    @apply dark:bg-slate-900/40;
+  }
+
+  #dia-view .space-y-4 > div.bg-yellow-50 {
+    @apply bg-slate-50;
+    @apply dark:bg-slate-900/40;
+  }
+
+  #dia-view strong {
+    @apply text-xs font-semibold uppercase tracking-wide;
+  }
+
+  #dia-view .space-y-4 p.font-medium {
+    @apply mt-1 text-lg font-semibold text-slate-900;
+    @apply dark:text-slate-100;
+  }
+
+  #dia-view button[data-action="toggle-lido"] {
+    @apply mt-2 inline-flex items-center justify-center gap-2;
+    @apply rounded-full px-5 py-2.5 text-sm font-semibold;
+    @apply shadow-md transition-all duration-200;
+    @apply hover:-translate-y-0.5 hover:shadow-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply focus:ring-blue-500 focus:ring-offset-white;
+    @apply dark:focus:ring-blue-400 dark:focus:ring-offset-slate-900;
+
+    /* Primary sempre (estado lido/não-lido não muda cor do botão) */
+    @apply bg-blue-600 text-white;
+    @apply hover:bg-blue-700;
+    @apply dark:bg-blue-500 dark:hover:bg-blue-400;
+  }
+
+  /* Realce/margem primary nos botões de navegação */
+  #btn-dia-anterior,
+  #btn-dia-proximo {
+    margin-top: 0.25rem;
+    @apply ring-1 ring-blue-200;
+    @apply dark:ring-blue-400/20;
+  }
+
+  #calendar .nav-mes-btn.anterior,
+  #calendar .nav-mes-btn.proximo {
+    margin-inline: 0.25rem;
+    @apply ring-1 ring-blue-200;
+    @apply dark:ring-blue-400/20;
+  }
+
+  #dia-view .mt-6.flex {
+    justify-content: flex-end;
+  }
+
+  /* Repaginação visual do calendário (markup do CalendarioComponent) */
+  #calendar > div.relative {
+    display: none;
+  }
+
+  #calendar .calendar-wrapper {
+    /* neutralizar CSS legado (.calendar-wrapper) dentro do calendário moderno */
+    @apply flex flex-col;
+    @apply rounded-2xl bg-slate-50;
+    @apply dark:bg-slate-900/30;
+    padding: 0;
+    margin: 0;
+    min-height: 0;
+    height: auto;
+  }
+
+  #calendar .calendar-header {
+    /* neutralizar CSS legado (.calendar-header/.calendar-title absolutos) */
+    @apply mb-4 flex items-center justify-between gap-3;
+    @apply rounded-2xl bg-white px-4 py-3;
+    @apply shadow-sm;
+    @apply dark:bg-slate-900/60;
+    border-bottom: 0;
+    position: static;
+  }
+
+  #calendar .calendar-title {
+    @apply text-base font-semibold text-slate-900;
+    @apply dark:text-slate-100;
+    letter-spacing: -0.01em;
+    position: static;
+    left: auto;
+    transform: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  #calendar .calendar-title::before {
+    content: "Calendário";
+    display: none;
+  }
+
+  #calendar > div.rounded-xl {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    margin: 0;
+    min-height: 0;
+  }
+
+  #calendar #calendario {
+    padding: 0;
+    margin: 0;
+    flex: 1;
+  }
+
+  #calendar .nav-mes-btn {
+    @apply inline-flex h-9 w-9 items-center justify-center;
+    @apply rounded-full border border-gray-200 bg-white;
+    @apply text-slate-700 shadow-sm transition-all duration-200;
+    @apply hover:border-blue-300 hover:bg-blue-50;
+    @apply dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100;
+    @apply dark:hover:border-blue-400 dark:hover:bg-blue-400/10;
+    @apply ring-1 ring-transparent;
+    @apply hover:ring-blue-200 dark:hover:ring-blue-400/20;
+  }
+
+  #calendar .nav-mes-btn {
+    font-size: 0;
+  }
+
+  #calendar .nav-mes-btn.anterior::before {
+    content: "‹";
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  #calendar .nav-mes-btn.proximo::before {
+    content: "›";
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  #calendar .calendario-grid {
+    @apply grid grid-cols-7 gap-2;
+    justify-content: center;
+    align-content: start;
+    padding: 0;
+  }
+
+  #calendar .calendar-header,
+  #calendar .calendar-title {
+    left: auto !important;
+    transform: none !important;
+    position: static !important;
+  }
+
+  #calendar .calendar-header {
+    padding: 0.75rem 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  #calendar .calendar-title {
+    font-size: 1.125rem !important;
+    line-height: 1.4 !important;
+  }
+
+  #calendar .calendar-title::before {
+    content: "\1F4C5";
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  #calendar .nav-mes-btn {
+    border-color: rgb(226 232 240) !important;
+  }
+
+  .dark #calendar .nav-mes-btn {
+    border-color: rgb(51 65 85) !important;
+  }
+
+  #calendar .calendar-wrapper {
+    background: transparent;
+  }
+
+  #calendar #calendario {
+    width: 100%;
+  }
+
+  #calendar .calendario-grid {
+    width: fit-content;
+    margin: 0 auto;
+    padding: 1rem !important;
+    border-radius: 1.25rem;
+    border: 1px solid rgb(226 232 240);
+    background: rgb(248 250 252);
+  }
+
+  .dark #calendar .calendario-grid {
+    border-color: rgb(51 65 85);
+    background: rgba(15, 23, 42, 0.25);
+  }
+
+  #calendar .calendario-dia {
+    height: 44px !important;
+    width: 44px !important;
+    border-radius: 0.9rem !important;
+    border-color: rgb(226 232 240) !important;
+    background: rgb(255 255 255) !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+  }
+
+  .dark #calendar .calendario-dia {
+    border-color: rgb(51 65 85) !important;
+    background: rgb(30 41 59) !important;
+  }
+
+  #calendar .calendario-dia.ativo,
+  #calendar .calendario-dia.dia-atual {
+    border-color: rgb(37 99 235) !important;
+    background: rgb(37 99 235) !important;
+    color: white !important;
+    box-shadow: 0 12px 24px -14px rgba(37, 99, 235, 0.6) !important;
+    transform: none !important;
+  }
+
+  #calendar .calendario-dia.dia-hoje {
+    border-color: rgb(148 163 184) !important;
+    box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.35) !important;
+  }
+
+  #calendar .calendario-dia.dia-lido {
+    border-color: rgba(34, 197, 94, 0.35) !important;
+    background: rgba(34, 197, 94, 0.08) !important;
+    color: rgb(15 23 42) !important;
+  }
+
+  .dark #calendar .calendario-dia.dia-lido {
+    background: rgba(34, 197, 94, 0.12) !important;
+    color: rgb(226 232 240) !important;
+  }
+
+  #calendar #calendario {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  #calendar .calendar-wrapper {
+    justify-content: flex-start;
+  }
+
+  #calendar .calendario-grid {
+    padding: 0.25rem !important;
+  }
+
+  #calendar .calendario-dia {
+    height: 44px !important;
+    width: 44px !important;
+  }
+
+  #calendar .calendario-dia {
+    @apply inline-flex h-11 w-11 items-center justify-center;
+    @apply rounded-xl border border-gray-200 bg-white text-sm font-semibold;
+    @apply text-slate-700 shadow-sm transition-all duration-200;
+    @apply hover:border-blue-300 hover:bg-blue-50;
+    @apply disabled:cursor-not-allowed disabled:opacity-40;
+    @apply dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200;
+    @apply dark:hover:border-blue-400 dark:hover:bg-blue-400/10;
+  }
+
+  #calendar .calendario-dia:hover {
+    transform: translateY(-1px);
+  }
+
+  #calendar .calendario-dia.ativo {
+    @apply border-blue-600 bg-blue-600 text-white;
+    @apply dark:border-blue-400 dark:bg-blue-500/30 dark:text-blue-100;
   }
 
   .card-hover:hover {
@@ -271,7 +728,8 @@
 
   .calendar-nav-btn,
   .nav-mes-btn {
-    @apply min-w-[120px] rounded-md border border-gray-300 bg-gray-50 px-4 py-2;
+    min-width: 120px;
+    @apply rounded-md border border-gray-300 bg-gray-50 px-4 py-2;
     @apply text-sm text-gray-600 transition-all duration-200;
     @apply hover:bg-gray-100 hover:border-gray-400;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
@@ -281,31 +739,13 @@
 
   /* Dias da semana */
   .calendar-weekdays {
-    @apply mb-4 grid grid-cols-7 gap-2 text-center;
-  }
-
-  .weekday {
-    @apply py-2 text-sm font-semibold uppercase text-gray-500;
-    @apply dark:text-gray-400;
-  }
-
-  /* Grade do calendário */
-  .calendario-grid {
-    @apply grid grid-cols-7 gap-2;
-  }
-
-  /* Células vazias */
-  .calendario-dia-vazio {
-    @apply h-[42px] bg-transparent;
-  }
-
-  .calendario-dia-vazio:disabled {
-    @apply cursor-not-allowed border-2 border-dashed border-gray-300 bg-gray-50 opacity-70;
+    /* ... */
   }
 
   /* Dia base */
   .calendario-dia {
-    @apply relative flex h-[42px] items-center justify-center rounded-lg;
+    height: 42px;
+    @apply relative flex items-center justify-center rounded-lg;
     @apply border border-gray-200 bg-white text-sm font-medium;
     @apply transition-all duration-200 outline-none cursor-pointer;
     @apply hover:-translate-y-0.5 hover:shadow-md;
@@ -315,6 +755,7 @@
 
   /* Dia não lido (default) - exclui classes do ViewModel também */
   .calendario-dia:not(.lido):not(.ativo):not(.hoje):not(.dia-lido):not(
+    /* ... */
       .dia-atual
     ):not(.dia-hoje):not(.calendario-sem-plano) {
     @apply bg-gray-50 text-gray-500 border-gray-200;
@@ -381,7 +822,8 @@
 
   .calendario-dia.dia-bloqueado::after {
     content: "🔒";
-    @apply absolute top-0.5 right-0.5 text-[10px] opacity-70;
+    font-size: 10px;
+    @apply absolute top-0.5 right-0.5 opacity-70;
     @apply flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white/80;
     @apply dark:bg-slate-600/80;
   }
@@ -444,8 +886,10 @@
 
   /* Container do modal */
   .notas-container {
-    @apply relative flex w-[90%] max-w-3xl flex-col rounded-2xl bg-white shadow-2xl;
-    @apply h-[80vh] overflow-hidden;
+    width: 90%;
+    height: 80vh;
+    @apply relative flex max-w-3xl flex-col rounded-2xl bg-white shadow-2xl;
+    @apply overflow-hidden;
     @apply transform translate-y-8 scale-95 transition-transform duration-300;
     @apply dark:bg-slate-800;
   }
@@ -535,7 +979,8 @@
   }
 
   #notas-editor p {
-    @apply mb-4 min-h-[1.5em];
+    min-height: 1.5em;
+    @apply mb-4;
   }
 
   #notas-editor h2 {
@@ -603,7 +1048,9 @@
     }
 
     .notas-container {
-      @apply h-[90vh] w-[98%] max-w-none mx-2;
+      height: 90vh;
+      width: 98%;
+      @apply max-w-none mx-2;
     }
 
     .notas-toolbar {
@@ -622,7 +1069,8 @@
     }
 
     .notas-container {
-      @apply h-[95vh] mx-1 rounded-xl;
+      height: 95vh;
+      @apply mx-1 rounded-xl;
     }
 
     .notas-header {
@@ -652,7 +1100,8 @@
 
     /* Modal Card Base */
     .modal {
-      @apply relative w-[90%] max-w-lg rounded-2xl bg-white p-8 shadow-2xl;
+      width: 90%;
+      @apply relative max-w-lg rounded-2xl bg-white p-8 shadow-2xl;
       @apply transform translate-y-5 scale-95 transition-all duration-300;
       @apply dark:bg-slate-800;
     }
@@ -705,7 +1154,8 @@
 
     /* Reajuste Modal Específico */
     .reajuste-modal-overlay {
-      @apply fixed inset-0 z-[9999] flex items-center justify-center bg-black/50;
+      z-index: 9999;
+      @apply fixed inset-0 flex items-center justify-center bg-black/50;
       animation: fadeInOverlay 0.3s ease;
     }
 
@@ -719,7 +1169,8 @@
     }
 
     .reajuste-modal {
-      @apply w-[90%] max-w-md rounded-2xl bg-white p-8 shadow-2xl;
+      width: 90%;
+      @apply max-w-md rounded-2xl bg-white p-8 shadow-2xl;
       animation: slideUp 0.3s ease;
       @apply dark:bg-slate-800;
     }
@@ -785,7 +1236,8 @@
 
     /* Reset Modal Específico */
     .reset-modal-overlay {
-      @apply fixed inset-0 z-[999] flex items-center justify-center bg-black/50 p-4 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm;
+      z-index: 999;
+      @apply fixed inset-0 flex items-center justify-center bg-black/50 p-4 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm;
     }
 
     .reset-modal-overlay.active {
@@ -793,7 +1245,8 @@
     }
 
     .reset-modal {
-      @apply relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-xl border border-gray-200 bg-white p-8 shadow-2xl;
+      max-height: 90vh;
+      @apply relative w-full max-w-xl overflow-y-auto rounded-xl border border-gray-200 bg-white p-8 shadow-2xl;
       @apply dark:border-slate-600 dark:bg-slate-800;
       animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
@@ -900,7 +1353,9 @@
 
     /* Toasts para Modais */
     .modal-toast {
-      @apply fixed bottom-8 left-1/2 z-[3000] max-w-sm -translate-x-1/2 translate-y-[200px] rounded-lg px-6 py-4 opacity-0 shadow-xl transition-all duration-300;
+      z-index: 3000;
+      transform: translate(-50%, 200px);
+      @apply fixed bottom-8 left-1/2 max-w-sm rounded-lg px-6 py-4 opacity-0 shadow-xl transition-all duration-300;
     }
 
     .modal-toast.visible {
@@ -978,7 +1433,8 @@
       }
 
       .result-details {
-        @apply max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap text-right text-xs text-gray-500;
+        max-width: 120px;
+        @apply overflow-hidden text-ellipsis whitespace-nowrap text-right text-xs text-gray-500;
         @apply dark:text-gray-400;
       }
 
